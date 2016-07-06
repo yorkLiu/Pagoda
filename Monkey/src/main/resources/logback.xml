@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[Monkey] %d{ISO8601} %p [%t]%X{agentName}[%X{agentId}] %class.%M\(%L\) | %m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+      <discriminator>
+        <key>agentDate</key>
+        <defaultValue>unknown</defaultValue>
+      </discriminator>
+      <sift>
+        <appender name="FILE-${agentName}" class="ch.qos.logback.core.FileAppender">
+          <file>${catalina.base}/logs/${agentDate}.log</file>
+          <prudent>true</prudent>
+          <encoder>
+            <pattern>[Monkey] %d{ISO8601} %-5level [%t]%X{agentName}[%X{agentId}] %class.%M\(%L\) | %msg%n</pattern>
+          </encoder>
+        </appender>
+      </sift>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!--<file>/Users/liuqian/projects/log</file>-->
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- daily rollover -->
+        <fileNamePattern>${catalina.base}/logs/logFile.%d.log</fileNamePattern>
+  
+        <!-- keep 90 days' worth of history -->
+        <maxHistory>90</maxHistory>
+      </rollingPolicy>
+  
+      <encoder>
+        <pattern>[Monkey] %d{ISO8601} %-5level [%t]%X{agentName}[%X{agentId}]  %class.%M\(%L\) | %msg%n</pattern>
+      </encoder>
+    </appender>
+    <logger name="com.opensymphony.oscache" level="ERROR"/>
+    <logger name="org.hibernate.SQL" level="ERROR"/>
+    <logger name="org.mvel2.optimizers.impl.refl" level="ERROR"/>
+    <logger name="org.tuckey.web.filters" level="WARN"/>
+    <logger name="org.springframework.context" level="ERROR"/>
+    <logger name="org.hibernate.ps.PreparedStatementCache" level="WARN"/>
+    <logger name="org.apache.velocity" level="WARN"/>
+    <logger name="com.gargoylesoftware.htmlunit" level="WARN"/>
+    <logger name="org.springframework.cache" level="ERROR"/>
+    <logger name="org.springframework.security" level="WARN"/>
+    <logger name="net.sf.ehcache" level="ERROR"/>
+    <logger name="com.ly.capture" level="DEBUG"/>
+    <logger name="com.ly.utils" level="DEBUG"/>
+    <logger name="net.jawr" level="WARN"/>
+    <logger name="org.apache.struts" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.displaytag" level="ERROR"/>
+    <logger name="org.hibernate.type" level="ERROR"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.directwebremoting" level="WARN"/>
+    <logger name="com.googlecode.ehcache" level="ERROR"/>
+    <logger name="org.apache.commons" level="ERROR"/>
+    <logger name="net.sf.navigator" level="ERROR"/>
+    <logger name="com.canoo.webtest" level="WARN"/>
+    <root level="INFO">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="SIFT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

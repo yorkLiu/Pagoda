@@ -31,11 +31,10 @@
   </developers>
 
   <modules>
-
+    <module>PD-Utils</module>
+    <module>PD-Capture</module>
     <!--Estimation-->
     <module>Monkey</module>
-    <module>PD-Capture</module>
-    <module>PD-Utils</module>
 
   </modules>
   
@@ -154,16 +153,29 @@
       <version>${json-lib.version}</version>
       <classifier>jdk15</classifier>
     </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.classic.version}</version>
+    </dependency>
     
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>${spring.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    
   </dependencies>
   
 
   <properties>
+    <app.version>1.0.1</app.version>
     <!-- Framework dependency versions -->
     <spring.version>4.3.0.RELEASE</spring.version>
 
