@@ -8,7 +8,7 @@
   <artifactId>Pagoda</artifactId>
   <version>1.0.1</version>
   <packaging>pom</packaging>
-  <name>Pagada Applications</name>
+  <name>Pagoda Applications</name>
 
   <prerequisites>
     <maven>3.1.1</maven>
@@ -136,17 +136,6 @@
     </plugins>
   </build>
   
-  <repositories>
-    <repository>
-      <id>central</id>
-      <url>http://artifactory:8182/artifactory/repo</url>
-    </repository>
-    <!--<repository>-->
-      <!--<id>central</id>-->
-      <!--<url>https://mvnrepository.com/artifac</url>-->
-    <!--</repository>-->
-    
-  </repositories>
 
   <dependencies>
     <dependency>
