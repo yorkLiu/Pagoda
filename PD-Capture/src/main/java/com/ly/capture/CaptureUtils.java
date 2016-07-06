@@ -1,9 +1,15 @@
 package com.ly.capture;
 
 
-import com.ly.lib.ChaoJiYing;
-import com.sun.tools.javac.util.Assert;
 import org.apache.log4j.Logger;
+
+import org.springframework.util.Assert;
+
+import com.ly.lib.ChaoJiYing;
+
+import com.ly.utils.JSONObjectUtils;
+
+import net.sf.json.JSONObject;
 
 
 /**
@@ -13,27 +19,19 @@ import org.apache.log4j.Logger;
  * @version  07/05/2016 17:13
  */
 public class CaptureUtils {
+  //~ Static fields/initializers ---------------------------------------------------------------------------------------
+
+  private static final String KEY_SCORE = "tifen";
+
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   private final Logger log = Logger.getLogger(getClass());
 
   private String password;
-  
-  private String username;
-  
-  private static final String KEY_SCORE="tifen";
-  
-  //~ Methods ----------------------------------------------------------------------------------------------------------
-  
-  private int getScore(){
-    Assert.checkNonNull(username);
-    Assert.checkNonNull(password);
-    String results = ChaoJiYing.GetScore(username, password);
-    
-    
-    return 0;
-  }
 
+  private String username;
+
+  //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
    * setter method for password.
@@ -53,5 +51,32 @@ public class CaptureUtils {
    */
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private int getScore() {
+    Assert.notNull(username);
+    Assert.notNull(password);
+
+    String results = ChaoJiYing.GetScore(username, password);
+
+    JSONObject json = JSONObjectUtils.toJSONObject(results);
+
+    if (json != null) {
+      String scoreStr = (String) json.get(KEY_SCORE);
+
+      if (log.isDebugEnabled()) {
+        log.debug("UserName:" + username + ", you score is:" + scoreStr);
+      }
+
+      return Integer.parseInt(scoreStr);
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("UserName:" + username + ", you score is: 0");
+    }
+
+    return 0;
   }
 } // end class CaptureUtils

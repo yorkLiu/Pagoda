@@ -15,6 +15,16 @@
   <description>Evaluate the capture</description>
   
   
+  <dependencies>
+    <dependency>
+      <groupId>com.ly</groupId>
+      <artifactId>PD-Utils</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+  </dependencies>
+  
+  
 
 
 </project>

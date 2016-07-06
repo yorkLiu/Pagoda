@@ -8,11 +8,12 @@
   <artifactId>Pagoda</artifactId>
   <version>1.0.1</version>
   <packaging>pom</packaging>
+  <name>Pagada Applications</name>
 
   <prerequisites>
-    <maven>2.0.6</maven>
+    <maven>3.1.1</maven>
   </prerequisites>
-
+  
   <licenses>
     <license>
     </license>
@@ -134,6 +135,18 @@
       </plugin>
     </plugins>
   </build>
+  
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>http://artifactory:8182/artifactory/repo</url>
+    </repository>
+    <!--<repository>-->
+      <!--<id>central</id>-->
+      <!--<url>https://mvnrepository.com/artifac</url>-->
+    <!--</repository>-->
+    
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -150,7 +163,9 @@
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <version>${json-lib.version}</version>
+      <classifier>jdk15</classifier>
     </dependency>
+    
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
@@ -191,6 +206,7 @@
     <jackson.version>1.9.3</jackson.version>
     <httpclient.version>4.5.2</httpclient.version>
     <httpmime.version>3.1</httpmime.version>
+    <commons-httpclient.version>3.1</commons-httpclient.version>
 
   </properties>
   
