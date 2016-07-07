@@ -24,7 +24,7 @@
   <bean id="captureUtil" class="com.ly.capture.CaptureUtil">
     <property name="username" value="${CAPTURE_USERNAME}"/>
     <property name="password" value="${CAPTURE_PASSWORD}"/>
-    <property name="appName" value="${appName}"/>
+    <property name="appName" value="${organizationName}"/>
   </bean>
   
   </beans>
