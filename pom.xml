@@ -208,6 +208,10 @@
     <httpclient.version>4.5.2</httpclient.version>
     <httpmime.version>3.1</httpmime.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
+    <commons-codec.version>1.10</commons-codec.version>
+    <bouncycastle.version>1.46</bouncycastle.version>
+    <sauce_testng.version>2.1.21</sauce_testng.version>
+    <testng.version>6.9.10</testng.version>
 
   </properties>
   
