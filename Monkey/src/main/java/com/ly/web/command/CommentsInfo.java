@@ -21,11 +21,9 @@ public class CommentsInfo implements Serializable {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /**
-   * key: sku
-   * value: comments content
-   * @i.e 
-   *    key: 123423423423
-   *    value: It's so good
+   * key: sku value: comments content
+   *
+   * @i.e  key: 123423423423 value: It's so good
    */
   private Map<String, String> commentsMap = new HashedMap(10);
 
@@ -37,6 +35,37 @@ public class CommentsInfo implements Serializable {
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
+  /**
+   * @see  java.lang.Object#equals(java.lang.Object)
+   */
+  @Override public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if ((o == null) || (getClass() != o.getClass())) {
+      return false;
+    }
+
+    CommentsInfo that = (CommentsInfo) o;
+
+    if ((commentsMap != null) ? (!commentsMap.equals(that.commentsMap)) : (that.commentsMap != null)) {
+      return false;
+    }
+
+    if ((orderId != null) ? (!orderId.equals(that.orderId)) : (that.orderId != null)) {
+      return false;
+    }
+
+    if ((password != null) ? (!password.equals(that.password)) : (that.password != null)) {
+      return false;
+    }
+
+    return !((username != null) ? (!username.equals(that.username)) : (that.username != null));
+
+  } // end method equals
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * getter method for comments map.
@@ -71,7 +100,6 @@ public class CommentsInfo implements Serializable {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-
   /**
    * getter method for username.
    *
@@ -79,6 +107,20 @@ public class CommentsInfo implements Serializable {
    */
   public String getUsername() {
     return username;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#hashCode()
+   */
+  @Override public int hashCode() {
+    int result = (commentsMap != null) ? commentsMap.hashCode() : 0;
+    result = (31 * result) + ((orderId != null) ? orderId.hashCode() : 0);
+    result = (31 * result) + ((password != null) ? password.hashCode() : 0);
+    result = (31 * result) + ((username != null) ? username.hashCode() : 0);
+
+    return result;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -123,5 +165,21 @@ public class CommentsInfo implements Serializable {
    */
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#toString()
+   */
+  @Override public String toString() {
+    final StringBuffer sb = new StringBuffer("CommentsInfo{");
+    sb.append("commentsMap=").append(commentsMap);
+    sb.append(", orderId='").append(orderId).append('\'');
+    sb.append(", password='").append(password).append('\'');
+    sb.append(", username='").append(username).append('\'');
+    sb.append('}');
+
+    return sb.toString();
   }
 } // end class CommentsInfo

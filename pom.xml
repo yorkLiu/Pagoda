@@ -212,6 +212,7 @@
     <bouncycastle.version>1.46</bouncycastle.version>
     <sauce_testng.version>2.1.21</sauce_testng.version>
     <testng.version>6.9.10</testng.version>
+    <poi.version>3.14</poi.version>
 
   </properties>
   
