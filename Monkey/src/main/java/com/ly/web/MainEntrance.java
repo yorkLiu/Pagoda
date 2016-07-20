@@ -1,5 +1,6 @@
 package com.ly.web;
 
+import com.ly.web.dp.YHDDataProvider;
 import com.ly.web.lyd.YHD;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,10 +24,11 @@ public class MainEntrance {
    */
   public static void main(String[] args) {
     try {
-      Log logger = LogFactory.getLog(MainEntrance.class);
-
-//      TestNGCase.configFilePath = "/Users/yongliu/Project/suning-config-mac.properties";
-
+      
+      // args path
+      String path = "";
+      YHDDataProvider.path = path;
+      
       TestNG testng = new TestNG();
       Class[] classes = new Class[]{YHD.class};
       testng.setTestClasses(classes);
