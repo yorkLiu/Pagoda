@@ -25,7 +25,7 @@ import com.saucelabs.testng.SauceOnDemandTestListener;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  07/12/2016 15:06
  */
-//@Listeners({ SauceOnDemandTestListener.class })
+// @Listeners({ SauceOnDemandTestListener.class })
 public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
@@ -58,6 +58,17 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for driver.
+   *
+   * @return  WebDriver
+   */
+  public WebDriver getDriver() {
+    return driver;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * The Sauce Job id for the current thread.
    *
    * @return  the Sauce Job id for the current thread
@@ -88,6 +99,17 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     }
 
     return webDriver.get();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for driver.
+   *
+   * @param  driver  WebDriver
+   */
+  public void setDriver(WebDriver driver) {
+    this.driver = driver;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

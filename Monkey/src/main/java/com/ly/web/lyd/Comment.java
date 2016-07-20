@@ -231,7 +231,8 @@ public class Comment extends YHDAbstractObject {
       logger.debug("Ready for submit comment for orderId#" + orderId);
     }
 
-    // wait 3 seconds
+    // wait 5 seconds
+    delay(5);
     webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     
     // submit the comment

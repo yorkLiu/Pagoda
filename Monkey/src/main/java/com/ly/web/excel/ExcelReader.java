@@ -50,7 +50,7 @@ public class ExcelReader implements Serializable {
    *
    * @return  获取合并单元格的值.
    */
-  public String getMergedRegionValue(Sheet sheet, int row, int column) {
+  private String getMergedRegionValue(Sheet sheet, int row, int column) {
     int sheetMergeCount = sheet.getNumMergedRegions();
 
     for (int i = 0; i < sheetMergeCount; i++) {
@@ -227,7 +227,7 @@ public class ExcelReader implements Serializable {
    *
    * @return  读取excel数据.
    */
-  private List<CommentsInfo> readExcelToObj(String path) {
+  public List<CommentsInfo> readExcelToObj(String path) {
     Workbook wb = null;
 
     try {
@@ -252,5 +252,16 @@ public class ExcelReader implements Serializable {
   }
 
 
+  /**
+   * main.
+   *
+   * @param  args  String[]
+   */
+  public static void main(String[] args) {
+    ExcelReader excelReader = new ExcelReader();
+    String      path        = "/Users/yongliu/Downloads/7.11AoXin-YHD.xlsx";
+    List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
+    System.out.println(commentsInfoList);
+  }
   
 } // end class ExcelReader

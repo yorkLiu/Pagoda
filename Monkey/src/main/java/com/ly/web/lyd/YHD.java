@@ -1,22 +1,11 @@
 package com.ly.web.lyd;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.openqa.selenium.support.events.WebDriverEventListener;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+
+import org.springframework.util.Assert;
 
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -24,7 +13,7 @@ import org.testng.annotations.Test;
 import com.ly.web.base.SeleniumBaseObject;
 import com.ly.web.command.CommentsInfo;
 import com.ly.web.constant.Constant;
-import com.ly.web.listeners.WebDriverExceptionTakeScreenshotListener;
+import com.ly.web.dp.YHDDataProvider;
 
 
 /**
@@ -46,12 +35,47 @@ public class YHD extends SeleniumBaseObject {
 
   private CommentsInfo commentsInfo = null;
 
+  private List<CommentsInfo> commentsInfoList = new LinkedList<>();
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * comment.
+   */
+  @Test(priority = 2)
+  public void comment() {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Comments total count: " + commentsInfoList.size());
+    }
+
+    for (CommentsInfo commentsInfo : commentsInfoList) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Ready comment: " + commentsInfo);
+      }
+
+      this.commentsInfo = commentsInfo;
+
+      // 1. login
+      login();
+
+      // 2. confirm receipt
+      confirmReceipt();
+
+      // 3. comment production(s)
+      comments();
+
+      // 4. logout for current user
+      logout();
+
+    }
+  } // end method comment
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * comments.
    */
-  @Test(priority = 3)
+// @Test(priority = 3)
   public void comments() {
     try {
       if (logger.isDebugEnabled()) {
@@ -75,7 +99,7 @@ public class YHD extends SeleniumBaseObject {
   /**
    * 1. Open my order page 2. confirm this orderId receipt
    */
-  @Test(priority = 2)
+// @Test(priority = 2)
   public void confirmReceipt() {
     try {
       if (logger.isDebugEnabled()) {
@@ -97,10 +121,21 @@ public class YHD extends SeleniumBaseObject {
 
   /**
    * initData.
+   *
+   * @param  commentsInfo  CommentsInfo
    */
-  @Test(priority = 0)
-  public void initData() {
-    
+  @Test(
+    priority          = 1,
+    dataProvider      = "dp-yhd-comment",
+    dataProviderClass = YHDDataProvider.class
+  )
+  public void initData(CommentsInfo commentsInfo) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("init comment data.....");
+    }
+
+    Assert.notNull(commentsInfo);
+    commentsInfoList.add(commentsInfo);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -108,7 +143,7 @@ public class YHD extends SeleniumBaseObject {
   /**
    * login.
    */
-  @Test(priority = 1)
+// @Test(priority = 1)
   public void login() {
     try {
       if (logger.isDebugEnabled()) {
@@ -140,7 +175,7 @@ public class YHD extends SeleniumBaseObject {
   /**
    * logout.
    */
-  @Test(priority = 4)
+// @Test(priority = 4)
   public void logout() {
     if (logger.isDebugEnabled()) {
       logger.debug("Ready logout for user#" + commentsInfo.getUsername());
@@ -161,20 +196,20 @@ public class YHD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
-    WebDriverEventListener eventListener = new WebDriverExceptionTakeScreenshotListener();
-    driver = new EventFiringWebDriver(new FirefoxDriver());
+    if (driver == null) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Driver is NULL, then new chrome driver instance.");
+      }
 
+      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
+      driver = new ChromeDriver();
+    } else {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Driver is not NULL, no need to new driver instance.");
+      }
+    }
 
-// DesiredCapabilities capability = null;
-// capability = DesiredCapabilities.firefox();
-// WebDriverExceptionTakeScreenshotListener eventListener = new WebDriverExceptionTakeScreenshotListener();
-// eventListener.setBaseDir("/Users/yongliu/Download/temp/");
-// WebDriver driver = new EventFiringWebDriver(new RemoteWebDriver(new URL(
-// remote_driver_url), capability)).register(eventListener);
-
-    
-    
-  }
+  } // end method setup
 
 
 } // end class YHD
