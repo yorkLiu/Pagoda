@@ -66,9 +66,11 @@ public class Login extends AbstractObject {
       });
 
     WebElement username = this.webDriver.findElement(By.id("un"));
+    username.clear();
     username.sendKeys(userName);
 
     WebElement pwd = this.webDriver.findElement(By.id("pwd"));
+    pwd.clear();
     pwd.sendKeys(password);
 
     WebElement loginButton = this.webDriver.findElement(By.id("login_button"));
