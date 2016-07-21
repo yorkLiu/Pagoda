@@ -140,12 +140,11 @@ public class YHD extends SeleniumBaseObject {
     dataProviderClass = YHDDataProvider.class
   )
   public void initData(CommentsInfo commentsInfo) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("init comment data.....");
-    }
-
     Assert.notNull(commentsInfo);
     commentsInfoList.add(commentsInfo);
+    if (logger.isDebugEnabled()) {
+      logger.debug("init comment data list size:" + commentsInfoList.size());
+    }
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

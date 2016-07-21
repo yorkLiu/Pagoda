@@ -26,7 +26,7 @@ public class MainEntrance {
     try {
       
       // args path
-      String path = "/Users/yongliu/Downloads/7.12AoXin-YHD.xlsx";
+      String path = "";
       YHDDataProvider.path = path;
       
       TestNG testng = new TestNG();
