@@ -33,8 +33,11 @@
   <modules>
     <module>PD-Utils</module>
     <module>PD-Capture</module>
+    <!--models-->
+    <module>Stalagnate</module>
     <!--Estimation-->
     <module>Monkey</module>
+    
 
   </modules>
   
@@ -213,6 +216,7 @@
     <sauce_testng.version>2.1.21</sauce_testng.version>
     <testng.version>6.9.10</testng.version>
     <poi.version>3.14</poi.version>
+    <jpa.version>1.0.0.Final</jpa.version>
 
   </properties>
   

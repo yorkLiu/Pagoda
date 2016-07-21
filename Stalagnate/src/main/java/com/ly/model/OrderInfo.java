@@ -1,0 +1,401 @@
+package com.ly.model;
+
+import com.ly.model.type.PaymentType;
+import com.ly.model.type.StatusType;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Created by yongliu on 7/20/16.
+ *
+ * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @version  07/21/2016 11:39
+ */
+@Entity
+@Table(name = "OrderInfo")
+public class OrderInfo {
+  //~ Instance fields --------------------------------------------------------------------------------------------------
+
+  @JoinColumn(
+    name       = "addressId",
+    insertable = true,
+    updatable  = true
+  )
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Address address;
+
+  /** How much amount for this order. */
+  private BigDecimal commission;
+
+
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Id private Long id;
+
+  @Cascade(value = CascadeType.ALL)
+  @JoinTable(
+    name               = "OrderItemInfo",
+    joinColumns        = {
+      @JoinColumn(
+        name           = "orderInfoId",
+        insertable     = true,
+        nullable       = false
+      )
+    },
+    inverseJoinColumns = {
+      @JoinColumn(
+        name           = "itemInfoId",
+        insertable     = true,
+        nullable       = false
+      )
+    }
+  )
+  @ManyToMany(fetch = FetchType.LAZY)
+  private Set<ItemInfo> items = new HashSet<>();
+
+  @JoinColumn(
+    name     = "merchantId",
+    nullable = false
+  )
+  @ManyToOne private Merchant merchant;
+
+  private String orderNum;
+
+  private String paymentMethod;
+
+  @Enumerated(EnumType.STRING)
+  private PaymentType paymentType;
+
+  private String paymentUrl;
+
+  @Enumerated(EnumType.STRING)
+  private StatusType status;
+
+  /** This order total amount. */
+  private BigDecimal totalAmount;
+
+  //~ Methods ----------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * @see  java.lang.Object#equals(java.lang.Object)
+   */
+  @Override public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if ((o == null) || (getClass() != o.getClass())) {
+      return false;
+    }
+
+    OrderInfo orderInfo = (OrderInfo) o;
+
+    if ((commission != null) ? (!commission.equals(orderInfo.commission)) : (orderInfo.commission != null)) {
+      return false;
+    }
+
+    if ((merchant != null) ? (!merchant.equals(orderInfo.merchant)) : (orderInfo.merchant != null)) {
+      return false;
+    }
+
+    if ((orderNum != null) ? (!orderNum.equals(orderInfo.orderNum)) : (orderInfo.orderNum != null)) {
+      return false;
+    }
+
+    if ((paymentMethod != null) ? (!paymentMethod.equals(orderInfo.paymentMethod))
+                                : (orderInfo.paymentMethod != null)) {
+      return false;
+    }
+
+    if (paymentType != orderInfo.paymentType) {
+      return false;
+    }
+
+    if ((paymentUrl != null) ? (!paymentUrl.equals(orderInfo.paymentUrl)) : (orderInfo.paymentUrl != null)) {
+      return false;
+    }
+
+    if (status != orderInfo.status) {
+      return false;
+    }
+
+    return !((totalAmount != null) ? (!totalAmount.equals(orderInfo.totalAmount)) : (orderInfo.totalAmount != null));
+
+  } // end method equals
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for address.
+   *
+   * @return  Address
+   */
+  public Address getAddress() {
+    return address;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for commission.
+   *
+   * @return  BigDecimal
+   */
+  public BigDecimal getCommission() {
+    return commission;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for id.
+   *
+   * @return  Long
+   */
+  public Long getId() {
+    return id;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for items.
+   *
+   * @return  Set
+   */
+  public Set<ItemInfo> getItems() {
+    return items;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for merchant.
+   *
+   * @return  Merchant
+   */
+  public Merchant getMerchant() {
+    return merchant;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for order num.
+   *
+   * @return  String
+   */
+  public String getOrderNum() {
+    return orderNum;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for payment method.
+   *
+   * @return  String
+   */
+  public String getPaymentMethod() {
+    return paymentMethod;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for payment type.
+   *
+   * @return  PaymentType
+   */
+  public PaymentType getPaymentType() {
+    return paymentType;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for payment url.
+   *
+   * @return  String
+   */
+  public String getPaymentUrl() {
+    return paymentUrl;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for status.
+   *
+   * @return  StatusType
+   */
+  public StatusType getStatus() {
+    return status;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for total amount.
+   *
+   * @return  BigDecimal
+   */
+  public BigDecimal getTotalAmount() {
+    return totalAmount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#hashCode()
+   */
+  @Override public int hashCode() {
+    int result = (commission != null) ? commission.hashCode() : 0;
+    result = (31 * result) + ((merchant != null) ? merchant.hashCode() : 0);
+    result = (31 * result) + ((orderNum != null) ? orderNum.hashCode() : 0);
+    result = (31 * result) + ((paymentMethod != null) ? paymentMethod.hashCode() : 0);
+    result = (31 * result) + ((paymentType != null) ? paymentType.hashCode() : 0);
+    result = (31 * result) + ((paymentUrl != null) ? paymentUrl.hashCode() : 0);
+    result = (31 * result) + ((status != null) ? status.hashCode() : 0);
+    result = (31 * result) + ((totalAmount != null) ? totalAmount.hashCode() : 0);
+
+    return result;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for address.
+   *
+   * @param  address  Address
+   */
+  public void setAddress(Address address) {
+    this.address = address;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for commission.
+   *
+   * @param  commission  BigDecimal
+   */
+  public void setCommission(BigDecimal commission) {
+    this.commission = commission;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for id.
+   *
+   * @param  id  Long
+   */
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for items.
+   *
+   * @param  items  Set
+   */
+  public void setItems(Set<ItemInfo> items) {
+    this.items = items;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for merchant.
+   *
+   * @param  merchant  Merchant
+   */
+  public void setMerchant(Merchant merchant) {
+    this.merchant = merchant;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for order num.
+   *
+   * @param  orderNum  String
+   */
+  public void setOrderNum(String orderNum) {
+    this.orderNum = orderNum;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for payment method.
+   *
+   * @param  paymentMethod  String
+   */
+  public void setPaymentMethod(String paymentMethod) {
+    this.paymentMethod = paymentMethod;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for payment type.
+   *
+   * @param  paymentType  PaymentType
+   */
+  public void setPaymentType(PaymentType paymentType) {
+    this.paymentType = paymentType;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for payment url.
+   *
+   * @param  paymentUrl  String
+   */
+  public void setPaymentUrl(String paymentUrl) {
+    this.paymentUrl = paymentUrl;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for status.
+   *
+   * @param  status  StatusType
+   */
+  public void setStatus(StatusType status) {
+    this.status = status;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for total amount.
+   *
+   * @param  totalAmount  BigDecimal
+   */
+  public void setTotalAmount(BigDecimal totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+} // end class OrderInfo
