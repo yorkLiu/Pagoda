@@ -44,11 +44,11 @@ public class YHDUtils {
 
     int colIdx = cell.getColumnIndex();
 
-    if (logger.isDebugEnabled()) {
-      logger.debug("Read the cellIndex: " + colIdx + " in row: " + row.getRowNum());
-    }
-
     String cellValue = getCellValue(cell);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Read the cellIndex: " + colIdx + " in row: " + row.getRowNum() + " and value: " + cellValue);
+    }
 
     switch (colIdx) {
       case ORDER_ID_COLUMN: {
@@ -60,14 +60,18 @@ public class YHDUtils {
 
       case USER_NAME_COLUMN: {
         // column index is 1, it's username
-        commentsInfo.setUsername(cellValue);
+        if (cellValue != null && StringUtils.hasText(cellValue)) {
+          commentsInfo.setUsername(cellValue);
+        }
 
         break;
       }
 
       case PASSWORD_COLUMN: {
         // column index is 2, it's password
-        commentsInfo.setPassword(cellValue);
+        if (cellValue != null && StringUtils.hasText(cellValue)) {
+          commentsInfo.setPassword(cellValue);
+        }
 
         break;
       }

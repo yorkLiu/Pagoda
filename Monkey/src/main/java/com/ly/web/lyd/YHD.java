@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import org.springframework.util.Assert;
 
+import org.springframework.util.StringUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -49,6 +50,15 @@ public class YHD extends SeleniumBaseObject {
     }
 
     for (CommentsInfo commentsInfo : commentsInfoList) {
+      
+      if ((commentsInfo.getUsername() == null) || !StringUtils.hasText(commentsInfo.getUsername())) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("This record username is NULL, skip it.");
+        }
+
+        continue;
+      }
+      
       if (logger.isDebugEnabled()) {
         logger.debug("Ready comment: " + commentsInfo);
       }
