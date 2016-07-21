@@ -12,6 +12,7 @@
   
   <artifactId>Lion</artifactId>
   <packaging>jar</packaging>
+  <name>Pagoda Models</name>
   <description>Pagoda models</description>
   
   <dependencies>
