@@ -7,8 +7,6 @@ import org.springframework.util.Assert;
 import com.ly.web.base.YHDAbstractObject;
 import com.ly.web.constant.Constant;
 
-import com.oracle.tools.packager.Log;
-
 
 /**
  * Created by yongliu on 7/13/16.
