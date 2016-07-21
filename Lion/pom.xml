@@ -10,12 +10,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   
-  <artifactId>Stalagnate</artifactId>
+  <artifactId>Lion</artifactId>
   <packaging>jar</packaging>
-  <description>models</description>
+  <description>Pagoda models</description>
   
   <dependencies>
-
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.1-api</artifactId>
