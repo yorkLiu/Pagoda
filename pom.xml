@@ -35,6 +35,8 @@
     <module>PD-Capture</module>
     <!--models-->
     <module>Lion</module>
+    <!--services-->
+    <module>Rabbit</module>
     <!--Estimation-->
     <module>Monkey</module>
     
@@ -173,11 +175,34 @@
       <artifactId>spring-beans</artifactId>
       <version>${spring.version}</version>
     </dependency>
+
+   
     
   </dependencies>
   
 
   <properties>
+
+    <!-- Database settings -->
+    <!--<hibernate.dialect>org.hibernate.dialect.MySQL5InnoDBDialect</hibernate.dialect>-->
+    <!--<jdbc.groupId>mysql</jdbc.groupId>-->
+    <!--<jdbc.artifactId>mysql-connector-java</jdbc.artifactId>-->
+    <!--<jdbc.driverClassName>com.mysql.jdbc.Driver</jdbc.driverClassName>-->
+
+    <!-- Database settings -->
+    <dbunit.dataTypeFactoryName>org.dbunit.dataset.datatype.DefaultDataTypeFactory</dbunit.dataTypeFactoryName>
+    <dbunit.operation.type>CLEAN_INSERT</dbunit.operation.type>
+    <hibernate.dialect>org.hibernate.dialect.MySQL5InnoDBDialect</hibernate.dialect>
+    <jdbc.groupId>mysql</jdbc.groupId>
+    <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
+    <jdbc.version>5.0.5</jdbc.version>
+    <jdbc.driverClassName>com.mysql.jdbc.Driver</jdbc.driverClassName>
+    <jdbc.url>
+      <![CDATA[jdbc:mysql://localhost:3306/Pagoda?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=utf-8]]></jdbc.url>
+    <jdbc.username>root</jdbc.username>
+    <jdbc.password>Passw0rd</jdbc.password>
+    
+    
     <app.version>1.0.1</app.version>
     <!-- Framework dependency versions -->
     <spring.version>4.3.0.RELEASE</spring.version>
@@ -196,10 +221,12 @@
     <junit.version>4.12</junit.version>
     <servlet.version>3.1.0</servlet.version>
 
+    <mysql.version>5.0.5</mysql.version>
     <HikariCP.version>2.4.6</HikariCP.version>
     <dwr.version>3.0.1-RELEASE</dwr.version>
     <hibernate.core.version>5.2.0.Final</hibernate.core.version>
     <hibernate.cglib.version>2.1_3</hibernate.cglib.version>
+    <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
     <json-lib.version>2.4</json-lib.version>
     <joda-time.version>2.9.3</joda-time.version>
     <jstl.version>1.1.2</jstl.version>
@@ -226,6 +253,8 @@
     <testng.version>6.9.10</testng.version>
     <poi.version>3.14</poi.version>
     <jpa.version>1.0.0.Final</jpa.version>
+    <junit.version>4.12</junit.version>
+    
 
   </properties>
   
