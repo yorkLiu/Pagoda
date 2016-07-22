@@ -14,8 +14,7 @@ import javax.persistence.TemporalType;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  07/20/2016 14:47
  */
-@MappedSuperclass
-public abstract class BaseObject {
+@MappedSuperclass public abstract class BaseObject {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /** Create date. */
@@ -32,8 +31,17 @@ public abstract class BaseObject {
   @Temporal(TemporalType.TIMESTAMP)
   protected Date lastUpdateDate;
 
-  //~ Methods ----------------------------------------------------------------------------------------------------------
+  //~ Constructors -----------------------------------------------------------------------------------------------------
 
+  /**
+   * Creates a new BaseObject object.
+   */
+  public BaseObject() {
+    this.createDate     = new Date();
+    this.lastUpdateDate = createDate;
+  }
+
+  //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
    * getter method for create date.
@@ -63,7 +71,11 @@ public abstract class BaseObject {
    * @param  createDate  Date
    */
   public void setCreateDate(Date createDate) {
-    this.createDate = createDate;
+    if (createDate == null) {
+      this.createDate = new Date();
+    } else {
+      this.createDate = createDate;
+    }
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -75,5 +87,22 @@ public abstract class BaseObject {
    */
   public void setLastUpdateDate(Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#toString()
+   */
+  @Override public String toString() {
+    final String TAB = "    ";
+
+    StringBuilder retValue = new StringBuilder();
+
+    retValue.append("BaseObject ( ").append("createDate = ").append(
+      this.createDate).append(TAB).append("updateDate = ").append(
+      this.lastUpdateDate).append(TAB).append(" )");
+
+    return retValue.toString();
   }
 } // end class BaseObject
