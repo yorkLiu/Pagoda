@@ -1,5 +1,6 @@
 package com.ly.model;
 
+import com.ly.model.base.AbstractOrderInfo;
 import com.ly.model.type.PaymentType;
 import com.ly.model.type.StatusType;
 import org.hibernate.annotations.Cascade;
@@ -29,20 +30,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "OrderInfo")
-public class OrderInfo {
+public class OrderInfo extends AbstractOrderInfo {
   //~ Instance fields --------------------------------------------------------------------------------------------------
-
-  @JoinColumn(
-    name       = "addressId",
-    insertable = true,
-    updatable  = true
-  )
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Address address;
-
-  /** How much amount for this order. */
-  private BigDecimal commission;
-
 
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Id private Long id;
@@ -67,27 +56,19 @@ public class OrderInfo {
   )
   @ManyToMany(fetch = FetchType.LAZY)
   private Set<ItemInfo> items = new HashSet<>();
-
-  @JoinColumn(
-    name     = "merchantId",
-    nullable = false
-  )
-  @ManyToOne private Merchant merchant;
-
-  private String orderNum;
-
-  private String paymentMethod;
-
-  @Enumerated(EnumType.STRING)
-  private PaymentType paymentType;
-
-  private String paymentUrl;
-
-  @Enumerated(EnumType.STRING)
-  private StatusType status;
-
-  /** This order total amount. */
-  private BigDecimal totalAmount;
+  
+  public void deepCopy(OrderInfo that){
+    
+    that.setAddress(this.address);
+    that.setCommission(this.commission);
+    that.setMerchant(this.merchant);
+    that.setOrderNum(this.orderNum);
+    that.setPaymentMethod(this.paymentMethod);
+    that.setPaymentType(this.paymentType);
+    that.setPaymentUrl(this.paymentUrl);
+    that.setStatus(this.status);
+    that.setTotalAmount(this.getTotalAmount());
+  }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
