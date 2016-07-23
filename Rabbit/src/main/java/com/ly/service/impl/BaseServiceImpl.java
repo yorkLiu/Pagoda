@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.ly.dao.Dao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service("baseService")
+@Transactional
 public class BaseServiceImpl implements BaseService {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 

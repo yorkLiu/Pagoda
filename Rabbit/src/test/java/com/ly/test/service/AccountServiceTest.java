@@ -18,21 +18,22 @@ import java.util.Date;
 /**
  * Created by yongliu on 7/21/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
- * @version  07/21/2016 16:57
+ * @author <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @version 07/21/2016 16:57
  */
-@Transactional
 public class AccountServiceTest extends BaseManagerTestCase {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  @Autowired private AccountService accountService;
+  @Autowired
+  private AccountService accountService;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
    * testSaveAccount.
    */
-  @Test public void testSaveAccount() {
+  @Test
+  public void testSaveAccount() {
     Assert.notNull(accountService);
 
     Account account = new Account();
@@ -43,9 +44,9 @@ public class AccountServiceTest extends BaseManagerTestCase {
     account.setLocked(false);
     account.setDisabled(false);
     account.setCreateDate(new Date());
-    
+
     accountService.save(account);
-    
+
   }
 
 }

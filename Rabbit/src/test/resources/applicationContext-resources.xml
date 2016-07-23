@@ -99,26 +99,26 @@
         <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
         <property name="packagesToScan" value="com.ly.service,com.ly.dao"/>
   
-      <!--<property name="hibernateProperties">-->
-            <!--<value>-->
-                <!--hibernate.dialect=org.hibernate.dialect.MySQLInnoDBDialect-->
-                <!--hibernate.query.substitutions=true 'Y', false 'N'-->
-                <!--hibernate.cache.use_second_level_cache=true-->
-                <!--hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory-->
-              <!--hibernate.jdbc.batch_size=50-->
-              <!--hibernate.cache.use_query_cache=true-->
-              <!--hibernate.format_sql=false-->
-              <!--hibernate.generate_statistics=false-->
-              <!--hibernate.order_inserts=true-->
-              <!--hibernate.order_updates=true-->
-              <!--hibernate.show_sql=false-->
-              <!--hibernate.max_fetch_depth=8-->
-              <!--hibernate.id.new_generator_mappings=false-->
+      <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=org.hibernate.dialect.MySQLInnoDBDialect
+                hibernate.query.substitutions=true 'Y', false 'N'
+                hibernate.cache.use_second_level_cache=false
+                hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+              hibernate.jdbc.batch_size=50
+              hibernate.cache.use_query_cache=false
+              hibernate.format_sql=true
+              hibernate.generate_statistics=true
+              hibernate.order_inserts=false
+              hibernate.order_updates=false
+              hibernate.show_sql=true
+              hibernate.max_fetch_depth=8
+              hibernate.id.new_generator_mappings=false
 
-            <!--</value>-->
-            <!--&lt;!&ndash; Turn batching off for better error messages under PostgreSQL &ndash;&gt;-->
-            <!--&lt;!&ndash; hibernate.jdbc.batch_size=0 &ndash;&gt;-->
-        <!--</property>-->
+            </value>
+            <!-- Turn batching off for better error messages under PostgreSQL -->
+            <!-- hibernate.jdbc.batch_size=0 -->
+        </property>
 
     </bean>
  
