@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd
+              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+  <!-- HTTP security configurations -->
+  <http auto-config="true" use-expressions="true">
+    <!-- Configure these elements to secure URIs in your application -->
+    <!-- <intercept-url pattern="//**" access="hasRole('ROLE_ADMIN')" /> -->
+    <!-- <intercept-url pattern="/member/**" access="isAuthenticated()" /> -->
+    <!-- <intercept-url pattern="/resources/**" access="permitAll" /> -->
+    <!-- <intercept-url pattern="/**" access="permitAll" /> -->
+
+    <intercept-url pattern="/ext/**" access="permitAll"/>
+    <intercept-url pattern="/login/**" access="permitAll"/>
+    <intercept-url pattern="/desktop/**" access="permitAll"/>
+    <intercept-url pattern="/security/login" access="permitAll"/>
+    <intercept-url pattern="/dwr/call/**" access="permitAll"/>
+    <intercept-url pattern="/common/**" access="permitAll"/>
+    <intercept-url pattern="/html/**" access="permitAll"/>
+
+    <form-login login-page="/security/login" authentication-failure-url="/security/login?error=true"
+                default-target-url="/src/main/webapp" />
+
+      <!--<form-login login-page="/security/login" authentication-failure-url="/security/login?error=true"-->
+                  <!--default-target-url="/" -->
+       <!--login-processing-url="/security/check"-->
+       <!--authentication-success-handler-ref="authSuccessLogger"-->
+       <!--authentication-failure-handler-ref="authFailureLogger"/>-->
+
+    <!-- <session-management session-authentication-strategy-ref="yourConcurrentSessionControlStrategy"/> -->
+    <!-- <custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" /> -->
+    <!-- <custom-filter position="LOGOUT_FILTER" ref="logoutFilter"/> -->
+    <anonymous/>
+
+  </http>
+
+
+    <!--<beans:bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">-->
+      <!--<beans:property name="authenticationEntryPoint" ref="authenticationProcessingFilterEntryPoint" />-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.AuthenticationProcessingFilterEntryPoint">-->
+      <!--<beans:property name="loginFormUrl" value="/security/login"/>-->
+      <!--<beans:property name="forceHttps" value="false" />-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">-->
+      <!--<beans:constructor-arg value="/security/login"/> &lt;!&ndash; URL redirected to after logout &ndash;&gt;-->
+      <!--<beans:constructor-arg>-->
+        <!--<beans:list>-->
+          <!--&lt;!&ndash; ref model="rememberMeServices"/ &ndash;&gt;-->
+          <!--<beans:bean class="com.ozstrategy.webapp.security.LogoutWebActivityLoggingHandler">-->
+            <!--<beans:property name="webActivityManager" ref="webActivityManager"/>-->
+            <!--<beans:property name="webLoggingService" ref="webLoggingService" />-->
+            <!--<beans:property name="SessionRegistry" ref="sessionRegistry"/>-->
+          <!--</beans:bean>-->
+          <!--<beans:bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">-->
+            <!--<beans:property name="invalidateHttpSession" value="true"/>-->
+          <!--</beans:bean>-->
+        <!--</beans:list>-->
+      <!--</beans:constructor-arg>-->
+      <!--<beans:property name="filterProcessesUrl" value="/security/logout"/>-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">-->
+      <!--<beans:property name="allowIfAllAbstainDecisions" value="false"/>-->
+      <!--<beans:property name="decisionVoters">-->
+        <!--<beans:list>-->
+          <!--<beans:bean class="org.springframework.security.web.access.expression.WebExpressionVoter">-->
+            <!--<beans:property name="expressionHandler" ref="expressionHandler"/>-->
+          <!--</beans:bean>-->
+        <!--</beans:list>-->
+      <!--</beans:property>-->
+    <!--</beans:bean>-->
+
+
+    <!--<beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder"/>-->
+    <!--<authentication-manager alias="authenticationManagerAlias">-->
+      <!--<authentication-provider user-service-ref="userDao">-->
+        <!--<password-encoder ref="passwordEncoder"/>-->
+      <!--</authentication-provider>-->
+    <!--</authentication-manager>-->
+
+
+    <!--&lt;!&ndash; This bean is optional; it isn't used by any other bean as it only listens and logs to commons logging &ndash;&gt;-->
+    <!--<beans:bean id="loggerListener" class="org.springframework.security.access.event.LoggerListener">-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="authSuccessLogger" class="com.yourWebAuthenticationSuccessLoggerHandler">-->
+      <!--<beans:property name="alwaysUseDefaultTargetUrl" value="true"/>-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="authFailureLogger" class="com.yourWebAuthenticationFailureLoggerHandler">-->
+      <!--<beans:property name="defaultFailureUrl" value="/security/login?error=true"/>-->
+      <!--<beans:property name="retryCount" value="6"/>-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="concurrencyFilter"-->
+                <!--class="org.springframework.security.web.session.ConcurrentSessionFilter">-->
+      <!--<beans:property name="sessionRegistry" ref="sessionRegistry" />-->
+      <!--<beans:property name="expiredUrl" value="/security/login" />-->
+    <!--</beans:bean>-->
+
+    <!--<beans:bean id="ozConcurrentSessionControlStrategy" class="com.yourConcurrentSessionControlStrategy">-->
+      <!--<beans:constructor-arg ref="sessionRegistry" />-->
+      <!--<beans:property name="maximumSessions" value="1" />-->
+      <!--<beans:property name="exceptionIfMaximumExceeded" value="${bccDisallowLaterConcurrentSession}"/>-->
+    <!--</beans:bean>-->
+
+
+    <!--<beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />-->
+
+
+
+
+
+    <!-- Configure Authentication mechanism -->
+  <authentication-manager alias="authenticationManager">
+    <!-- SHA-256 values can be produced using 'echo -n your_desired_password | sha256sum' (using normal *nix environments) -->
+    <authentication-provider>
+      <password-encoder hash="sha-256" />
+      <user-service>
+        <user name="admin" password="8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" authorities="ROLE_ADMIN" />
+        <user name="user" password="04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb" authorities="ROLE_USER" />
+      </user-service>
+    </authentication-provider>
+  </authentication-manager>
+
+  <beans:bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
+</beans:beans>

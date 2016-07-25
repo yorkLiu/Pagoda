@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+   	http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-4.2.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.2.xsd
+    http://www.directwebremoting.org/schema/spring-dwr
+    http://www.directwebremoting.org/schema/spring-dwr-3.0.xsd"
+       default-lazy-init="false">
+
+  <!-- Activates annotation-based model configuration -->
+  <context:annotation-config/>
+
+  <!-- Scans for application @Components to deploy -->
+  <context:component-scan base-package="com.ly.web.controller" />
+
+  <dwr:annotation-config id="dwrConfig"/>
+  <dwr:annotation-scan base-package="com.ly" scanDataTransferObject="true" scanRemoteProxy="true"/>
+  <dwr:controller id="dwrController">
+    <dwr:config-param name="activeReverseAjaxEnabled" value="true"/>
+    <dwr:config-param name="org.directwebremoting.extend.ServerLoadMonitor"
+                      value="org.directwebremoting.impl.PollingServerLoadMonitor"/>
+    <dwr:config-param name="disconnectedTime" value="1000"/>
+    <!--<dwr:config-param name="compressionLevel" value="47"/>-->
+    <dwr:config-param name="maxCallCount" value="35"/>
+    <!--<dwr:config-param name="accessLogLevel" value="CALL"/>-->
+    <dwr:config-param name="debug" value="false" />
+    <dwr:config-param name="scriptCompressed" value="false" />
+    <dwr:config-param name="allowScriptTagRemoting" value="true" />
+    <dwr:config-param name="crossDomainSessionSecurity" value="false" />
+  </dwr:controller>
+
+  <!--
+     DispatcherServlet will automatically look up all resolvers in a certain order.
+
+     The order of the following two exception resolver is important . If no Order interface implemented, the later will be
+     run first (in this case, swfExceptionResolver). So you have to put SimpleMappingExceptionResolver in the front
+     so that it will not prevent SpringWebFlowExceptionResolver from running.
+
+     After setting "order" property, the physical order is not important any more.
+   -->
+  <bean id="exceptionResolver"
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="defaultErrorView" value="sysError"/>
+    <property name="order" value="2"/>
+    <property name="exceptionMappings">
+      <props>
+        <prop key="org.springframework.dao.DataAccessException">dataError</prop>
+        <prop key="org.springframework.orm.ObjectRetrievalFailureException">dataError</prop>
+        <prop key="org.springframework.security.core.userdetails.UsernameNotFoundException">login</prop>
+        <prop key="org.springframework.security.access.AccessDeniedException">login</prop>
+        <prop key="java.lang.Exception">jsonGeneralFailure</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="filenameController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
+
+  <!-- Add additional controllers beans here -->
+  <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+    <!--<property name="maxUploadSize" value="2097152"/>-->
+  <!--</bean>-->
+
+  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename" value="ApplicationResources"/>
+    <property name="useCodeAsDefaultMessage" value="true"/>
+  </bean>
+
+  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" p:order="0" >
+  </bean>
+
+  <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value>
+      </value>
+    </property>
+    <property name="order" value="1"/>
+  </bean>
+
+  <!-- Maps request paths to @Controller classes; e.g. a path of /hotels looks for a controller named HotelsController -->
+  <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+    <property name="order" value="2" />
+    <property name="defaultHandler">
+      <!-- If no @Controller match, map path to a view to render; e.g. the "/intro" path would map to the view named "intro" -->
+      <bean class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+    </property>
+  </bean>
+
+  <bean id="constrainedUrlPathHelper" class="org.springframework.web.util.UrlPathHelper"/>
+  
+  <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+    <property name="stripExtension" value="false"/>
+    <property name="urlPathHelper" ref="constrainedUrlPathHelper"/>
+  </bean>
+  
+
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize" value="120960000"/>
+  </bean>
+
+  <!-- Enables annotated POJO @Controllers -->
+  <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
+  <!-- Enables plain Controllers -->
+  <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+  <!-- View Resolver for JSPs -->
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="requestContextAttribute" value="rc"/>
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/pages/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+</beans>
