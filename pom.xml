@@ -39,6 +39,8 @@
     <module>Rabbit</module>
     <!--Estimation-->
     <module>Monkey</module>
+    <!--Pagoda Manager Desktop-->
+    <module>Dragon</module>
     
 
   </modules>
@@ -163,6 +165,11 @@
       <artifactId>logback-classic</artifactId>
       <version>${logback.classic.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>${jsoup.version}</version>
+    </dependency>
     
     <dependency>
       <groupId>org.springframework</groupId>
@@ -206,6 +213,8 @@
     <app.version>1.0.1</app.version>
     <!-- Framework dependency versions -->
     <spring.version>4.3.0.RELEASE</spring.version>
+    <spring-security.version>4.1.0.RELEASE</spring-security.version>
+    <spring-modules-validation.version>0.8</spring-modules-validation.version>
     <java.version>1.8</java.version>
     <!-- Testing dependency versions -->
     <jmock.version>2.4.0</jmock.version>
@@ -247,13 +256,21 @@
     <httpclient.version>4.5.2</httpclient.version>
     <httpmime.version>3.1</httpmime.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
+    <commons-collections.version>3.2.2</commons-collections.version>
     <commons-codec.version>1.10</commons-codec.version>
+    <commons-lang.version>2.6</commons-lang.version>
+    <commons-validator.version>1.5.1</commons-validator.version>
+    <commons-io.version>2.5</commons-io.version>
+    <commons-fileupload.version>1.3.1</commons-fileupload.version>
     <bouncycastle.version>1.46</bouncycastle.version>
     <sauce_testng.version>2.1.21</sauce_testng.version>
     <testng.version>6.9.10</testng.version>
     <poi.version>3.14</poi.version>
     <jpa.version>1.0.0.Final</jpa.version>
     <junit.version>4.12</junit.version>
+    <taglibs.version>1.1.2</taglibs.version>
+    <xstream.version>1.3.1</xstream.version>
+    
     
 
   </properties>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-4.0.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
+       default-autowire="byName" default-lazy-init="true">
+
+    <context:component-scan base-package="com.ly.dao">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <context:component-scan base-package="com.ly.service">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+
+    <!-- For enterprise properties configuration -->
+    <!--<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+        <!--<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>-->
+        <!--<property name="order" value="0"/>-->
+        <!--<property name="ignoreUnresolvablePlaceholders" value="true"/>-->
+        <!--&lt;!&ndash; Do not search environment properties &ndash;&gt;-->
+        <!--<property name="searchSystemEnvironment" value="true"/>-->
+        <!--<property name="locations">-->
+            <!--<list>-->
+                <!--<value>classpath:pagoda.dev.properties</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<context:property-placeholder location="classpath:/pagoda.dev.properties"/>-->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:pagoda.dev.properties"/>
+    </bean>
+
+    <!-- HikariCP  -->
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="driverClassName" value="${JDBC_DRIVER}"/>
+        <property name="connectionTestQuery" value="SELECT 1 " />
+        <property name="jdbcUrl" value="${JDBC_URL}"/>
+        <property name="username" value="${JDBC_USERNAME}"/>
+        <property name="password" value="${JDBC_PASSWORD}"/>
+        <!--<property name="dataSource"><null/></property>-->
+        <property name="dataSourceProperties">
+        <props>
+            <prop key="useUnicode">true</prop>
+            <prop key="characterEncoding">UTF-8</prop>
+            <prop key="connectionCollation">utf8_general_ci</prop>
+            <prop key="cachePrepStmts">true</prop>
+            <prop key="prepStmtCacheSize">250</prop>
+            <prop key="prepStmtCacheSqlLimit">2048</prop>
+        </props>
+        </property>
+
+        <property name="minimumIdle" value="5"/>
+        <property name="leakDetectionThreshold" value="60000"/>
+        <!-- default：30s-->
+        <property name="connectionTimeout" value="30000"/>
+        <!-- default：10min  -->
+        <property name="idleTimeout" value="600000"/>
+        <!-- default：30min-->
+        <property name="maxLifetime" value="1200000 "/>
+    </bean>
+
+    
+    <!-- Hibernate SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
+        <property name="packagesToScan" value="com.ly.service,com.ly.dao"/>
+  
+      <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=org.hibernate.dialect.MySQLInnoDBDialect
+                hibernate.query.substitutions=true 'Y', false 'N'
+                hibernate.cache.use_second_level_cache=false
+                hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+              hibernate.jdbc.batch_size=50
+              hibernate.cache.use_query_cache=false
+              hibernate.format_sql=true
+              hibernate.generate_statistics=true
+              hibernate.order_inserts=false
+              hibernate.order_updates=false
+              hibernate.show_sql=true
+              hibernate.max_fetch_depth=8
+              hibernate.id.new_generator_mappings=false
+
+            </value>
+            <!-- Turn batching off for better error messages under PostgreSQL -->
+            <!-- hibernate.jdbc.batch_size=0 -->
+        </property>
+
+    </bean>
+ 
+    <bean id="myJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" order="60"/>
+
+</beans>
+
