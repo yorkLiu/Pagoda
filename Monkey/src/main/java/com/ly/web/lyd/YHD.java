@@ -2,12 +2,14 @@ package com.ly.web.lyd;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import org.springframework.util.Assert;
-
 import org.springframework.util.StringUtils;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -45,12 +47,14 @@ public class YHD extends SeleniumBaseObject {
    */
   @Test(priority = 2)
   public void comment() {
+    int total = commentsInfoList.size();
+    int index = 0;
+
     if (logger.isDebugEnabled()) {
-      logger.debug("Comments total count: " + commentsInfoList.size());
+      logger.debug("Comments total count: " + total);
     }
 
     for (CommentsInfo commentsInfo : commentsInfoList) {
-      
       if ((commentsInfo.getUsername() == null) || !StringUtils.hasText(commentsInfo.getUsername())) {
         if (logger.isDebugEnabled()) {
           logger.debug("This record username is NULL, skip it.");
@@ -58,7 +62,13 @@ public class YHD extends SeleniumBaseObject {
 
         continue;
       }
-      
+
+      index++;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<<<Ready comment: [" + index + "/" + total + "]>>>>>>>");
+      }
+
       if (logger.isDebugEnabled()) {
         logger.debug("Ready comment: " + commentsInfo);
       }
@@ -77,7 +87,22 @@ public class YHD extends SeleniumBaseObject {
       // 4. logout for current user
       logout();
 
+      int seconds = new Random().nextInt(80);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("It will delay:" + seconds + " seconds to comment next record.");
+      }
+
+      delay(seconds);
+
+    } // end for
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Comment successfully, close the web driver.");
     }
+
+    driver.close();
+
   } // end method comment
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -142,6 +167,7 @@ public class YHD extends SeleniumBaseObject {
   public void initData(CommentsInfo commentsInfo) {
     Assert.notNull(commentsInfo);
     commentsInfoList.add(commentsInfo);
+
     if (logger.isDebugEnabled()) {
       logger.debug("init comment data list size:" + commentsInfoList.size());
     }
@@ -219,6 +245,29 @@ public class YHD extends SeleniumBaseObject {
     }
 
   } // end method setup
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * delay.
+   *
+   * @param  seconds  int
+   */
+  protected void delay(int seconds) {
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug(">>>Starting delay " + seconds + " second(s).>>>");
+      }
+
+      Thread.sleep(seconds * 1000);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<End delay " + seconds + " second(s).<<<<");
+      }
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+    }
+  }
 
 
 } // end class YHD

@@ -30,6 +30,14 @@ public class YHDUtils {
   private static final Logger logger = Logger.getLogger(YHDUtils.class);
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+  
+  public static String getStringCell(Cell cell){
+    if(cell != null){
+      cell.setCellType(cell.CELL_TYPE_STRING);
+      return getCellValue(cell);
+    }
+    return null;
+  }
 
   /**
    * assembleCommentInfoByCell.
@@ -46,6 +54,7 @@ public class YHDUtils {
 
     String cellValue = getCellValue(cell);
 
+
     if (logger.isDebugEnabled()) {
       logger.debug("Read the cellIndex: " + colIdx + " in row: " + row.getRowNum() + " and value: " + cellValue);
     }
@@ -53,6 +62,7 @@ public class YHDUtils {
     switch (colIdx) {
       case ORDER_ID_COLUMN: {
         // column index is 0, it's order id
+        System.out.println("order number:" + cellValue);
         commentsInfo.setOrderId(cellValue);
 
         break;
@@ -60,6 +70,7 @@ public class YHDUtils {
 
       case USER_NAME_COLUMN: {
         // column index is 1, it's username
+        System.out.println("username:" + cellValue);
         if (cellValue != null && StringUtils.hasText(cellValue)) {
           commentsInfo.setUsername(cellValue);
         }
@@ -69,6 +80,7 @@ public class YHDUtils {
 
       case PASSWORD_COLUMN: {
         // column index is 2, it's password
+        System.out.println("password:" + cellValue);
         if (cellValue != null && StringUtils.hasText(cellValue)) {
           commentsInfo.setPassword(cellValue);
         }
@@ -78,6 +90,7 @@ public class YHDUtils {
 
       case SKU_COLUMN: {
         // column index is 3, it's sku
+        System.out.println("sku:" + cellValue);
         String sku = YHDUtils.getSku(cellValue);
 
         if (sku != null) {
@@ -89,6 +102,7 @@ public class YHDUtils {
 
       case COMMENT_CONTENT_COLUMN: {
         // column index is 4, it's comment content
+        System.out.println("comment:" + cellValue);
         String sku = YHDUtils.getSku(getCellValue(row.getCell(SKU_COLUMN)));
 
         if (sku != null) {

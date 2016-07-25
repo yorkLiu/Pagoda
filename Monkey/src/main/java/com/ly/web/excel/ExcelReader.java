@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -17,6 +20,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+
+import org.springframework.util.StringUtils;
 
 import com.ly.web.command.CommentsInfo;
 import com.ly.web.utils.YHDUtils;
@@ -41,6 +46,69 @@ public class ExcelReader implements Serializable {
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
+ 
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * 读取excel数据.
+   *
+   * @param   path  $param.type$
+   *
+   * @return  读取excel数据.
+   */
+  public List<CommentsInfo> readExcelToObj(String path) {
+    Workbook wb = null;
+
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<<<<<<<Start process excel from path: " + path);
+      }
+
+      wb = WorkbookFactory.create(new File(path));
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<<<<<<<End processed excel");
+      }
+
+      return readExcel(wb, 0, 1, 0);
+    } catch (InvalidFormatException e) {
+      logger.error(e.getMessage(), e);
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+    }
+
+    return null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private Cell getMergeCell(Sheet sheet, int row, int column) {
+    int sheetMergeCount = sheet.getNumMergedRegions();
+
+    for (int i = 0; i < sheetMergeCount; i++) {
+      CellRangeAddress ca          = sheet.getMergedRegion(i);
+      int              firstColumn = ca.getFirstColumn();
+      int              lastColumn  = ca.getLastColumn();
+      int              firstRow    = ca.getFirstRow();
+      int              lastRow     = ca.getLastRow();
+
+      if ((row >= firstRow) && (row <= lastRow)) {
+        if ((column >= firstColumn) && (column <= lastColumn)) {
+          Row  fRow  = sheet.getRow(firstRow);
+          Cell fCell = fRow.getCell(firstColumn);
+          fCell.setCellType(fCell.CELL_TYPE_STRING);
+
+          return fCell;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
   /**
    * 获取合并单元格的值.
    *
@@ -64,6 +132,8 @@ public class ExcelReader implements Serializable {
         if ((column >= firstColumn) && (column <= lastColumn)) {
           Row  fRow  = sheet.getRow(firstRow);
           Cell fCell = fRow.getCell(firstColumn);
+
+          fCell.setCellType(fCell.CELL_TYPE_STRING);
 
           return YHDUtils.getCellValue(fCell);
         }
@@ -180,6 +250,8 @@ public class ExcelReader implements Serializable {
     Sheet              sheet            = wb.getSheetAt(sheetIndex);
     Row                row              = null;
 
+    Map<String, CommentsInfo> map = new LinkedHashMap<>();
+
     if (logger.isDebugEnabled()) {
       logger.debug("This excel have total rows: " + (sheet.getLastRowNum() + 1));
     }
@@ -187,11 +259,50 @@ public class ExcelReader implements Serializable {
     for (int i = startReadLine; i < (sheet.getLastRowNum() - tailLine + 1); i++) {
       row = sheet.getRow(i);
 
+      String       orderNum     = null;
+      CommentsInfo commentsInfo = null;
+
       if (logger.isDebugEnabled()) {
         logger.debug("Read excel row index: " + row.getRowNum());
       }
 
-      CommentsInfo commentsInfo = new CommentsInfo();
+      Cell orderNumCell = null;
+
+      // read i line 0 column orderNum
+      boolean isMergeForFirstCol = isMergedRegion(sheet, i, 0);
+
+      if (isMergeForFirstCol) {
+        orderNumCell = getMergeCell(sheet, row.getRowNum(), 0);
+      } else {
+        orderNumCell = row.getCell(0);
+      }
+
+      if (orderNumCell != null) {
+        orderNum = YHDUtils.getStringCell(orderNumCell);
+
+        if (logger.isDebugEnabled()) {
+          logger.debug("orderNum: " + orderNum);
+        }
+
+        if ((orderNum != null) && StringUtils.hasText(orderNum)) {
+          if(map.get(orderNum) == null){
+            commentsInfo = new CommentsInfo();
+            map.put(orderNum, commentsInfo);
+          } else {
+            commentsInfo = map.get(orderNum);
+          }
+          
+        }
+      }
+
+      if ((orderNum == null) || !StringUtils.hasText(orderNum.trim())) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("No order number, skip this row.");
+        }
+
+        continue;
+      }
+
 
       for (Cell cell : row) {
         boolean isMerge = isMergedRegion(sheet, i, cell.getColumnIndex());
@@ -202,54 +313,21 @@ public class ExcelReader implements Serializable {
 
         // 判断是否具有合并单元格
         if (isMerge) {
-          String rs = getMergedRegionValue(sheet, row.getRowNum(), cell.getColumnIndex());
-          System.out.print(rs + " ");
-        } else {
-          YHDUtils.assembleCommentInfoByCell(commentsInfo, row, cell);
+          cell = getMergeCell(sheet, row.getRowNum(), cell.getColumnIndex());
         }
+
+        YHDUtils.assembleCommentInfoByCell(commentsInfo, row, cell);
       }
-
-      // add to list
-      commentsInfoList.add(commentsInfo);
-
     } // end for
 
+
+    for (CommentsInfo commentsInfo : map.values()) {
+      commentsInfoList.add(commentsInfo);
+    }
+    
     // return list
     return commentsInfoList;
   } // end method readExcel
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * 读取excel数据.
-   *
-   * @param   path  $param.type$
-   *
-   * @return  读取excel数据.
-   */
-  public List<CommentsInfo> readExcelToObj(String path) {
-    Workbook wb = null;
-
-    try {
-      if (logger.isDebugEnabled()) {
-        logger.debug("<<<<<<<<<<Start process excel from path: " + path);
-      }
-
-      wb = WorkbookFactory.create(new File(path));
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("<<<<<<<<<<End processed excel");
-      }
-
-      return readExcel(wb, 0, 0, 0);
-    } catch (InvalidFormatException e) {
-      logger.error(e.getMessage(), e);
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-    }
-
-    return null;
-  }
 
 
   /**
@@ -258,10 +336,12 @@ public class ExcelReader implements Serializable {
    * @param  args  String[]
    */
   public static void main(String[] args) {
-    ExcelReader excelReader = new ExcelReader();
-    String      path        = "/Users/yongliu/Downloads/7.11AoXin-YHD.xlsx";
+    ExcelReader        excelReader      = new ExcelReader();
+    String             path             = "/Users/yongliu/Downloads/7.21TianXun.xlsx";
     List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
     System.out.println(commentsInfoList);
+
+
   }
-  
+
 } // end class ExcelReader
