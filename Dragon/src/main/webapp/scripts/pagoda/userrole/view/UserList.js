@@ -1,17 +1,13 @@
 /**
- * Created with app source gen maven plugin
- * author: @author
- * Date: @Date
- * Time: @Time
- * To change this template use File | Settings | File Templates.
+ * Created by yongliu on 7/26/16.
  */
 
-Ext.define('Pagoda.mytestmodel.view.MyTestModelList',{
+Ext.define('Pagoda.userrole.view.UserList', {
   extend:'Ext.grid.Panel',
-  alias: 'widget.mytestmodellist',
+  alias: 'widget.userlist',
   requires:[
-     'Pagoda.mytestmodel.store.MyTestModels',
-     'Pagoda.mytestmodel.view.MyTestModelEdit'
+    'Pagoda.userrole.store.Users',
+    'Pagoda.userrole.view.UserEdit'
   ],
 
   forceFit: true,
@@ -19,30 +15,37 @@ Ext.define('Pagoda.mytestmodel.view.MyTestModelList',{
 
   initComponent: function(){
     var me = this;
-
     this.store = this.getStore();
-
+    
     this.columns = [
-        {
-          text: 'id',
-          dataIndex: 'id',
-          flex: 100
-        },
-        {
-          text: 'email',
-          dataIndex: 'email',
-          flex: 100
-        },
-        {
-          text: 'description',
-          dataIndex: 'description',
-          flex: 100
-        },
-        {
-          text: 'name',
-          dataIndex: 'name',
-          flex: 100
-        }
+      {
+        header: 'User Name',
+        dataIndex: 'username'
+      },
+      {
+        header: 'Full Name',
+        dataIndex: 'fullName'
+      },
+      {
+        header: 'Email',
+        dataIndex: 'email'
+      },
+      {
+        header: 'Telephone',
+        dataIndex: 'telephone'
+      },
+      {
+        header: 'Telephone 2',
+        dataIndex: 'telephone2'
+      },
+      {
+        header: 'Status',
+        dataIndex: 'status'
+      },
+      {
+        header: 'Locked',
+        dataIndex: 'locked'
+      }
     ];
 
     this.dockedItems = [
@@ -79,20 +82,20 @@ Ext.define('Pagoda.mytestmodel.view.MyTestModelList',{
         prependButtons:true,
         doRefresh:function () {
           var pagebar = this,
-          current = pagebar.store.currentPage,
-          model = me.getSelectionModel(),
-          lastRec = model.getLastSelected();
-            if (pagebar.fireEvent('beforechange', pagebar, current) !== false) {
-              pagebar.store.loadPage(current, {
+            current = pagebar.store.currentPage,
+            model = me.getSelectionModel(),
+            lastRec = model.getLastSelected();
+          if (pagebar.fireEvent('beforechange', pagebar, current) !== false) {
+            pagebar.store.loadPage(current, {
               callback:function (records, operation, success) {
-                  if (success && lastRec) {
+                if (success && lastRec) {
                   var idProperty = pagebar.store.getProxy().reader.getIdProperty();
                   var index = pagebar.store.find(idProperty, lastRec.get(idProperty), null, null, null, true);
                   model.select(index);
-                  }
-               }
-              });
-            }
+                }
+              }
+            });
+          }
         }
       }
     ];
@@ -102,16 +105,16 @@ Ext.define('Pagoda.mytestmodel.view.MyTestModelList',{
       itemdblclick: this.onItemDblClickHandler,
       selectionchange : this.onRowSelectChanged
     };
-
-
+    
+    
     this.callParent();
   },
 
   getStore: function(){
-    var store = Ext.StoreManager.lookup('MyTestModelStore');
+    var store = Ext.StoreManager.lookup('PagodaUserListStore');
     if(!store || store == null){
-      store = Ext.create('Pagoda.mytestmodel.store.MyTestModels',{
-        storeId: 'MyTestModelStore'
+      store = Ext.create('Pagoda.userrole.store.Users',{
+        storeId: 'PagodaUserListStore'
       });
       store.load();
     }
@@ -132,38 +135,39 @@ Ext.define('Pagoda.mytestmodel.view.MyTestModelList',{
 
   addOrUpdate: function(record){
     var me = this,
-        title = 'Add MyTestModel';
+      title = 'Add User';
     if(record){
-      title = 'Update MyTestModel';
+      title = 'Update User';
     }
-    var win = Ext.widget('mytestmodeledit',{
+    var win = Ext.widget('useredit',{
       title: title,
       modal: true,
-      width: 400,
-      height: 250,
+      width: 600,
+      autoHeight: true,
 //      autoWidth: true,
 //      autoHeight: true,
 //      maxWidth: 800,
 //      maxHeight: 600,
       activeRecord: record,
       addRecord: function(record){
+        console.log('record:', record);
         me.store.add(record);
       },
       saveRecord: function(){
-       me.store.sync({
-        success: function(){
-          // todo after success
-          win.close();
-        },
-        failed: function(){
-          Ext.MessageBox.show({
-           title: title + " Error",
-           msg: "There is some errors when " + title,
-           icon: Ext.MessageBox.ERROR,
-           buttons: Ext.MessageBox.YES
-          });
-        }
-       });
+        me.store.sync({
+          success: function(){
+            // todo after success
+            win.close();
+          },
+          failed: function(){
+            Ext.MessageBox.show({
+              title: title + " Error",
+              msg: "There is some errors when " + title,
+              icon: Ext.MessageBox.ERROR,
+              buttons: Ext.MessageBox.YES
+            });
+          }
+        });
       }
     }).show();
   },
@@ -199,4 +203,5 @@ Ext.define('Pagoda.mytestmodel.view.MyTestModelList',{
       });
     }
   }
+  
 });

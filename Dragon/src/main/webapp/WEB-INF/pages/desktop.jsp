@@ -13,8 +13,8 @@
 
     <script type="text/javascript" src="<c:url value='/dwr/engine.js'/>"></script>
 
-    <%--<script type="text/javascript" src='<c:url value="/dwr/interface/(XXController:XXXController).js"/>'></script>--%>
-    <%--<script type="text/javascript" src='<c:url value="/dwr/interface/myTestModelController.js"/>'></script>--%>
+    <%--<script type="text/javascript" src='<c:url value="/dwr/interface/(userRoleController).js"/>'></script>--%>
+    <script type="text/javascript" src='<c:url value="/dwr/interface/userRoleController.js"/>'></script>
 
     <script type="text/javascript">
       var basePath = '<c:url value="/"/>';
@@ -28,7 +28,9 @@
       Ext.Loader.setPath({
         'Ext.ux.desktop': '<c:url value="/scripts/desktop/js"/>',
         'Ext': '<c:url value="/scripts/ext/src"/>',
-         Pagoda: '<c:url value="/scripts/pagoda"/>'
+         Pagoda: '<c:url value="/scripts/pagoda"/>',
+         Pago: '<c:url value="/scripts/ux/Pago"/>'
+        
       });
 
       Ext.require('Pagoda.App');

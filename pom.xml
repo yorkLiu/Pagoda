@@ -232,6 +232,7 @@
 
     <mysql.version>5.0.5</mysql.version>
     <HikariCP.version>2.4.6</HikariCP.version>
+    <bonecp.version>0.8.0.RELEASE</bonecp.version>
     <dwr.version>3.0.1-RELEASE</dwr.version>
     <hibernate.core.version>5.2.0.Final</hibernate.core.version>
     <hibernate.cglib.version>2.1_3</hibernate.cglib.version>

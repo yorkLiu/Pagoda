@@ -17,9 +17,9 @@
     <param-value>
       classpath:/applicationContext-resources.xml
       classpath*:/applicationContext*.xml
-      /WEB-INF/security.xml
-      /WEB-INF/dispatcher-servlet.xml
+      <!--/WEB-INF/security.xml-->
       /WEB-INF/applicationContext-dwr.xml
+      /WEB-INF/dispatcher-servlet.xml
     </param-value>
   </context-param>
 
@@ -42,15 +42,15 @@
   </filter>
  
 
-  <filter>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  <!--<filter>-->
+    <!--<filter-name>springSecurityFilterChain</filter-name>-->
+    <!--<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
+  <!--</filter>-->
+  <!--<filter-mapping>-->
+    <!--<filter-name>springSecurityFilterChain</filter-name>-->
+    <!--<url-pattern>/*</url-pattern>-->
+  <!--</filter-mapping>-->
+  
   <filter-mapping>
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -159,13 +159,10 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/html/dwr/*</url-pattern>
   </servlet-mapping>
-  
- 
-
-  <!--<servlet-mapping>-->
-  <!--<servlet-name>dispatcher</servlet-name>-->
-  <!--<url-pattern>/error/*</url-pattern>-->
-  <!--</servlet-mapping>-->
+  <servlet-mapping>
+  <servlet-name>dispatcher</servlet-name>
+  <url-pattern>/error/*</url-pattern>
+  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>

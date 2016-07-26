@@ -14,11 +14,10 @@ Ext.define('Pagoda.App', {
     'Ext.window.MessageBox',
 
     'Ext.ux.desktop.ShortcutModel',
-    'Pagoda.Settings'
-    //,
+    'Pagoda.Settings',
 
     // import modules
-    //'Pagoda.MyTestModel'
+    'Pagoda.UserRole'
 
     // todo import you modules
   ],
@@ -32,7 +31,7 @@ Ext.define('Pagoda.App', {
     // todo add your modules
 
     return [
-      //new Pagoda.MyTestModel()
+      new Pagoda.UserRole()
     ];
 //      eg:
 //    return [
@@ -60,7 +59,7 @@ Ext.define('Pagoda.App', {
         model: 'Ext.ux.desktop.ShortcutModel',
         data: [
           // todo add your module @module: 'your defined module id'
-          //{ name: 'Test', iconCls: 'grid-shortcut', module: 'mytestmodel-win' }
+          { name: 'User Role Manager', iconCls: 'grid-shortcut', module: 'userRole-win' }
           //eg:
 //          { name: 'Grid Window', iconCls: 'grid-shortcut', module: 'grid-win' },
 //          { name: 'Accordion Window', iconCls: 'accordion-shortcut', module: 'acc-win' },

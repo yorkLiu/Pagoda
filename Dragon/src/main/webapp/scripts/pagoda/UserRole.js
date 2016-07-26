@@ -6,19 +6,19 @@
  * To change this template use File | Settings | File Templates.
  */
 
-Ext.define('Pagoda.MyTestModel', {
+Ext.define('Pagoda.UserRole', {
   extend:'Ext.ux.desktop.Module',
 
   requires:[
-    'Pagoda.mytestmodel.view.MyTestModelList'
+    'Pagoda.userrole.view.UserList'
   ],
 
-  id:'mytestmodel-win',
-  moduleName: 'mytestmodel-win',
+  id:'userRole-win',
+  moduleName: 'userRole-win',
 
   init:function () {
     this.launcher = {
-      text:'MyTestModel Window',
+      text:'User & Role Manager',
       iconCls:'tabs',
       handler:this.createWindow,
       scope:this
@@ -28,12 +28,12 @@ Ext.define('Pagoda.MyTestModel', {
 
   createWindow:function () {
     var desktop = this.app.getDesktop();
-    var win = desktop.getWindow('mytestmodel-win');
+    var win = desktop.getWindow('userRole-win');
 
     if (!win) {
       win = desktop.createWindow({
-        id:'mytestmodel-win',
-        title:'MyTestModel',
+        id:'userRole-win',
+        title:'User & Role Manager',
         width:800,
         height:600,
         shim:false,
@@ -50,7 +50,7 @@ Ext.define('Pagoda.MyTestModel', {
           animate:false
         },
         items: {
-          xtype: 'mytestmodellist'
+          xtype: 'userlist'
         }
       });
     }
