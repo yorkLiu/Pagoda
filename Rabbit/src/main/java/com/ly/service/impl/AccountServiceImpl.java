@@ -18,7 +18,7 @@ import com.ly.service.AccountService;
  * @version  07/21/2016 15:10
  */
 @Service("accountService")
-@Transactional public class AccountServiceImpl extends BaseServiceImpl implements AccountService {
+public class AccountServiceImpl extends BaseServiceImpl implements AccountService {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   @Autowired private AccountDao accountDao;

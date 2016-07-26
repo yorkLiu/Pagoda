@@ -11,4 +11,4 @@ import org.springframework.stereotype.Repository;
  * @version  07/21/2016 15:07
  */
 @Repository("accountDao")
-public class AccountDaoHibernate extends BaseDao implements AccountDao { }
+public class AccountDaoHibernate extends BaseDaoHibernate implements AccountDao { }
