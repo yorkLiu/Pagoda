@@ -51,7 +51,7 @@ public class Merchant {
   /** 团购 主页面(这个商品所在的团购页面). */
   private String groupBuyIndexUrl;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   private String indexUrl;

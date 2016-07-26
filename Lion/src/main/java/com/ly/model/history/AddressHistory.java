@@ -33,7 +33,7 @@ public class AddressHistory extends BaseObject {
   @ManyToOne(fetch = FetchType.LAZY)
   private Address address;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   @JoinColumn(

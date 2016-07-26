@@ -21,7 +21,7 @@ import com.ly.model.base.AbstractOrderInfo;
 public class OrderInfoAudit extends AbstractOrderInfo {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------

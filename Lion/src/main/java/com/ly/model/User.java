@@ -1,6 +1,8 @@
 package com.ly.model;
 
 import com.ly.model.base.AbstractUserInfo;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Collection;
 
 
 /**
@@ -19,10 +23,10 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "User")
-public class User extends AbstractUserInfo {
+public class User extends AbstractUserInfo implements Serializable, UserDetails {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id
   private Long id;
 
@@ -99,301 +103,39 @@ public class User extends AbstractUserInfo {
 
   } // end method equals
 
-  //~ ------------------------------------------------------------------------------------------------------------------
 
-  /**
-   * getter method for change password.
-   *
-   * @return  Boolean
-   */
-  public Boolean getChangePassword() {
-    if (changePassword == null) {
-      return Boolean.FALSE;
-    }
-
-    return changePassword;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for disabled.
-   *
-   * @return  Boolean
-   */
-  public Boolean getDisabled() {
-    return disabled;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for email.
-   *
-   * @return  String
-   */
-  public String getEmail() {
-    return email;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for first name.
-   *
-   * @return  String
-   */
-  public String getFirstName() {
-    return firstName;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for full name.
-   *
-   * @return  String
-   */
-  public String getFullName() {
-    return firstName + " " + lastName;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for id.
-   *
-   * @return  Long
-   */
   public Long getId() {
     return id;
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for last name.
-   *
-   * @return  String
-   */
-  public String getLastName() {
-    return lastName;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for locked.
-   *
-   * @return  Boolean
-   */
-  public Boolean getLocked() {
-    return locked;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for password.
-   *
-   * @return  String
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for password hint.
-   *
-   * @return  String
-   */
-  public String getPasswordHint() {
-    return passwordHint;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for telephone.
-   *
-   * @return  String
-   */
-  public String getTelephone() {
-    return telephone;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for telephone2.
-   *
-   * @return  String
-   */
-  public String getTelephone2() {
-    return telephone2;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for username.
-   *
-   * @return  String
-   */
-  public String getUsername() {
-    return username;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  java.lang.Object#hashCode()
-   */
-  @Override public int hashCode() {
-    int result = (username != null) ? username.hashCode() : 0;
-    result = (31 * result) + ((password != null) ? password.hashCode() : 0);
-    result = (31 * result) + ((disabled != null) ? disabled.hashCode() : 0);
-    result = (31 * result) + ((locked != null) ? locked.hashCode() : 0);
-    result = (31 * result) + ((firstName != null) ? firstName.hashCode() : 0);
-    result = (31 * result) + ((lastName != null) ? lastName.hashCode() : 0);
-    result = (31 * result) + ((email != null) ? email.hashCode() : 0);
-    result = (31 * result) + ((telephone != null) ? telephone.hashCode() : 0);
-    result = (31 * result) + ((telephone2 != null) ? telephone2.hashCode() : 0);
-
-    return result;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for change password.
-   *
-   * @param  changePassword  Boolean
-   */
-  public void setChangePassword(Boolean changePassword) {
-    this.changePassword = changePassword;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for disabled.
-   *
-   * @param  disabled  Boolean
-   */
-  public void setDisabled(Boolean disabled) {
-    this.disabled = disabled;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for email.
-   *
-   * @param  email  String
-   */
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for first name.
-   *
-   * @param  firstName  String
-   */
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for id.
-   *
-   * @param  id  Long
-   */
   public void setId(Long id) {
     this.id = id;
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
 
-  /**
-   * setter method for last name.
-   *
-   * @param  lastName  String
-   */
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return null;
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for locked.
-   *
-   * @param  locked  Boolean
-   */
-  public void setLocked(Boolean locked) {
-    this.locked = locked;
+  @Override
+  public boolean isAccountNonExpired() {
+    return !getExpired();
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for password.
-   *
-   * @param  password  String
-   */
-  public void setPassword(String password) {
-    this.password = password;
+  @Override
+  public boolean isAccountNonLocked() {
+    return !getLocked();
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for password hint.
-   *
-   * @param  passwordHint  String
-   */
-  public void setPasswordHint(String passwordHint) {
-    this.passwordHint = passwordHint;
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return !getCredentialsExpired();
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for telephone.
-   *
-   * @param  telephone  String
-   */
-  public void setTelephone(String telephone) {
-    this.telephone = telephone;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for telephone2.
-   *
-   * @param  telephone2  String
-   */
-  public void setTelephone2(String telephone2) {
-    this.telephone2 = telephone2;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for username.
-   *
-   * @param  username  String
-   */
-  public void setUsername(String username) {
-    this.username = username;
+  @Override
+  public boolean isEnabled() {
+    return getEnable();
   }
 } // end class User

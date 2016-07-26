@@ -40,7 +40,7 @@ public class Account extends CreatorObject {
   )
   private String disabledDescription;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   @Type(type = "yes_no")

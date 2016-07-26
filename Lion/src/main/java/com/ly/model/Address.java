@@ -43,7 +43,7 @@ public class Address {
   )
   private String fullName;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   @Column(

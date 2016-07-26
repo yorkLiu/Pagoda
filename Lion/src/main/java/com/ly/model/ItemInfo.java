@@ -31,7 +31,7 @@ public class ItemInfo {
   /** when search by price using. */
   private BigDecimal endPrice;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   private String itemUrl;

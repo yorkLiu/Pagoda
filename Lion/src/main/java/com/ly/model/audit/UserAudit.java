@@ -33,7 +33,7 @@ public class UserAudit extends AbstractUserInfo {
   @Column(length = 20)
   private String action;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------

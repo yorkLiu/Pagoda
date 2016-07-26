@@ -33,7 +33,7 @@ import java.util.Set;
 public class OrderInfo extends AbstractOrderInfo {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   @Cascade(value = CascadeType.ALL)

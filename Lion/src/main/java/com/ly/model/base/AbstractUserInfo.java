@@ -27,9 +27,24 @@ import org.hibernate.annotations.Type;
   /** TODO: DOCUMENT ME! */
   @Type(type = "yes_no")
   protected Boolean disabled = Boolean.FALSE;
+  @Column(
+    nullable = false
+  )
+  protected Boolean expired = Boolean.FALSE;
+
+  @Column(
+    name     = "credentialsExpired",
+    nullable = false
+  )
+  @Type(type = "yes_no")
+  protected Boolean credentialsExpired = Boolean.FALSE;
 
   /** TODO: DOCUMENT ME! */
   protected String email;
+
+  /** TODO: DOCUMENT ME! */
+  @Type(type = "yes_no")
+  protected Boolean enable;
 
   /** TODO: DOCUMENT ME! */
   protected String firstName;
@@ -47,6 +62,9 @@ import org.hibernate.annotations.Type;
   /** TODO: DOCUMENT ME! */
   @Column(nullable = false)
   protected String password;
+
+  /** TODO: DOCUMENT ME! */
+  @Column protected Integer passwordFailureCount = 0;
 
   /** TODO: DOCUMENT ME! */
   protected String passwordHint;
@@ -109,6 +127,20 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for enable.
+   *
+   * @return  Boolean
+   */
+  public Boolean getEnable() {
+    if(null == enable){
+      return Boolean.FALSE;
+    }
+    return enable;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for first name.
    *
    * @return  String
@@ -147,6 +179,9 @@ import org.hibernate.annotations.Type;
    * @return  Boolean
    */
   public Boolean getLocked() {
+    if(locked == null){
+      return Boolean.FALSE;
+    }
     return locked;
   }
 
@@ -159,6 +194,17 @@ import org.hibernate.annotations.Type;
    */
   public String getPassword() {
     return password;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for password failure count.
+   *
+   * @return  Integer
+   */
+  public Integer getPasswordFailureCount() {
+    return passwordFailureCount;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -252,6 +298,17 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for enable.
+   *
+   * @param  enable  Boolean
+   */
+  public void setEnable(Boolean enable) {
+    this.enable = enable;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for first name.
    *
    * @param  firstName  String
@@ -307,6 +364,17 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for password failure count.
+   *
+   * @param  passwordFailureCount  Integer
+   */
+  public void setPasswordFailureCount(Integer passwordFailureCount) {
+    this.passwordFailureCount = passwordFailureCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for password hint.
    *
    * @param  passwordHint  String
@@ -357,5 +425,27 @@ import org.hibernate.annotations.Type;
    */
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public Boolean getExpired() {
+    if(null == expired){
+      return Boolean.FALSE;
+    }
+    return expired;
+  }
+
+  public void setExpired(Boolean expired) {
+    this.expired = expired;
+  }
+
+  public Boolean getCredentialsExpired() {
+    if(null == credentialsExpired){
+      return Boolean.FALSE;
+    }
+    return credentialsExpired;
+  }
+
+  public void setCredentialsExpired(Boolean credentialsExpired) {
+    this.credentialsExpired = credentialsExpired;
   }
 } // end class AbstractUserInfo

@@ -37,7 +37,7 @@ public class AccountHistory extends BaseObject {
   @ManyToOne(fetch = FetchType.LAZY)
   private Account account;
 
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id private Long id;
 
   @JoinColumn(

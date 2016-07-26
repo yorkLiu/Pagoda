@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Type;
+
 import com.ly.model.Address;
 import com.ly.model.Merchant;
 import com.ly.model.type.PaymentType;
@@ -55,6 +57,10 @@ import com.ly.model.type.StatusType;
 
   /** TODO: DOCUMENT ME! */
   protected String paymentUrl;
+
+  /** TODO: DOCUMENT ME! */
+  @Type(type = "yes_no")
+  protected Boolean readyForComment;
 
   /** TODO: DOCUMENT ME! */
   @Enumerated(EnumType.STRING)
@@ -195,6 +201,21 @@ import com.ly.model.type.StatusType;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for ready for comment.
+   *
+   * @return  Boolean
+   */
+  public Boolean getReadyForComment() {
+    if (null == readyForComment) {
+      return Boolean.FALSE;
+    }
+
+    return readyForComment;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for status.
    *
    * @return  StatusType
@@ -308,6 +329,17 @@ import com.ly.model.type.StatusType;
    */
   public void setPaymentUrl(String paymentUrl) {
     this.paymentUrl = paymentUrl;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for ready for comment.
+   *
+   * @param  readyForComment  Boolean
+   */
+  public void setReadyForComment(Boolean readyForComment) {
+    this.readyForComment = readyForComment;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
