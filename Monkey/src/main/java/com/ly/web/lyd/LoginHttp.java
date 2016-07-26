@@ -26,7 +26,7 @@ import com.ly.web.utils.HtmlUtils;
 /**
  * Created by yongliu on 7/7/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/07/2016 17:20
  */
 public class LoginHttp {

@@ -33,7 +33,7 @@ import com.ly.web.utils.ScreenshotUtils;
 /**
  * Created by yongliu on 7/8/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/08/2016 13:52
  * 
  * @issues: chrome getLocation issue

@@ -13,7 +13,7 @@ import com.ly.model.base.AbstractOrderInfo;
 /**
  * Created by yongliu on 7/23/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/23/2016 15:45
  */
 @Entity

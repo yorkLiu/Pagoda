@@ -98,8 +98,7 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
         <property name="packagesToScan" value="com.ly.service,com.ly.dao"/>
-  
-      <property name="hibernateProperties">
+        <property name="hibernateProperties">
             <value>
                 hibernate.dialect=org.hibernate.dialect.MySQLInnoDBDialect
                 hibernate.query.substitutions=true 'Y', false 'N'
@@ -115,10 +114,10 @@
               hibernate.max_fetch_depth=8
               hibernate.id.new_generator_mappings=false
 
-            </value>
-            <!-- Turn batching off for better error messages under PostgreSQL -->
-            <!-- hibernate.jdbc.batch_size=0 -->
-        </property>
+             </value>
+             <!-- Turn batching off for better error messages under PostgreSQL -->
+             <!-- hibernate.jdbc.batch_size=0 -->
+         </property>
 
     </bean>
  

@@ -18,7 +18,7 @@ import com.ly.model.type.StatusType;
 /**
  * Created by yongliu on 7/23/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/23/2016 15:45
  */
 @MappedSuperclass public abstract class AbstractOrderInfo extends CreatorObject {

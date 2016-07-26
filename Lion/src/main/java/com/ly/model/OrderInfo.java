@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * Created by yongliu on 7/20/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/21/2016 11:39
  */
 @Entity

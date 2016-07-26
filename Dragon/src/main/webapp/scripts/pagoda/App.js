@@ -69,7 +69,7 @@ Ext.define('Pagoda.App', {
         ]
       }),
 
-      wallpaper: '../desktop/wallpapers/Blue-Sencha.jpg',
+      wallpaper: basePath + 'scripts/desktop/wallpapers/desk.jpg',
       wallpaperStretch: false
     });
   },

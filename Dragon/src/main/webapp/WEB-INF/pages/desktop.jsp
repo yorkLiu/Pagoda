@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Pagoda Manager Desktop</title>
+    <title><fmt:message key="webapp.name"/> </title>
 
     <!-- load ext js --->
     <link href="<c:url value='/scripts/ext/resources/css/ext-all.css'/>" rel="stylesheet" type="text/css"/>
@@ -17,7 +17,7 @@
     <%--<script type="text/javascript" src='<c:url value="/dwr/interface/myTestModelController.js"/>'></script>--%>
 
     <script type="text/javascript">
-      var basePath = '<c:url value="/src/main/webapp"/>';
+      var basePath = '<c:url value="/"/>';
       Ext.Loader.setConfig({
             enabled: true,
             basePath: '<c:url value="/scripts/ext/src"/>',

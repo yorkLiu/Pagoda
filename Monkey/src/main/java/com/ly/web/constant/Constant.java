@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * TODO: DOCUMENT ME!
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/12/2016 14:49
  */
 public class Constant {

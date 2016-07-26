@@ -22,7 +22,7 @@ import com.ly.web.dp.YHDDataProvider;
 /**
  * Created by yongliu on 7/12/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/12/2016 14:08
  * @Steps    <pre>
      1. Login

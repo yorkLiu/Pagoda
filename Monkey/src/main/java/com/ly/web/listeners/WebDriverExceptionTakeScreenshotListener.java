@@ -20,7 +20,7 @@ import org.openqa.selenium.support.events.WebDriverEventListener;
 /**
  * Created by yongliu on 7/12/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/12/2016 11:32
  */
 public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventListener {

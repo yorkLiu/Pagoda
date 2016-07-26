@@ -3,7 +3,7 @@ package com.ly.utils;
 /**
  * Created by yongliu on 7/5/16.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/05/2016 10:37
  */
 public class UnicodeUtil {

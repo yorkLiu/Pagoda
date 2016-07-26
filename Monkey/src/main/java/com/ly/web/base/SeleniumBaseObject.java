@@ -22,7 +22,7 @@ import com.saucelabs.testng.SauceOnDemandTestListener;
 /**
  * Create by Yong Liu on 07/12/2016.
  *
- * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/12/2016 15:06
  */
 // @Listeners({ SauceOnDemandTestListener.class })
