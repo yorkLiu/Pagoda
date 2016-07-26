@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import com.ly.model.base.CreatorObject;
 import com.ly.model.type.CategoryType;
+import org.hibernate.annotations.Type;
 
 
 /**
@@ -42,6 +43,7 @@ public class Account extends CreatorObject {
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Id private Long id;
 
+  @Type(type = "yes_no")
   private Boolean locked;
 
   @Column(

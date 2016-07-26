@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 
 import com.ly.model.type.AppType;
 import com.ly.model.type.StatusType;
+import org.hibernate.annotations.Type;
 
 
 /**
@@ -44,6 +45,7 @@ public class Merchant {
   private Integer confirmReceiptDelay;
 
   /** 是否是团购. */
+  @Type(type = "yes_no")
   private Boolean groupBuy;
 
   /** 团购 主页面(这个商品所在的团购页面). */
@@ -64,6 +66,7 @@ public class Merchant {
   private String name;
 
   /** is overseas 是否是海购. */
+  @Type(type = "yes_no")
   private Boolean overseas;
 
   /** SD Date. */
@@ -88,6 +91,12 @@ public class Merchant {
 
   /** 每个商品浏览时间 (minute). */
   private Integer viewingTimeForOrder = 1;
+
+  /**
+   * 是否快速下单, 不用"关键字"查找, 直接点url buy
+   */
+  @Type(type = "yes_no")
+  private Boolean quickOrder;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -581,5 +590,16 @@ public class Merchant {
    */
   public void setViewingTimeForOrder(Integer viewingTimeForOrder) {
     this.viewingTimeForOrder = viewingTimeForOrder;
+  }
+
+  public Boolean getQuickOrder() {
+    if(null == quickOrder){
+      return Boolean.FALSE;
+    }
+    return quickOrder;
+  }
+
+  public void setQuickOrder(Boolean quickOrder) {
+    this.quickOrder = quickOrder;
   }
 } // end class Merchant

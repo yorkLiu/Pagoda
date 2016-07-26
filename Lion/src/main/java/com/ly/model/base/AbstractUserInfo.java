@@ -1,11 +1,14 @@
 package com.ly.model.base;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 
 /**
@@ -18,9 +21,11 @@ import javax.persistence.Transient;
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /** TODO: DOCUMENT ME! */
+  @Type(type = "yes_no")
   protected Boolean changePassword;
 
   /** TODO: DOCUMENT ME! */
+  @Type(type = "yes_no")
   protected Boolean disabled = Boolean.FALSE;
 
   /** TODO: DOCUMENT ME! */
@@ -36,6 +41,7 @@ import javax.persistence.Transient;
   protected String lastName;
 
   /** TODO: DOCUMENT ME! */
+  @Type(type = "yes_no")
   protected Boolean locked = Boolean.FALSE;
 
   /** TODO: DOCUMENT ME! */
