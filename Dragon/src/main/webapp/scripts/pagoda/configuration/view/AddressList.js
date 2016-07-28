@@ -18,35 +18,43 @@ Ext.define('Pagoda.configuration.view.AddressList', {
     this.columns = [
       {
         header: '收货人',
-        dataIndex: 'fullName'
+        dataIndex: 'fullName',
+        flex: 100
       },
       {
         header: '收货地址',
-        dataIndex: 'address'
+        dataIndex: 'address',
+        flex: 130
       },
       {
         header: '省',
-        dataIndex: 'province'
+        dataIndex: 'province',
+        flex: 100
       },
       {
         header: '市',
-        dataIndex: 'city'
+        dataIndex: 'city',
+        flex: 80
       },
       {
         header: '区/镇',
-        dataIndex: 'area'
+        dataIndex: 'area',
+        flex: 100
       },
       {
         header: '手机号码',
-        dataIndex: 'telephone'
+        dataIndex: 'telephone',
+        flex: 130
       },
       {
         header: '邮编',
-        dataIndex: 'zipCode'
+        dataIndex: 'zipCode',
+        flex: 100
       },
       {
         header: '身份证号码',
-        dataIndex: 'identityCardNum'
+        dataIndex: 'identityCardNum',
+        flex: 200
       }
     ];
 

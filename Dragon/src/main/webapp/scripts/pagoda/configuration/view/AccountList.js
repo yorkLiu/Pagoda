@@ -22,31 +22,38 @@ Ext.define('Pagoda.configuration.view.AccountList', {
     this.columns = [
       {
         header: '账号',
-        dataIndex: 'username'
+        dataIndex: 'username',
+        flex: 130
       },
       {
         header: '账号密码',
-        dataIndex: 'password'
+        dataIndex: 'password',
+        flex: 100
       },
       {
         header: '账号等级',
-        dataIndex: 'accountLevel'
+        dataIndex: 'accountLevel',
+        flex: 100
       },
       {
         header: '所属平台',
-        dataIndex: 'categoryType'
+        dataIndex: 'categoryType',
+        flex: 130
       },
       {
         header: '是否被锁',
-        dataIndex: 'locked'
+        dataIndex: 'locked',
+        flex: 100
       },
       {
         header: '是否不可用',
-        dataIndex: 'disabled'
+        dataIndex: 'disabled',
+        flex: 100
       },
       {
         header: '不可用原因',
-        dataIndex: 'disabledDescription'
+        dataIndex: 'disabledDescription',
+        flex: 200
       }
     ];
 
@@ -153,11 +160,9 @@ Ext.define('Pagoda.configuration.view.AccountList', {
 //      maxHeight: 600,
       activeRecord: record,
       addRecord: function(record){
-        console.log('***record:', record);
         me.store.add(record);
       },
       saveRecord: function(){
-        console.log("*****")
         try {
           me.store.sync({
             success: function () {

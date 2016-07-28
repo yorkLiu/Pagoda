@@ -7,10 +7,13 @@
     <title><fmt:message key="webapp.name"/> </title>
 
     <!-- load ext js --->
-    <link href="<c:url value='/scripts/ext/resources/css/ext-all.css'/>" rel="stylesheet" type="text/css"/>
+    <%--<link href="<c:url value='/scripts/ext/resources/css/ext-all.css'/>" rel="stylesheet" type="text/css"/>--%>
+    <link href="<c:url value='/scripts/ext/resources/ext-theme-neptune/ext-theme-neptune-all-debug.css'/>" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="<c:url value='/scripts/desktop/css/desktop.css'/>" />
     <link href="<c:url value='/scripts/pagoda/css/pagoda.css'/>" rel="stylesheet" type="text/css"/>
+    
     <script type="text/javascript" src="<c:url value='/scripts/ext/ext-all-debug.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/scripts/ext/packages/ext-theme-neptune/ext-theme-neptune.js'/>"></script>
     <script type="text/javascript" src="<c:url value="/jscripts/jscriptRes.js"/>"></script>
 
     <script type="text/javascript" src="<c:url value='/dwr/engine.js'/>"></script>
