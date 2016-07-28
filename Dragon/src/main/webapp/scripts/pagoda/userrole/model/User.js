@@ -15,8 +15,8 @@ Ext.define('Pagoda.userrole.model.User',{
     {name: 'passwordHint',type:'string'} ,
     {name: 'status',type:'string'} ,
     {name: 'telephone',type:'string'} ,
-    {name: 'telephone2',type:'string'} 
-    //{name: 'locked',type:'bool'} ,
-    //{name: 'disabled',type:'bool'}
+    {name: 'telephone2',type:'string'}, 
+    {name: 'locked',type:'bool'} ,
+    {name: 'disabled',type:'bool'}
   ]
 });

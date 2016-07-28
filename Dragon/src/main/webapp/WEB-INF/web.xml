@@ -10,6 +10,18 @@
     <param-value>true</param-value>
   </context-param>
 
+  <!-- Define the basename for a resource bundle for I18N -->
+  <context-param>
+    <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+    <param-value>ApplicationResources</param-value>
+  </context-param>
+  <!-- Fallback locale if no bundles found for browser's preferred locale -->
+  <!-- Force a single locale using param-name 'javax.servlet.jsp.jstl.fmt.locale' -->
+  <context-param>
+    <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
+    <param-value>en</param-value>
+  </context-param>
+
 
   <!-- Context Configuration locations for Spring XML files -->
   <context-param>
@@ -39,6 +51,10 @@
   <filter>
     <filter-name>lazyLoadingFilter</filter-name>
     <filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>localeFilter</filter-name>
+    <filter-class>com.ly.web.filter.LocaleFilter</filter-class>
   </filter>
  
 
@@ -76,10 +92,10 @@
     <filter-name>lazyLoadingFilter</filter-name>
     <url-pattern>/reports/*</url-pattern>
   </filter-mapping>
-  <!--<filter-mapping>-->
-  <!--<filter-name>localeFilter</filter-name>-->
-  <!--<url-pattern>/*</url-pattern>-->
-  <!--</filter-mapping>-->
+  <filter-mapping>
+  <filter-name>localeFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
 
   <listener>

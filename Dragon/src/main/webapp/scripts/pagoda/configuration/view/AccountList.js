@@ -1,52 +1,55 @@
 /**
- * Created by yongliu on 7/26/16.
+ * Created by yongliu on 7/27/16.
  */
 
-Ext.define('Pagoda.userrole.view.UserList', {
-  extend:'Ext.grid.Panel',
-  alias: 'widget.userlist',
-  requires:[
-    'Pagoda.userrole.store.Users',
-    'Pagoda.userrole.view.UserEdit'
-  ],
 
-  forceFit: true,
-  selType: 'rowmodel',
+
+
+
+Ext.define('Pagoda.configuration.view.AccountList', {
+  extend: 'Ext.grid.Panel',
+  alias: 'widget.accountlist',
+  requires: [
+    'Pagoda.configuration.store.Accounts',
+    'Pagoda.configuration.view.AccountEdit'
+  ],
 
   initComponent: function(){
     var me = this;
-    this.store = this.getStore();
     
+    this.store = me.getStore();
+
     this.columns = [
       {
-        header: userRoleRes.fields.username,
+        header: '账号',
         dataIndex: 'username'
       },
       {
-        header: userRoleRes.fields.fullName,
-        dataIndex: 'fullName'
+        header: '账号密码',
+        dataIndex: 'password'
       },
       {
-        header: userRoleRes.fields.email,
-        dataIndex: 'email'
+        header: '账号等级',
+        dataIndex: 'accountLevel'
       },
       {
-        header: userRoleRes.fields.telephone,
-        dataIndex: 'telephone'
+        header: '所属平台',
+        dataIndex: 'categoryType'
       },
       {
-        header: userRoleRes.fields.telephone2,
-        dataIndex: 'telephone2'
-      },
-      {
-        header: userRoleRes.fields.status,
-        dataIndex: 'status'
-      },
-      {
-        header: userRoleRes.fields.locked,
+        header: '是否被锁',
         dataIndex: 'locked'
+      },
+      {
+        header: '是否不可用',
+        dataIndex: 'disabled'
+      },
+      {
+        header: '不可用原因',
+        dataIndex: 'disabledDescription'
       }
     ];
+
 
     this.dockedItems = [
       {
@@ -105,21 +108,21 @@ Ext.define('Pagoda.userrole.view.UserList', {
       itemdblclick: this.onItemDblClickHandler,
       selectionchange : this.onRowSelectChanged
     };
-    
-    
+
     this.callParent();
   },
 
   getStore: function(){
-    var store = Ext.StoreManager.lookup('PagodaUserListStore');
+    var store = Ext.StoreManager.lookup('PagodaAccountsStore');
     if(!store || store == null){
-      store = Ext.create('Pagoda.userrole.store.Users',{
-        storeId: 'PagodaUserListStore'
+      store = Ext.create('Pagoda.configuration.store.Accounts',{
+        storeId: 'PagodaAccountsStore'
       });
       store.load();
     }
     return store;
   },
+
 
   onItemDblClickHandler: function(view,record){
     if(record){
@@ -135,11 +138,11 @@ Ext.define('Pagoda.userrole.view.UserList', {
 
   addOrUpdate: function(record){
     var me = this,
-      title = 'Add User';
+      title = '新建账号';
     if(record){
-      title = 'Update User';
+      title = '更新账号';
     }
-    var win = Ext.widget('useredit',{
+    var win = Ext.widget('accountedit',{
       title: title,
       modal: true,
       width: 600,
@@ -150,24 +153,29 @@ Ext.define('Pagoda.userrole.view.UserList', {
 //      maxHeight: 600,
       activeRecord: record,
       addRecord: function(record){
-        console.log('record:', record);
+        console.log('***record:', record);
         me.store.add(record);
       },
       saveRecord: function(){
-        me.store.sync({
-          success: function(){
-            // todo after success
-            win.close();
-          },
-          failed: function(){
-            Ext.MessageBox.show({
-              title: title + " Error",
-              msg: "There is some errors when " + title,
-              icon: Ext.MessageBox.ERROR,
-              buttons: Ext.MessageBox.YES
-            });
-          }
-        });
+        console.log("*****")
+        try {
+          me.store.sync({
+            success: function () {
+              // todo after success
+              win.close();
+            },
+            failed: function () {
+              Ext.MessageBox.show({
+                title: title + " Error",
+                msg: "There is some errors when " + title,
+                icon: Ext.MessageBox.ERROR,
+                buttons: Ext.MessageBox.YES
+              });
+            }
+          });
+        }catch (e){
+          console.log('**e:', e);
+        }
       }
     }).show();
   },
@@ -203,5 +211,5 @@ Ext.define('Pagoda.userrole.view.UserList', {
       });
     }
   }
-  
+
 });

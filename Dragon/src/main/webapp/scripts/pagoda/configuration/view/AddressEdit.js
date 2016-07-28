@@ -1,14 +1,10 @@
 /**
- * Created with app source gen maven plugin
- * author: @author
- * Date: @Date
- * Time: @Time
- * To change this template use File | Settings | File Templates.
+ * Created by yongliu on 7/27/16.
  */
 
-Ext.define('Pagoda.userrole.view.UserEdit', {
+Ext.define('Pagoda.configuration.view.AddressEdit', {
   extend: 'Ext.window.Window',
-  alias: 'widget.useredit',
+  alias: 'widget.addressedit',
   uses: [
     'Ext.form.Panel',
     'Ext.form.field.Text',
@@ -20,6 +16,7 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
   activeRecord: undefined,
 
   layout: 'fit',
+
   initComponent: function () {
     var me = this;
 
@@ -42,57 +39,37 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
             name: 'id'
           },
           {
-            fieldLabel: userRoleRes.fields.username,
-            name: 'username',
+            fieldLabel: "收货人",
+            name: 'fullName',
             allowBlank: false,
-            emptyText: 'Please input username',
+            emptyText: '姓名',
             maxLength: 50,
             minLength: 5,
             anchor: '90%'
           },
           {
-            fieldLabel: userRoleRes.fields.firstName,
-            name: 'firstName',
+            fieldLabel: '收货地址',
+            name: 'address',
             maxLength: 50,
             allowBlank: false
           },
           {
-            fieldLabel: userRoleRes.fields.lastName,
-            name: 'lastName',
+            fieldLabel: '手机号码',
+              name: 'telephone',
             maxLength: 50,
             allowBlank: false
           },
           {
-            fieldLabel: userRoleRes.fields.password,
-            type: 'password',
-            name: 'password',
-            maxLength: 100,
-            allowBlank: false
+            fieldLabel: '邮编',
+            name: 'zipCode',
+            maxLength: 10,
+            allowBlank: true
           },
           {
-            fieldLabel: userRoleRes.fields.passwordHint,
-            name: 'passwordHint',
+            fieldLabel: '身份证号码',
+            name: 'identityCardNum',
+            emptyText: '用于海购时的实名认证信息',
             maxLength: 200,
-            allowBlank: false
-          },
-          {
-            fieldLabel: userRoleRes.fields.email,
-            name: 'email',
-            vtype: 'email',
-            maxLength: 200,
-            allowBlank: false
-          },
-
-          {
-            fieldLabel: userRoleRes.fields.telephone,
-            name: 'telephone',
-            maxLength: 20,
-            allowBlank: false
-          },
-          {
-            fieldLabel: userRoleRes.fields.telephone2,
-            name: 'telephone2',
-            maxLength: 20,
             allowBlank: true
           }
         ],

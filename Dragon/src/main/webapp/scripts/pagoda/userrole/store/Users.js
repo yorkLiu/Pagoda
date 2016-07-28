@@ -64,6 +64,8 @@ Ext.define('Pagoda.userrole.store.Users',{
   model: 'Pagoda.userrole.model.User',
 
 
+  pageSize: 50,
+  
   proxy: {
     type: 'dwr',
 
@@ -84,13 +86,15 @@ Ext.define('Pagoda.userrole.store.Users',{
     listeners: {
       exception: function(proxy, response, operation) {
         Ext.MessageBox.show({
-            title: 'Remote Exception', //globalRes.remoteException,
-            msg: operation.getError(),
+            title: globalRes.exception.title,
+            msg: operation.getError() || globalRes.exception.message,
             icon: Ext.MessageBox.ERROR,
             buttons: Ext.Msg.OK
           }
         );
       }
     }
-  }
+  },
+  autoSync: false,
+  autoLoad: false
 });

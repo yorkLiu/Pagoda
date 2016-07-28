@@ -28,7 +28,6 @@
       <property name="cacheMappings">
         <props>
           <!-- cache for one month -->
-          <!--<prop key="/html/ozExtDirect">86400</prop>-->
           <prop key="/dwr/**">86400</prop>
           <!-- don't set cache headers -->
           <prop key="/data/**">-1</prop>
@@ -73,12 +72,35 @@
   <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" p:order="0" >
   </bean>
 
+  <!--<bean id="managerContextInterceptor" class="org.springframework.web.servlet.HandlerInterceptor">-->
+  <!--</bean>-->
+
+  <!-- URL to url/flow mapping rules -->
   <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="mappings">
-      <value>
-      </value>
-    </property>
     <property name="order" value="1"/>
+    <!--<property name="interceptors">-->
+      <!--<list>-->
+        <!--&lt;!&ndash;<ref bean="managerContextInterceptor"/>&ndash;&gt;-->
+      <!--</list>-->
+    <!--</property>-->
+  </bean>
+
+
+  <bean id="constrainedUrlPathHelper" class="com.ly.web.view.ConstrainedUrlPathHelper">
+    <property name="refuseUrlEndsWith">
+      <set>
+        <value>Res</value>
+      </set>
+    </property>
+    <property name="pathExtensionConstraint">
+      <map>
+        <entry key="/jscripts">
+          <set>
+            <value>js</value>
+          </set>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <!-- Maps request paths to @Controller classes; e.g. a path of /hotels looks for a controller named HotelsController -->

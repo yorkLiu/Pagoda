@@ -1,52 +1,55 @@
 /**
- * Created by yongliu on 7/26/16.
+ * Created by yongliu on 7/27/16.
  */
 
-Ext.define('Pagoda.userrole.view.UserList', {
-  extend:'Ext.grid.Panel',
-  alias: 'widget.userlist',
-  requires:[
-    'Pagoda.userrole.store.Users',
-    'Pagoda.userrole.view.UserEdit'
+Ext.define('Pagoda.configuration.view.AddressList', {
+  extend: 'Ext.grid.Panel',
+  alias: 'widget.addresslist',
+  requires: [
+    'Pagoda.configuration.store.Addresses',
+    'Pagoda.configuration.view.AddressEdit'
   ],
-
-  forceFit: true,
-  selType: 'rowmodel',
-
+  
   initComponent: function(){
     var me = this;
-    this.store = this.getStore();
+
+    this.store = me.getStore();
     
     this.columns = [
       {
-        header: userRoleRes.fields.username,
-        dataIndex: 'username'
-      },
-      {
-        header: userRoleRes.fields.fullName,
+        header: '收货人',
         dataIndex: 'fullName'
       },
       {
-        header: userRoleRes.fields.email,
-        dataIndex: 'email'
+        header: '收货地址',
+        dataIndex: 'address'
       },
       {
-        header: userRoleRes.fields.telephone,
+        header: '省',
+        dataIndex: 'province'
+      },
+      {
+        header: '市',
+        dataIndex: 'city'
+      },
+      {
+        header: '区/镇',
+        dataIndex: 'area'
+      },
+      {
+        header: '手机号码',
         dataIndex: 'telephone'
       },
       {
-        header: userRoleRes.fields.telephone2,
-        dataIndex: 'telephone2'
+        header: '邮编',
+        dataIndex: 'zipCode'
       },
       {
-        header: userRoleRes.fields.status,
-        dataIndex: 'status'
-      },
-      {
-        header: userRoleRes.fields.locked,
-        dataIndex: 'locked'
+        header: '身份证号码',
+        dataIndex: 'identityCardNum'
       }
     ];
+
 
     this.dockedItems = [
       {
@@ -106,20 +109,20 @@ Ext.define('Pagoda.userrole.view.UserList', {
       selectionchange : this.onRowSelectChanged
     };
     
-    
     this.callParent();
   },
 
   getStore: function(){
-    var store = Ext.StoreManager.lookup('PagodaUserListStore');
+    var store = Ext.StoreManager.lookup('PagodaAddressStore');
     if(!store || store == null){
-      store = Ext.create('Pagoda.userrole.store.Users',{
-        storeId: 'PagodaUserListStore'
+      store = Ext.create('Pagoda.configuration.store.Addresses',{
+        storeId: 'PagodaAddressStore'
       });
       store.load();
     }
     return store;
   },
+
 
   onItemDblClickHandler: function(view,record){
     if(record){
@@ -135,11 +138,11 @@ Ext.define('Pagoda.userrole.view.UserList', {
 
   addOrUpdate: function(record){
     var me = this,
-      title = 'Add User';
+      title = '创建新地址';
     if(record){
-      title = 'Update User';
+      title = '更新地址';
     }
-    var win = Ext.widget('useredit',{
+    var win = Ext.widget('addressedit',{
       title: title,
       modal: true,
       width: 600,
@@ -150,25 +153,29 @@ Ext.define('Pagoda.userrole.view.UserList', {
 //      maxHeight: 600,
       activeRecord: record,
       addRecord: function(record){
-        console.log('record:', record);
         me.store.add(record);
       },
       saveRecord: function(){
-        me.store.sync({
-          success: function(){
-            // todo after success
-            win.close();
-          },
-          failed: function(){
-            Ext.MessageBox.show({
-              title: title + " Error",
-              msg: "There is some errors when " + title,
-              icon: Ext.MessageBox.ERROR,
-              buttons: Ext.MessageBox.YES
-            });
-          }
-        });
+        try {
+          me.store.sync({
+            success: function () {
+              // todo after success
+              win.close();
+            },
+            failed: function () {
+              Ext.MessageBox.show({
+                title: title + " Error",
+                msg: "There is some errors when " + title,
+                icon: Ext.MessageBox.ERROR,
+                buttons: Ext.MessageBox.YES
+              });
+            }
+          });
+        }catch (e){
+          console.log('e:', e);
+        }
       }
+        
     }).show();
   },
 
@@ -203,5 +210,7 @@ Ext.define('Pagoda.userrole.view.UserList', {
       });
     }
   }
-  
+
 });
+
+

@@ -1,25 +1,29 @@
 /**
- * Created with app source gen maven plugin
- * author: @author
- * Date: @Date
- * Time: @Time
- * To change this template use File | Settings | File Templates.
+ * Created by yongliu on 7/27/16.
  */
 
-Ext.define('Pagoda.userrole.view.UserEdit', {
+
+
+
+
+
+Ext.define('Pagoda.configuration.view.AccountEdit', {
   extend: 'Ext.window.Window',
-  alias: 'widget.useredit',
+  alias: 'widget.accountedit',
   uses: [
     'Ext.form.Panel',
     'Ext.form.field.Text',
     'Ext.form.field.Date',
     'Ext.form.field.Number',
-    'Ext.button.Button'
+    'Ext.button.Button',
+    'Ext.form.field.ComboBox',
+    'Ext.data.ArrayStore'
   ],
 
   activeRecord: undefined,
 
   layout: 'fit',
+
   initComponent: function () {
     var me = this;
 
@@ -37,62 +41,43 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
         },
         trackResetOnLoad:true,
         items: [
+          //{
+          //  xtype: 'hidden',
+          //  name: 'id'
+          //},
           {
-            xtype: 'hidden',
-            name: 'id'
-          },
-          {
-            fieldLabel: userRoleRes.fields.username,
+            fieldLabel: "账号",
             name: 'username',
-            allowBlank: false,
-            emptyText: 'Please input username',
-            maxLength: 50,
-            minLength: 5,
-            anchor: '90%'
-          },
-          {
-            fieldLabel: userRoleRes.fields.firstName,
-            name: 'firstName',
+            emptyText: '账号',
             maxLength: 50,
             allowBlank: false
           },
           {
-            fieldLabel: userRoleRes.fields.lastName,
-            name: 'lastName',
-            maxLength: 50,
-            allowBlank: false
-          },
-          {
-            fieldLabel: userRoleRes.fields.password,
-            type: 'password',
+            fieldLabel: '账号密码',
             name: 'password',
-            maxLength: 100,
+            maxLength: 50,
             allowBlank: false
           },
           {
-            fieldLabel: userRoleRes.fields.passwordHint,
-            name: 'passwordHint',
-            maxLength: 200,
-            allowBlank: false
+            xtype: 'numberfield',
+            fieldLabel: '账号等级',
+            name: 'accountLevel',
+            allowDecimals: false,
+            step: 1,
+            minValue: 0,
+            maxValue: 5,
+            allowBlank: true
           },
           {
-            fieldLabel: userRoleRes.fields.email,
-            name: 'email',
-            vtype: 'email',
-            maxLength: 200,
-            allowBlank: false
-          },
-
-          {
-            fieldLabel: userRoleRes.fields.telephone,
-            name: 'telephone',
-            maxLength: 20,
-            allowBlank: false
-          },
-          {
-            fieldLabel: userRoleRes.fields.telephone2,
-            name: 'telephone2',
-            maxLength: 20,
+            xtype: 'combo',
+            fieldLabel: '所属平台',
+            displayField: 'label',
+            valueField: 'value',
+            queryMode: 'local',
+            triggerAction: 'all',
+            editable: false,
+            name: 'categoryType',
+            store: me.getCategoryTypeStore(),
             allowBlank: true
           }
         ],
@@ -135,6 +120,22 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
       me.addRecord(values);
     }
     me.saveRecord();
+  },
+
+  getCategoryTypeStore: function(){
+    var store = Ext.StoreManager.lookup('PagodaCategoryTypeStore');
+    if(!store || store == null){
+      store = Ext.create('Ext.data.ArrayStore', {
+        storeId: 'myStore',
+        fields: ['label', 'value'],
+        data: [
+          ['京东', 'JD'],
+          ['一号店', 'YHD'],
+          ['当当', 'DD']
+        ]
+      });
+    }
+    return store;
   },
 
   onCloseHandler: function () {

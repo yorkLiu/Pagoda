@@ -17,10 +17,252 @@ Ext.define('Pagoda.App', {
     'Pagoda.Settings',
 
     // import modules
-    'Pagoda.UserRole'
+    'Pagoda.UserRole',
+    'Pagoda.Configuration'
 
     // todo import you modules
   ],
+
+  //constructor: function (config) {
+  //  this.callParent(config);
+  //
+  //  /**
+  //   * Fixed the issues of Ext.ux.desktop.Desktop.
+  //   * Issue 1: The shortcuts are displayed as only one column, no matter how many;
+  //   * Issue 2: The desktop do not redraw the shortcut when resizing browser.
+  //   */
+  //  Ext.override(Ext.ux.desktop.Desktop, {
+  //    createDataView: function () {
+  //      var me = this;
+  //      return {
+  //        xtype: 'dataview',
+  //        overItemCls: 'x-view-over',
+  //        trackOver: true,
+  //        itemSelector: me.shortcutItemSelector,
+  //        store: me.shortcuts,
+  //        style: {
+  //          position: 'absolute'
+  //        },
+  //        x: 0, y: 0,
+  //        tpl: new Ext.XTemplate(me.shortcutTpl),
+  //        listeners: {
+  //          'refresh': me.positionItems,
+  //          'resize': me.positionItems
+  //        }
+  //      };
+  //    },
+  //
+  //    positionItems: function() {
+  //      var me = this,
+  //        height = this.getHeight(),
+  //        x = 0,
+  //        y = 0;
+  //      ////////// fixed the icon hide in IE./////////////////////////
+  //      if(Ext.isIE){
+  //        var cssHeight = me.getEl().getStyle('height');
+  //        if(cssHeight){
+  //          height = parseFloat(cssHeight.replace(/px/gi, ''));
+  //        }
+  //      }
+  //      ///////////////////////////////////////////////////////////
+  //      if (!me.itemWidth && !me.itemHeight) {
+  //        me.itemHeight = 0;
+  //        var h = 0, rh;
+  //        this.all.each(function(item) {
+  //          var el = Ext.get(item),
+  //            box = el.getBox();
+  //          me.itemWidth = me.itemWidth || box.right;
+  //          me.itemHeight = (rh = box.bottom - h) > me.itemHeight ? rh : me.itemHeight;
+  //          h = box.bottom;
+  //        });
+  //      }
+  //
+  //      this.all.each(function(item) {
+  //        var el = Ext.get(item);
+  //        if ((y + me.itemHeight) > height) {
+  //          x += me.itemWidth;
+  //          y = 0;
+  //        }
+  //        el.setXY([x, y]);
+  //        y += me.itemHeight;
+  //      });
+  //    }
+  //  });
+  //
+  //  /**
+  //   * show indicator for required field
+  //   */
+  //  Ext.override(Ext.form.field.Base,{
+  //
+  //    /**
+  //     * @property {Ext.Element} qtipAlign
+  //     * When the @allowBlank is false, the quick tip for red '*'
+  //     * values: left
+  //     */
+  //    qtipAlign: null,
+  //
+  //    childEls: [
+  //    /**
+  //     * @property {Ext.Element} labelCell
+  //     * The `<TD>` Element which contains the label Element for this component. Only available after the component has been rendered.
+  //     */
+  //      'labelCell',
+  //
+  //    /**
+  //     * @property {Ext.Element} labelEl
+  //     * The label Element for this component. Only available after the component has been rendered.
+  //     */
+  //      'labelEl',
+  //
+  //    /**
+  //     * @property {Ext.Element} bodyEl
+  //     * The div Element wrapping the component's contents. Only available after the component has been rendered.
+  //     */
+  //      'bodyEl',
+  //
+  //    /**
+  //     * @property {Ext.Element} errorEl
+  //     * The div Element that will contain the component's error message(s). Note that depending on the configured
+  //     * {@link #msgTarget}, this element may be hidden in favor of some other form of presentation, but will always
+  //     * be present in the DOM for use by assistive technologies.
+  //     */
+  //      'errorEl',
+  //
+  //      'inputRow',
+  //
+  //      'showRequiredIndicatorEl',
+  //
+  //      'imageBtnEl'
+  //    ],
+  //
+  //    /**
+  //     * Generates the arguments for the field decorations {@link #labelableRenderTpl rendering template}.
+  //     * @return {Object} The template arguments
+  //     * @protected
+  //     */
+  //    getLabelableRenderData: function() {
+  //      var me = this,
+  //        data,
+  //        tempEl;
+  //
+  //      if (!Ext.form.Labelable.errorIconWidth) {
+  //        Ext.form.Labelable.errorIconWidth = (tempEl = Ext.getBody().createChild({style: 'position:absolute', cls: Ext.baseCSSPrefix + 'form-invalid-icon'})).getWidth();
+  //        tempEl.remove();
+  //      }
+  //      var showRequiredIndicator = false;
+  //      if(false == me.allowBlank && me.getXType() != 'hiddenfield' && me.getXType() != 'displayfield' && !me.hideRequiredIndicator){
+  //        showRequiredIndicator = true;
+  //      }
+  //
+  //      var allowBlankTips = '<span style="color:red; " data-qtip="'+me.blankText+'" data-qclass="qtip-wrap">*</span>';
+  //      if(me.qtipAlign ==='left'){
+  //        allowBlankTips = '<span style="color:red; " data-qtip="'+me.blankText+'" data-qclass="qtip-wrap" data-qalign="tr-bl">*</span>';
+  //      }
+  //
+  //      data = Ext.copyTo({
+  //          inFormLayout   : me.ownerLayout && me.ownerLayout.type === 'form',
+  //          inputId        : me.getInputId(),
+  //          labelOnLeft    : me.labelAlign != 'top',
+  //          fieldLabel     : me.getFieldLabel(),
+  //          labelCellStyle : me.getLabelCellStyle(),
+  //          labelCellAttrs : me.getLabelCellAttrs(),
+  //          labelCls       : me.getLabelCls(),
+  //          labelStyle     : me.getLabelStyle(),
+  //          bodyColspan    : me.getBodyColspan(),
+  //          showRequiredIndicator:showRequiredIndicator,
+  //          allowBlankTips:allowBlankTips,
+  //          errorMsgCls    : me.errorMsgCls + (me.autoFitErrors ? '' : ' ' + Ext.baseCSSPrefix + 'external-error-icon'),
+  //          errorIconWidth : Ext.form.Labelable.errorIconWidth
+  //        },
+  //        me, me.labelableRenderProps, true);
+  //
+  //      me.getInsertionRenderData(data, me.labelableInsertions);
+  //
+  //      return data;
+  //    },
+  //    toggleRequiredIndicator:function(hide){
+  //      var me = this;
+  //      if(hide){
+  //        me.showRequiredIndicatorEl.setStyle('display','none');
+  //      } else {
+  //        me.showRequiredIndicatorEl.setStyle('display','table-cell');
+  //      }
+  //    },
+  //    labelableRenderTpl: [
+  //
+  //      // Top TR if labelAlign =='top'
+  //      '<tpl if="labelAlign==\'top\'">',
+  //      '<tr>',
+  //      '<td id="{id}-labelCell" colspan="3" style="{labelCellStyle}" {labelCellAttrs}>',
+  //      '{beforeLabelTpl}',
+  //      '<label id="{id}-labelEl" {labelAttrTpl}<tpl if="inputId"> for="{inputId}"</tpl> class="{labelCls}"',
+  //      '<tpl if="labelStyle"> style="{labelStyle}"</tpl>>',
+  //      '{beforeLabelTextTpl}',
+  //      '<tpl if="fieldLabel">{fieldLabel}{labelSeparator}</tpl>',
+  //      '{afterLabelTextTpl}',
+  //      '</label>',
+  //      '{afterLabelTpl}',
+  //      '</td>',
+  //      '</tr>',
+  //      '</tpl>',
+  //
+  //      // body row. If a heighted Field (eg TextArea, HtmlEditor, this must greedily consume height.
+  //      '<tr id="{id}-inputRow" <tpl if="inFormLayout">id="{id}"</tpl>>',
+  //
+  //      // Label cell
+  //      '<tpl if="labelOnLeft">',
+  //      '<td id="{id}-labelCell" style="{labelCellStyle}" {labelCellAttrs}>',
+  //      '{beforeLabelTpl}',
+  //      '<label id="{id}-labelEl" {labelAttrTpl}<tpl if="inputId"> for="{inputId}"</tpl> class="{labelCls}"',
+  //      '<tpl if="labelStyle"> style="{labelStyle}"</tpl>>',
+  //      '{beforeLabelTextTpl}',
+  //      '<tpl if="fieldLabel">{fieldLabel}{labelSeparator}</tpl>',
+  //      '{afterLabelTextTpl}',
+  //      '</label>',
+  //      '{afterLabelTpl}',
+  //      '</td>',
+  //      '</tpl>',
+  //
+  //      // Body of the input. That will be an input element, or, from a TriggerField, a table containing an input cell and trigger cell(s)
+  //      '<td class="{baseBodyCls} {fieldBodyCls}" id="{id}-bodyEl" role="presentation" colspan="{bodyColspan}">',
+  //      '{beforeSubTpl}',
+  //      '{[values.$comp.getSubTplMarkup()]}',
+  //      '{afterSubTpl}',
+  //      '</td>',
+  //
+  //      // Side required indicator
+  //      '<tpl if="showRequiredIndicator==true">',
+  //      '<td id="{id}-showRequiredIndicatorEl" width="13" style="width: 13px;"><div style="padding: 5px 0px 0px 3px;">{allowBlankTips}</div></td>',
+  //      '</tpl>',
+  //
+  //      //Image button element
+  //      '<td id="{id}-imageBtnEl" style="display:none;padding: 2px 0px 0px 3px;" width="19" ></td>',
+  //
+  //      // Side error element
+  //      '<tpl if="msgTarget==\'side\'">',
+  //      '<td id="{id}-errorEl" class="{errorMsgCls}" style="display:none" width="{errorIconWidth}"></td>',
+  //      '</tpl>',
+  //      '</tr>',
+  //
+  //      // Under error element is another TR
+  //      '<tpl if="msgTarget==\'under\'">',
+  //      '<tr>',
+  //      // Align under the input element
+  //      '<tpl if="labelOnLeft">',
+  //      '<td></td>',
+  //      '</tpl>',
+  //      '<td id="{id}-errorEl" class="{errorMsgClass}" colspan="{[values.labelOnLeft ? 2 : 3]}" style="display:none"></td>',
+  //      '</tr>',
+  //      '</tpl>',
+  //      {
+  //        disableFormats: true
+  //      }
+  //    ]
+  //  });
+  //
+  //
+  // 
+  //},
 
   init: function() {
     this.callParent();
@@ -31,7 +273,8 @@ Ext.define('Pagoda.App', {
     // todo add your modules
 
     return [
-      new Pagoda.UserRole()
+      new Pagoda.UserRole(),
+      new Pagoda.Configuration()
     ];
 //      eg:
 //    return [
@@ -59,7 +302,8 @@ Ext.define('Pagoda.App', {
         model: 'Ext.ux.desktop.ShortcutModel',
         data: [
           // todo add your module @module: 'your defined module id'
-          { name: 'User Role Manager', iconCls: 'grid-shortcut', module: 'userRole-win' }
+          { name: '用户与权限管理', iconCls: 'userRole-shortcut', module: 'userRole-win' },
+          { name: '配置管理', iconCls: 'configuration-shortcut', module: 'configuration-win' }
           //eg:
 //          { name: 'Grid Window', iconCls: 'grid-shortcut', module: 'grid-win' },
 //          { name: 'Accordion Window', iconCls: 'accordion-shortcut', module: 'acc-win' },

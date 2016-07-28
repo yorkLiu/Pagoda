@@ -1,0 +1,15 @@
+
+
+.userRole-shortcut img {
+  width: 48px;
+  height: 48px;
+  background-image: url(icons/userRoleManager_48.png);
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../styles/default/desktop/icons/userRoleManager_48.png', sizingMethod='scale');
+}
+
+.configuration-shortcut img {
+  width: 48px;
+  height: 48px;
+  background-image: url(icons/configurationManager_48.png);
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../styles/default/desktop/icons/configurationManager_48.png', sizingMethod='scale');
+}
