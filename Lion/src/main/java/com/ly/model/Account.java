@@ -32,6 +32,7 @@ public class Account extends CreatorObject {
   @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
 
+  @Type(type = "yes_no")
   private Boolean disabled = Boolean.FALSE;
 
   @Column(

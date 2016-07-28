@@ -23,7 +23,9 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "User")
-public class User extends AbstractUserInfo implements Serializable, UserDetails {
+public class User extends AbstractUserInfo 
+//  implements Serializable, UserDetails 
+{
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -114,28 +116,28 @@ public class User extends AbstractUserInfo implements Serializable, UserDetails 
 
 
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return null;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return !getExpired();
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return !getLocked();
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return !getCredentialsExpired();
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return getEnable();
-  }
+//  @Override
+//  public Collection<? extends GrantedAuthority> getAuthorities() {
+//    return null;
+//  }
+//
+//  @Override
+//  public boolean isAccountNonExpired() {
+//    return !getExpired();
+//  }
+//
+//  @Override
+//  public boolean isAccountNonLocked() {
+//    return !getLocked();
+//  }
+//
+//  @Override
+//  public boolean isCredentialsNonExpired() {
+//    return !getCredentialsExpired();
+//  }
+//
+//  @Override
+//  public boolean isEnabled() {
+//    return getEnable();
+//  }
 } // end class User
