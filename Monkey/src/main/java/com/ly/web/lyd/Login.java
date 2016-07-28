@@ -78,7 +78,7 @@ public class Login extends AbstractObject {
     // validator code
     WebElement vCodeDive = this.webDriver.findElement(By.id("vcd_div"));
 
-    WebElement loginError = this.webDriver.findElement(By.id("error_tips"));
+//    WebElement loginError = this.webDriver.findElement(By.id("error_tips"));
     
     
     logger.info("vcode div is css value:" + vCodeDive.getCssValue("display"));
@@ -87,13 +87,15 @@ public class Login extends AbstractObject {
     // click login button
     loginButton.click();
 
+    logger.info("After click 'Submit' the vcode div is css value:" + vCodeDive.getCssValue("display"));
+
 // Thread.sleep(1000);
 //
 // if (loginError.getText().contains("账号和密码不匹配，请重新输入")) {
 // throw new Exception("账号和密码不匹配，请重新输入");
 // }
 
-    (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+    (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
         @Override public Boolean apply(WebDriver d) {
           return (!d.getCurrentUrl().contains("login"));
         }
