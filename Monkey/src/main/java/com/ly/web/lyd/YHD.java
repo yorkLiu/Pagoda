@@ -1,11 +1,23 @@
 package com.ly.web.lyd;
 
+import java.io.File;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariOptions;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -34,6 +46,33 @@ import com.ly.web.dp.YHDDataProvider;
  * </pre>
  */
 public class YHD extends SeleniumBaseObject {
+  //~ Static fields/initializers ---------------------------------------------------------------------------------------
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_CHROME  = "chrome";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_FIREFOX = "firefox";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_SAFARI = "safari";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_IE = "ie";
+
+  /**
+   * <pre>
+       chrome
+       firefox
+       safari
+       IE
+   * </pre>
+   */
+  public static String currentDriver = "chrome";
+
+  /** TODO: DOCUMENT ME! */
+  public static ConcurrentMap<String, Integer> vCodeCountMap = new ConcurrentHashMap<>(5);
+
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   private CommentsInfo commentsInfo = null;
@@ -70,6 +109,32 @@ public class YHD extends SeleniumBaseObject {
       }
 
       if (logger.isDebugEnabled()) {
+        logger.debug(".......Start to check web drive is valid code shows more than 2 times.....");
+        logger.debug("Current web drive: " + currentDriver + ", input the valid code time(s): "
+          + vCodeCountMap.get(currentDriver));
+      }
+
+      if ((vCodeCountMap.get(currentDriver) != null) && (vCodeCountMap.get(currentDriver) >= 2)) {
+        if (vCodeCountMap.get(DRIVER_FIREFOX) == null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Ready change drive from: '" + currentDriver + " To: '" + DRIVER_FIREFOX + "'");
+          }
+
+          setupDriver(DRIVER_FIREFOX);
+        } else if (vCodeCountMap.get(DRIVER_SAFARI) == null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Ready change drive from: '" + currentDriver + " To: '" + DRIVER_SAFARI + "'");
+          }
+
+          setupDriver(DRIVER_SAFARI);
+        }
+      }
+
+      if (logger.isDebugEnabled()) {
+        logger.debug(".......End to check web drive is valid code shows more than 2 times.....");
+      }
+
+      if (logger.isDebugEnabled()) {
         logger.debug("Ready comment: " + commentsInfo);
       }
 
@@ -87,7 +152,7 @@ public class YHD extends SeleniumBaseObject {
       // 4. logout for current user
       logout();
 
-      int seconds = new Random().nextInt(80);
+      int seconds = new Random().nextInt(30);
 
       if (logger.isDebugEnabled()) {
         logger.debug("It will delay:" + seconds + " seconds to comment next record.");
@@ -236,6 +301,8 @@ public class YHD extends SeleniumBaseObject {
         logger.debug("Driver is NULL, then new chrome driver instance.");
       }
 
+      currentDriver = DRIVER_CHROME;
+
       System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
       driver = new ChromeDriver();
     } else {
@@ -245,6 +312,59 @@ public class YHD extends SeleniumBaseObject {
     }
 
   } // end method setup
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * setupDriver.
+   *
+   * @param  driverType  String
+   */
+  public void setupDriver(String driverType) {
+    if (DRIVER_CHROME.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_CHROME;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Chrome Web Driver.....");
+      }
+
+      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
+      driver = new ChromeDriver();
+    } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_FIREFOX;
+
+      FirefoxProfile profile = new FirefoxProfile();
+      profile.setAcceptUntrustedCertificates(true);
+      profile.setAssumeUntrustedCertificateIssuer(true);
+      profile.setEnableNativeEvents(true);
+      profile.setAlwaysLoadNoFocusLib(true);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Firefox Web Driver.....");
+      }
+
+      driver = new FirefoxDriver(new FirefoxBinary(new File("/Applications/Firefox.app/Contents/MacOS/firefox")),
+          profile);
+    } else if (DRIVER_SAFARI.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_SAFARI;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Safari Web Driver.....");
+      }
+
+      // safari path: /Applications/Safari.app/Contents/MacOS/safari
+      driver = new SafariDriver();
+    } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_IE;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Internet Explorer Web Driver.....");
+      }
+
+      driver = new InternetExplorerDriver();
+    } // end if-else
+  } // end method setupDriver
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

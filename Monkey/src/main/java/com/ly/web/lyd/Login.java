@@ -3,6 +3,10 @@ package com.ly.web.lyd;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -36,6 +40,33 @@ public class Login extends AbstractObject {
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for driver type.
+   *
+   * @return  String
+   */
+  public String getDriverType() {
+    String driverType = YHD.DRIVER_CHROME;
+
+    if (webDriver instanceof ChromeDriver) {
+      driverType = YHD.DRIVER_CHROME;
+    } else if (webDriver instanceof FirefoxDriver) {
+      driverType = YHD.DRIVER_FIREFOX;
+    } else if (webDriver instanceof SafariDriver) {
+      driverType = YHD.DRIVER_SAFARI;
+    } else if (webDriver instanceof InternetExplorerDriver) {
+      driverType = YHD.DRIVER_IE;
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Find the driver type is: " + driverType);
+    }
+
+    return driverType;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * DOCUMENT ME!
@@ -74,26 +105,43 @@ public class Login extends AbstractObject {
     pwd.sendKeys(password);
 
     WebElement loginButton = this.webDriver.findElement(By.id("login_button"));
-    
+
     // validator code
     WebElement vCodeDive = this.webDriver.findElement(By.id("vcd_div"));
 
-//    WebElement loginError = this.webDriver.findElement(By.id("error_tips"));
-    
-    
-    logger.info("vcode div is css value:" + vCodeDive.getCssValue("display"));
-    
+    logger.info("vcode div is display:" + vCodeDive.isDisplayed());
+
 
     // click login button
     loginButton.click();
 
-    logger.info("After click 'Submit' the vcode div is css value:" + vCodeDive.getCssValue("display"));
+    delay(2);
 
-// Thread.sleep(1000);
-//
-// if (loginError.getText().contains("账号和密码不匹配，请重新输入")) {
-// throw new Exception("账号和密码不匹配，请重新输入");
-// }
+    // 如果browser 让用户连续几次输入"验证码", count ++
+    // 如果不是连续输入,则忽略
+    if (webDriver.getCurrentUrl().contains("login")) {
+      logger.info("After click 'Submit' the vcode div isDisplay:" + vCodeDive.isDisplayed());
+
+      if (vCodeDive.isDisplayed()) {
+        String  driverType = getDriverType();
+        Integer count      = YHD.vCodeCountMap.get(driverType);
+
+        if (count == null) {
+          count = 1;
+        } else {
+          count++;
+        }
+
+        YHD.vCodeCountMap.put(driverType, count);
+      }
+    } else {
+      // no need input valid code.
+      String driverType = getDriverType();
+
+      if ((driverType != null) && (YHD.vCodeCountMap.get(driverType) != null)) {
+        YHD.vCodeCountMap.put(driverType, 0);
+      }
+    }
 
     (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
         @Override public Boolean apply(WebDriver d) {
@@ -114,5 +162,6 @@ public class Login extends AbstractObject {
   @Override public void logout() {
     webDriver.quit();
   }
+
 
 } // end class Login
