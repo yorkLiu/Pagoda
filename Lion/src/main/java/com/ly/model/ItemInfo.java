@@ -44,6 +44,8 @@ public class ItemInfo {
   /** production price. */
   private BigDecimal price;
 
+  private Integer priority;
+
   private String sku;
 
   /** when search by price using. */
@@ -91,6 +93,10 @@ public class ItemInfo {
     }
 
     if ((sku != null) ? (!sku.equals(itemInfo.sku)) : (itemInfo.sku != null)) {
+      return false;
+    }
+
+    if ((priority != null) ? (!priority.equals(itemInfo.priority)) : (itemInfo.priority != null)) {
       return false;
     }
 
@@ -178,6 +184,17 @@ public class ItemInfo {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for priority.
+   *
+   * @return  Integer
+   */
+  public Integer getPriority() {
+    return priority;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for sku.
    *
    * @return  String
@@ -211,6 +228,7 @@ public class ItemInfo {
     result = (31 * result) + ((price != null) ? price.hashCode() : 0);
     result = (31 * result) + ((sku != null) ? sku.hashCode() : 0);
     result = (31 * result) + ((startPrice != null) ? startPrice.hashCode() : 0);
+    result = (31 * result) + ((priority != null) ? priority.hashCode() : 0);
 
     return result;
   }
@@ -290,6 +308,17 @@ public class ItemInfo {
    */
   public void setPrice(BigDecimal price) {
     this.price = price;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for priority.
+   *
+   * @param  priority  Integer
+   */
+  public void setPriority(Integer priority) {
+    this.priority = priority;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

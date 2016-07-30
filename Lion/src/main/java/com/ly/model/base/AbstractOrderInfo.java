@@ -12,6 +12,7 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.Type;
 
 import com.ly.model.Address;
+import com.ly.model.AppType;
 import com.ly.model.Merchant;
 import com.ly.model.type.PaymentType;
 import com.ly.model.type.StatusType;
@@ -69,6 +70,13 @@ import com.ly.model.type.StatusType;
   /** This order total amount. */
   protected BigDecimal totalAmount;
 
+
+  @JoinColumn(name = "appTypeId")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private AppType appType;
+  
+  private Integer priority;
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
@@ -113,6 +121,13 @@ import com.ly.model.type.StatusType;
       return false;
     }
 
+    if ((appType != null) ? (!appType.equals(that.appType)) : (that.appType != null)) {
+      return false;
+    }
+    if ((priority != null) ? (!priority.equals(that.priority)) : (that.priority != null)) {
+      return false;
+    }
+
     if (status != that.status) {
       return false;
     }
@@ -130,6 +145,17 @@ import com.ly.model.type.StatusType;
    */
   public Address getAddress() {
     return address;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for app type.
+   *
+   * @return  AppType
+   */
+  public AppType getAppType() {
+    return appType;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -250,6 +276,8 @@ import com.ly.model.type.StatusType;
     result = (31 * result) + ((paymentUrl != null) ? paymentUrl.hashCode() : 0);
     result = (31 * result) + ((status != null) ? status.hashCode() : 0);
     result = (31 * result) + ((totalAmount != null) ? totalAmount.hashCode() : 0);
+    result = (31 * result) + ((appType != null) ? appType.hashCode() : 0);
+    result = (31 * result) + ((priority != null) ? priority.hashCode() : 0);
 
     return result;
   }
@@ -263,6 +291,17 @@ import com.ly.model.type.StatusType;
    */
   public void setAddress(Address address) {
     this.address = address;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for app type.
+   *
+   * @param  appType  AppType
+   */
+  public void setAppType(AppType appType) {
+    this.appType = appType;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -362,5 +401,13 @@ import com.ly.model.type.StatusType;
    */
   public void setTotalAmount(BigDecimal totalAmount) {
     this.totalAmount = totalAmount;
+  }
+
+  public Integer getPriority() {
+    return priority;
+  }
+
+  public void setPriority(Integer priority) {
+    this.priority = priority;
   }
 } // end class AbstractOrderInfo

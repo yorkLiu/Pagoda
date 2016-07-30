@@ -1,10 +1,9 @@
 package com.ly.model;
 
-import com.ly.model.base.AbstractOrderInfo;
-import com.ly.model.type.PaymentType;
-import com.ly.model.type.StatusType;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+import java.math.BigDecimal;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,9 +17,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import com.ly.model.base.AbstractOrderInfo;
+import com.ly.model.type.PaymentType;
+import com.ly.model.type.StatusType;
+
 
 /**
  * Created by yongliu on 7/20/16.
@@ -56,9 +60,15 @@ public class OrderInfo extends AbstractOrderInfo {
   )
   @ManyToMany(fetch = FetchType.LAZY)
   private Set<ItemInfo> items = new HashSet<>();
-  
-  public void deepCopy(OrderInfo that){
-    
+
+  //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * deepCopy.
+   *
+   * @param  that  OrderInfo
+   */
+  public void deepCopy(OrderInfo that) {
     that.setAddress(this.address);
     that.setCommission(this.commission);
     that.setMerchant(this.merchant);
@@ -68,10 +78,11 @@ public class OrderInfo extends AbstractOrderInfo {
     that.setPaymentUrl(this.paymentUrl);
     that.setStatus(this.status);
     that.setTotalAmount(this.getTotalAmount());
+    that.setAppType(this.getAppType());
+    that.setPriority(this.getPriority());
   }
 
-  //~ Methods ----------------------------------------------------------------------------------------------------------
-
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * @see  java.lang.Object#equals(java.lang.Object)
@@ -127,7 +138,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  Address
    */
-  public Address getAddress() {
+  @Override public Address getAddress() {
     return address;
   }
 
@@ -138,7 +149,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  BigDecimal
    */
-  public BigDecimal getCommission() {
+  @Override public BigDecimal getCommission() {
     return commission;
   }
 
@@ -171,7 +182,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  Merchant
    */
-  public Merchant getMerchant() {
+  @Override public Merchant getMerchant() {
     return merchant;
   }
 
@@ -182,7 +193,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  String
    */
-  public String getOrderNum() {
+  @Override public String getOrderNum() {
     return orderNum;
   }
 
@@ -193,7 +204,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  String
    */
-  public String getPaymentMethod() {
+  @Override public String getPaymentMethod() {
     return paymentMethod;
   }
 
@@ -204,7 +215,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  PaymentType
    */
-  public PaymentType getPaymentType() {
+  @Override public PaymentType getPaymentType() {
     return paymentType;
   }
 
@@ -215,7 +226,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  String
    */
-  public String getPaymentUrl() {
+  @Override public String getPaymentUrl() {
     return paymentUrl;
   }
 
@@ -226,7 +237,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  StatusType
    */
-  public StatusType getStatus() {
+  @Override public StatusType getStatus() {
     return status;
   }
 
@@ -237,7 +248,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @return  BigDecimal
    */
-  public BigDecimal getTotalAmount() {
+  @Override public BigDecimal getTotalAmount() {
     return totalAmount;
   }
 
@@ -266,7 +277,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  address  Address
    */
-  public void setAddress(Address address) {
+  @Override public void setAddress(Address address) {
     this.address = address;
   }
 
@@ -277,7 +288,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  commission  BigDecimal
    */
-  public void setCommission(BigDecimal commission) {
+  @Override public void setCommission(BigDecimal commission) {
     this.commission = commission;
   }
 
@@ -310,7 +321,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  merchant  Merchant
    */
-  public void setMerchant(Merchant merchant) {
+  @Override public void setMerchant(Merchant merchant) {
     this.merchant = merchant;
   }
 
@@ -321,7 +332,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  orderNum  String
    */
-  public void setOrderNum(String orderNum) {
+  @Override public void setOrderNum(String orderNum) {
     this.orderNum = orderNum;
   }
 
@@ -332,7 +343,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  paymentMethod  String
    */
-  public void setPaymentMethod(String paymentMethod) {
+  @Override public void setPaymentMethod(String paymentMethod) {
     this.paymentMethod = paymentMethod;
   }
 
@@ -343,7 +354,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  paymentType  PaymentType
    */
-  public void setPaymentType(PaymentType paymentType) {
+  @Override public void setPaymentType(PaymentType paymentType) {
     this.paymentType = paymentType;
   }
 
@@ -354,7 +365,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  paymentUrl  String
    */
-  public void setPaymentUrl(String paymentUrl) {
+  @Override public void setPaymentUrl(String paymentUrl) {
     this.paymentUrl = paymentUrl;
   }
 
@@ -365,7 +376,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  status  StatusType
    */
-  public void setStatus(StatusType status) {
+  @Override public void setStatus(StatusType status) {
     this.status = status;
   }
 
@@ -376,7 +387,7 @@ public class OrderInfo extends AbstractOrderInfo {
    *
    * @param  totalAmount  BigDecimal
    */
-  public void setTotalAmount(BigDecimal totalAmount) {
+  @Override public void setTotalAmount(BigDecimal totalAmount) {
     this.totalAmount = totalAmount;
   }
 } // end class OrderInfo

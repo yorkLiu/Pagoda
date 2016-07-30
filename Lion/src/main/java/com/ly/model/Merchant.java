@@ -32,9 +32,6 @@ public class Merchant {
   /**首选地址*/
   private String addressOption;
 
-  @Enumerated(EnumType.STRING)
-  private AppType appType;
-
   /** comment total count, default is all @totalCount. */
   private Integer commentCount;
 
@@ -130,10 +127,6 @@ public class Merchant {
       return false;
     }
 
-    if ((appType != null) ? (!appType.equals(merchant.appType)) : (merchant.appType != null)) {
-      return false;
-    }
-
     if ((commentCount != null) ? (!commentCount.equals(merchant.commentCount)) : (merchant.commentCount != null)) {
       return false;
     }
@@ -162,16 +155,6 @@ public class Merchant {
     return addressOption;
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for app type.
-   *
-   * @return  AppType
-   */
-  public AppType getAppType() {
-    return appType;
-  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -375,7 +358,6 @@ public class Merchant {
     result = (31 * result) + ((scheduleDate != null) ? scheduleDate.hashCode() : 0);
     result = (31 * result) + ((totalCount != null) ? totalCount.hashCode() : 0);
     result = (31 * result) + ((status != null) ? status.hashCode() : 0);
-    result = (31 * result) + ((appType != null) ? appType.hashCode() : 0);
     result = (31 * result) + ((commentCount != null) ? commentCount.hashCode() : 0);
     result = (31 * result) + ((confirmReceiptDelay != null) ? confirmReceiptDelay.hashCode() : 0);
     result = (31 * result) + ((commentDelay != null) ? commentDelay.hashCode() : 0);
@@ -394,16 +376,6 @@ public class Merchant {
     this.addressOption = addressOption;
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for app type.
-   *
-   * @param  appType  AppType
-   */
-  public void setAppType(AppType appType) {
-    this.appType = appType;
-  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
