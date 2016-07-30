@@ -2,10 +2,6 @@
  * Created by yongliu on 7/27/16.
  */
 
-
-
-
-
 Ext.define('Pagoda.configuration.view.AccountList', {
   extend: 'Ext.grid.Panel',
   alias: 'widget.accountlist',
@@ -21,37 +17,39 @@ Ext.define('Pagoda.configuration.view.AccountList', {
 
     this.columns = [
       {
-        header: '账号',
+        header: accountRes.fields.username,
         dataIndex: 'username',
         flex: 130
       },
       {
-        header: '账号密码',
+        header: accountRes.fields.password,
         dataIndex: 'password',
         flex: 100
       },
       {
-        header: '账号等级',
+        header: accountRes.fields.accountLevel,
         dataIndex: 'accountLevel',
         flex: 100
       },
       {
-        header: '所属平台',
+        header: accountRes.fields.categoryType,
         dataIndex: 'categoryType',
         flex: 130
       },
       {
-        header: '是否被锁',
+        header: accountRes.fields.locked,
         dataIndex: 'locked',
-        flex: 100
+        flex: 150,
+        renderer: Pago.Utils.booleanRenderer
       },
       {
-        header: '是否不可用',
+        header: userRoleRes.fields.disabled,
         dataIndex: 'disabled',
-        flex: 100
+        flex: 100,
+        renderer: Pago.Utils.booleanRenderer
       },
       {
-        header: '不可用原因',
+        header: accountRes.fields.disabledDescription,
         dataIndex: 'disabledDescription',
         flex: 200
       }
@@ -64,19 +62,19 @@ Ext.define('Pagoda.configuration.view.AccountList', {
         dock: 'top',
         items:[
           {
-            text: 'Add',
+            text: globalRes.buttons.create,
             iconCls: 'add',
             scope: me,
             handler: me.onAddHandler
           },{
-            text: 'Edit',
+            text: globalRes.buttons.update,
             iconCls: 'edit',
             action: 'edit',
             disabled: true,
             scope: me,
             handler: me.onUpdateHandler
           },{
-            text: 'Delete',
+            text: globalRes.buttons.delete,
             iconCls: 'remove',
             action: 'remove',
             disabled: true,
@@ -145,9 +143,9 @@ Ext.define('Pagoda.configuration.view.AccountList', {
 
   addOrUpdate: function(record){
     var me = this,
-      title = '新建账号';
+      title = accountRes.title.createAccount;
     if(record){
-      title = '更新账号';
+      title = accountRes.title.updateAccount;
     }
     var win = Ext.widget('accountedit',{
       title: title,
@@ -162,25 +160,21 @@ Ext.define('Pagoda.configuration.view.AccountList', {
       addRecord: function(record){
         me.store.add(record);
       },
-      saveRecord: function(){
-        try {
-          me.store.sync({
-            success: function () {
-              // todo after success
-              win.close();
-            },
-            failed: function () {
-              Ext.MessageBox.show({
-                title: title + " Error",
-                msg: "There is some errors when " + title,
-                icon: Ext.MessageBox.ERROR,
-                buttons: Ext.MessageBox.YES
-              });
-            }
-          });
-        }catch (e){
-          console.log('**e:', e);
-        }
+      saveRecord: function () {
+        me.store.sync({
+          success: function () {
+            // todo after success
+            win.close();
+          },
+          failed: function () {
+            Ext.MessageBox.show({
+              title: title + " Error",
+              msg: "There is some errors when " + title,
+              icon: Ext.MessageBox.ERROR,
+              buttons: Ext.MessageBox.YES
+            });
+          }
+        });
       }
     }).show();
   },
@@ -202,8 +196,8 @@ Ext.define('Pagoda.configuration.view.AccountList', {
 
     if(model.hasSelection() && record){
       Ext.MessageBox.show({
-        title: 'Delete MyTestModel',
-        msg: 'Are you sure you want to delete all information of this MyTestModel?',
+        title: accountRes.title.deleteAccount,
+        msg: accountRes.message.deleteAccount,
         buttons: Ext.MessageBox.YESNO,
         icon: Ext.MessageBox.QUESTION,
         fn: function(btn){

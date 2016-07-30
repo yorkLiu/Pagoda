@@ -3,8 +3,6 @@
 
 var globalRes = {
 
-  
-
   fields: {
     creteDate: '<fmt:message key="global.field.createDate" />',
     lastUpdateDate: '<fmt:message key="global.field.lastUpdateDate" />',
@@ -15,10 +13,19 @@ var globalRes = {
   buttons: {
     save: '<fmt:message key="global.button.save" />',
     cancel: '<fmt:message key="global.button.cancel" />',
+    create: '<fmt:message key="global.button.create" />',
     update: '<fmt:message key="global.button.update" />',
     delete: '<fmt:message key="global.button.delete" />',
     enable: '<fmt:message key="global.button.enable" />',
     disable: '<fmt:message key="global.button.disable" />'
+  },
+
+  title:{
+    confirmClose: '<fmt:message key="global.title.confirmClose" />',
+  },
+  
+  message: {
+    confirmClose: '<fmt:message key="global.message.confirmClose" />',
   },
 
   exception: {

@@ -27,12 +27,12 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
       {
         xtype: 'form',
         itemId: 'form',
-        frame: true,
+        border: false,
         height: '100%',
-        margin: '3 3 3 3',
+        bodyPadding: 5,
         defaults: {
           xtype: 'textfield',
-          anchor: '100%',
+          anchor: '95%',
           labelWidth: 100
         },
         trackResetOnLoad:true,
@@ -48,32 +48,46 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
             emptyText: 'Please input username',
             maxLength: 50,
             minLength: 5,
-            anchor: '90%'
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: userRoleRes.fields.firstName,
             name: 'firstName',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: userRoleRes.fields.lastName,
             name: 'lastName',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: userRoleRes.fields.password,
             type: 'password',
             name: 'password',
             maxLength: 100,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
+          },
+          {
+            fieldLabel: userRoleRes.fields.confirmPassword,
+            type: 'password',
+            name: 'confirmPassword',
+            maxLength: 100,
+            allowBlank: false,
+            validator: function(v){
+              var password = this.previousSibling('[name=password]');
+              return (v === password.getValue()) ? true : userRoleRes.error.newPasswordNotMatch
+            }
           },
           {
             fieldLabel: userRoleRes.fields.passwordHint,
             name: 'passwordHint',
             maxLength: 200,
-            allowBlank: false
+            allowBlank: true
           },
           {
             fieldLabel: userRoleRes.fields.email,
@@ -87,13 +101,15 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
             fieldLabel: userRoleRes.fields.telephone,
             name: 'telephone',
             maxLength: 20,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: userRoleRes.fields.telephone2,
             name: 'telephone2',
             maxLength: 20,
-            allowBlank: true
+            allowBlank: true,
+            validator: Pago.Utils.trimValidator
           }
         ],
         buttons: [
@@ -142,8 +158,8 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
       form = me.down('#form').getForm();
     if (form.isDirty()) {
       Ext.MessageBox.show({
-        title: 'Confirm Close',
-        msg: 'Are you sure you want to close this window',
+        title: globalRes.title.confirmClose,
+        msg: globalRes.message.confirmClose,
         icon: Ext.MessageBox.QUESTION,
         buttons: Ext.MessageBox.YESNO,
         fn: function (btn) {

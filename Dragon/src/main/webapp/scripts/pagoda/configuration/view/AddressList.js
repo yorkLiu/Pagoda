@@ -65,19 +65,19 @@ Ext.define('Pagoda.configuration.view.AddressList', {
         dock: 'top',
         items:[
           {
-            text: 'Add',
+            text: globalRes.buttons.create,
             iconCls: 'add',
             scope: me,
             handler: me.onAddHandler
           },{
-            text: 'Edit',
+            text: globalRes.buttons.update,
             iconCls: 'edit',
             action: 'edit',
             disabled: true,
             scope: me,
             handler: me.onUpdateHandler
           },{
-            text: 'Delete',
+            text: globalRes.buttons.delete,
             iconCls: 'remove',
             action: 'remove',
             disabled: true,

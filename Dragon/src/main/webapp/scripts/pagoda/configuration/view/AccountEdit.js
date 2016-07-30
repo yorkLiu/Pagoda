@@ -31,46 +31,39 @@ Ext.define('Pagoda.configuration.view.AccountEdit', {
       {
         xtype: 'form',
         itemId: 'form',
-        frame: true,
+        //frame: true,
+        border: false,
         height: '100%',
         margin: '3 3 3 3',
         defaults: {
           xtype: 'textfield',
-          anchor: '100%',
+          anchor: '95%',
           labelWidth: 100
         },
         trackResetOnLoad:true,
         items: [
-          //{
-          //  xtype: 'hidden',
-          //  name: 'id'
-          //},
           {
-            fieldLabel: "账号",
+            xtype: 'hidden',
+            name: 'id'
+          },
+          {
+            fieldLabel: accountRes.fields.username,
             name: 'username',
             emptyText: '账号',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
-            fieldLabel: '账号密码',
+            fieldLabel: accountRes.fields.password,
             name: 'password',
             maxLength: 50,
-            allowBlank: false
-          },
-          {
-            xtype: 'numberfield',
-            fieldLabel: '账号等级',
-            name: 'accountLevel',
-            allowDecimals: false,
-            step: 1,
-            minValue: 0,
-            maxValue: 5,
-            allowBlank: true
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
             xtype: 'combo',
-            fieldLabel: '所属平台',
+            fieldLabel: accountRes.fields.categoryType,
             displayField: 'label',
             valueField: 'value',
             queryMode: 'local',
@@ -78,6 +71,16 @@ Ext.define('Pagoda.configuration.view.AccountEdit', {
             editable: false,
             name: 'categoryType',
             store: me.getCategoryTypeStore(),
+            allowBlank: false
+          },
+          {
+            xtype: 'numberfield',
+            fieldLabel: accountRes.fields.accountLevel,
+            name: 'accountLevel',
+            allowDecimals: false,
+            step: 1,
+            minValue: 0,
+            maxValue: 5,
             allowBlank: true
           }
         ],
@@ -95,7 +98,6 @@ Ext.define('Pagoda.configuration.view.AccountEdit', {
         ]
       }
     ];
-
 
     this.callParent();
   },
@@ -143,8 +145,8 @@ Ext.define('Pagoda.configuration.view.AccountEdit', {
       form = me.down('#form').getForm();
     if (form.isDirty()) {
       Ext.MessageBox.show({
-        title: 'Confirm Close',
-        msg: 'Are you sure you want to close this window',
+        title: globalRes.title.confirmClose,
+        msg: globalRes.message.confirmClose,
         icon: Ext.MessageBox.QUESTION,
         buttons: Ext.MessageBox.YESNO,
         fn: function (btn) {

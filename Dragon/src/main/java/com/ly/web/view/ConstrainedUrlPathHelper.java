@@ -84,6 +84,8 @@ public class ConstrainedUrlPathHelper extends UrlPathHelper {
       }
     }
 
+    System.out.println("Result:" + result);
+
     return result;
   } // end method getLookupPathForRequest
 

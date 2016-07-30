@@ -13,3 +13,15 @@
   background-image: url(icons/configurationManager_48.png);
   filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../styles/default/desktop/icons/configurationManager_48.png', sizingMethod='scale');
 }
+
+
+.required-filed-mark{
+  color: #ff0000;
+  font-weight: bold;
+}
+
+.qtip-wrap {
+  word-wrap: break-word;
+  -ms-word-wrap: break-word;
+  white-space: normal;
+}

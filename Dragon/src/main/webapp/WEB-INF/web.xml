@@ -19,7 +19,7 @@
   <!-- Force a single locale using param-name 'javax.servlet.jsp.jstl.fmt.locale' -->
   <context-param>
     <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
-    <param-value>en</param-value>
+    <param-value>zh</param-value>
   </context-param>
 
 

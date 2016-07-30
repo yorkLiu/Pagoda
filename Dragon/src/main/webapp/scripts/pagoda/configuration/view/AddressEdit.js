@@ -24,12 +24,13 @@ Ext.define('Pagoda.configuration.view.AddressEdit', {
       {
         xtype: 'form',
         itemId: 'form',
-        frame: true,
+        //frame: true,
+        border: false,
         height: '100%',
         margin: '3 3 3 3',
         defaults: {
           xtype: 'textfield',
-          anchor: '100%',
+          anchor: '95%',
           labelWidth: 100
         },
         trackResetOnLoad:true,
@@ -45,19 +46,21 @@ Ext.define('Pagoda.configuration.view.AddressEdit', {
             emptyText: '姓名',
             maxLength: 50,
             minLength: 5,
-            anchor: '90%'
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: '收货地址',
             name: 'address',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: '手机号码',
               name: 'telephone',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: '邮编',
@@ -119,8 +122,8 @@ Ext.define('Pagoda.configuration.view.AddressEdit', {
       form = me.down('#form').getForm();
     if (form.isDirty()) {
       Ext.MessageBox.show({
-        title: 'Confirm Close',
-        msg: 'Are you sure you want to close this window',
+        title: globalRes.title.confirmClose,
+        msg: globalRes.message.confirmClose,
         icon: Ext.MessageBox.QUESTION,
         buttons: Ext.MessageBox.YESNO,
         fn: function (btn) {

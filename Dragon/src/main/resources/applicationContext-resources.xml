@@ -36,7 +36,10 @@
         <property name="location" value="classpath:pagoda.dev.properties"/>
     </bean>
 
-    <!-- HikariCP  -->
+  <context:property-placeholder location="classpath:*.properties" file-encoding="UTF-8"/>
+
+
+  <!-- HikariCP  -->
     <!--<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">-->
         <!--&lt;!&ndash;<property name="dataSourceClassName" value="${JDBC_DRIVER}"/>&ndash;&gt;-->
         <!--<property name="driverClassName" value="${JDBC_DRIVER}"/>-->

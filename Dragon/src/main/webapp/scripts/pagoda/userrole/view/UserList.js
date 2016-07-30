@@ -44,7 +44,8 @@ Ext.define('Pagoda.userrole.view.UserList', {
       },
       {
         header: userRoleRes.fields.locked,
-        dataIndex: 'locked'
+        dataIndex: 'locked',
+        renderer: Pago.Utils.booleanRenderer
       }
     ];
 
@@ -54,19 +55,19 @@ Ext.define('Pagoda.userrole.view.UserList', {
         dock: 'top',
         items:[
           {
-            text: 'Add',
+            text: globalRes.buttons.create,
             iconCls: 'add',
             scope: me,
             handler: me.onAddHandler
           },{
-            text: 'Edit',
+            text: globalRes.buttons.update,
             iconCls: 'edit',
             action: 'edit',
             disabled: true,
             scope: me,
             handler: me.onUpdateHandler
           },{
-            text: 'Delete',
+            text: globalRes.buttons.delete,
             iconCls: 'remove',
             action: 'remove',
             disabled: true,

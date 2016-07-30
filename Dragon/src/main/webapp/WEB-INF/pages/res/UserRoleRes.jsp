@@ -14,6 +14,7 @@ var userRoleRes = {
   fields: {
     username: '<fmt:message key="userRole.field.username" />',
     password: '<fmt:message key="userRole.field.password" />',
+    confirmPassword: '<fmt:message key="userRole.field.confirmPassword" />',
     passwordHint: '<fmt:message key="userRole.field.passwordHint" />',
     firstName: '<fmt:message key="userRole.field.firstName" />',
     lastName: '<fmt:message key="userRole.field.lastName" />',
@@ -23,6 +24,11 @@ var userRoleRes = {
     telephone2: '<fmt:message key="userRole.field.telephone2" />',
     status: '<fmt:message key="userRole.field.status" />',
     enabled: '<fmt:message key="userRole.field.enabled" />',
-    locked: '<fmt:message key="userRole.field.locked" />'
+    locked: '<fmt:message key="userRole.field.locked" />',
+    disabled: '<fmt:message key="userRole.field.disabled" />'
+  },
+
+  error: {
+    newPasswordNotMatch: '<fmt:message key="userRole.error.newPasswordNotMatch" />'
   }
 };

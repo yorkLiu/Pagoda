@@ -64,10 +64,13 @@
     <property name="maxUploadSize" value="2097152"/>
   </bean>
 
-  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+  <!--<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">-->
+  <bean id="messageSource" class="com.ly.web.view.PagodaResourceBundleMessageSource">
     <property name="basename" value="ApplicationResources"/>
     <property name="useCodeAsDefaultMessage" value="true"/>
   </bean>
+  
+  <!--<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>-->
 
   <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" p:order="0" >
   </bean>
@@ -87,6 +90,7 @@
 
 
   <bean id="constrainedUrlPathHelper" class="com.ly.web.view.ConstrainedUrlPathHelper">
+    <property name="defaultEncoding" value="UTF-8"/>
     <property name="refuseUrlEndsWith">
       <set>
         <value>Res</value>

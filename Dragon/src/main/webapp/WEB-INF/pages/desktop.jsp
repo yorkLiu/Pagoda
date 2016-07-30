@@ -52,5 +52,10 @@
   </head>
 <body>
 
+
+
+<a href="http://www.sencha.com" target="_blank" alt="<fmt:message key="userRole.field.disabled"/>"
+   id="poweredby"><div></div></a>
+
 </body>
 </html>

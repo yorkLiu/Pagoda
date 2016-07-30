@@ -93,7 +93,7 @@ public class AccountController extends BaseController {
       for (AccountCommand command : commands) {
         Account account = command.populate();
 
-        accountService.saveObject(account);
+        accountService.save(account);
       }
     } catch (Exception e) {
       success = Boolean.FALSE;

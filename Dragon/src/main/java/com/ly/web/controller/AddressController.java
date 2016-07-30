@@ -77,7 +77,6 @@ public class AddressController extends BaseController {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-
   /**
    * updateAddress.
    *
@@ -94,8 +93,7 @@ public class AddressController extends BaseController {
     try {
       for (AddressCommand command : commands) {
         Address account = command.populate();
-
-        addressService.saveObject(account);
+        addressService.save(account);
       }
     } catch (Exception e) {
       success = Boolean.FALSE;
