@@ -25,9 +25,9 @@ public class AddressCommand extends BaseCommand {
 
   @RemoteProperty private String address;
 
-  @RemoteProperty private String area;
-
   @RemoteProperty private String city;
+
+  @RemoteProperty private String county;
 
   @RemoteProperty private String fullName;
 
@@ -37,9 +37,9 @@ public class AddressCommand extends BaseCommand {
 
   @RemoteProperty private String province;
 
-  @RemoteProperty private String state;
-
   @RemoteProperty private String telephone;
+
+  @RemoteProperty private String town;
 
   @RemoteProperty private String zipCode;
 
@@ -60,9 +60,9 @@ public class AddressCommand extends BaseCommand {
     this.address         = address.getAddress();
     this.fullName        = address.getFullName();
     this.province        = address.getProvince();
-    this.state           = address.getState();
     this.city            = address.getCity();
-    this.area            = address.getArea();
+    this.county          = address.getCounty();
+    this.town            = address.getTown();
     this.identityCardNum = address.getIdentityCardNum();
     this.telephone       = address.getTelephone();
     this.zipCode         = address.getZipCode();
@@ -82,23 +82,23 @@ public class AddressCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for area.
-   *
-   * @return  String
-   */
-  public String getArea() {
-    return area;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * getter method for city.
    *
    * @return  String
    */
   public String getCity() {
     return city;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for county.
+   *
+   * @return  String
+   */
+  public String getCounty() {
+    return county;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -148,23 +148,23 @@ public class AddressCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for state.
-   *
-   * @return  String
-   */
-  public String getState() {
-    return state;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * getter method for telephone.
    *
    * @return  String
    */
   public String getTelephone() {
     return telephone;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for town.
+   *
+   * @return  String
+   */
+  public String getTown() {
+    return town;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -198,9 +198,9 @@ public class AddressCommand extends BaseCommand {
     address.setAddress(this.getAddress());
     address.setFullName(this.getFullName());
     address.setProvince(this.getProvince());
-    address.setState(this.getState());
     address.setCity(this.getCity());
-    address.setArea(this.getArea());
+    address.setCounty(this.getCounty());
+    address.setTown(this.getTown());
     address.setTelephone(this.getTelephone());
     address.setZipCode(this.getZipCode());
     address.setIdentityCardNum(this.getIdentityCardNum());
@@ -223,23 +223,23 @@ public class AddressCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * setter method for area.
-   *
-   * @param  area  String
-   */
-  public void setArea(String area) {
-    this.area = area;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * setter method for city.
    *
    * @param  city  String
    */
   public void setCity(String city) {
     this.city = city;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for county.
+   *
+   * @param  county  String
+   */
+  public void setCounty(String county) {
+    this.county = county;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -289,23 +289,23 @@ public class AddressCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * setter method for state.
-   *
-   * @param  state  String
-   */
-  public void setState(String state) {
-    this.state = state;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * setter method for telephone.
    *
    * @param  telephone  String
    */
   public void setTelephone(String telephone) {
     this.telephone = telephone;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for town.
+   *
+   * @param  town  String
+   */
+  public void setTown(String town) {
+    this.town = town;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

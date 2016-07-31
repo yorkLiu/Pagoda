@@ -8,9 +8,9 @@ Ext.define('Pagoda.configuration.model.Address',{
     {name: 'fullName',type:'string'},
     {name: 'address',type:'string'},
     {name: 'province',type:'string'},
-    {name: 'state',type:'string'},
     {name: 'city',type:'string'},
-    {name: 'area',type:'string'},
+    {name: 'county',type:'string'},
+    {name: 'town',type:'string'},
     {name: 'telephone',type:'bool'},
     {name: 'zipCode',type:'bool'},
     {name: 'identityCardNum',type:'bool'}

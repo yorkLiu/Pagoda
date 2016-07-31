@@ -37,8 +37,14 @@ Ext.define('Pagoda.configuration.view.AddressList', {
         flex: 80
       },
       {
+        header: '县',
+        dataIndex: 'county',
+        flex: 100
+      },
+      {
         header: '区/镇',
-        dataIndex: 'area',
+        dataIndex: 'town',
+        hidden: true,
         flex: 100
       },
       {
