@@ -76,6 +76,12 @@ import com.ly.model.type.StatusType;
   private AppType appType;
   
   private Integer priority;
+  
+  /**关注商品*/
+  private Boolean attentionGoods;
+
+  /**关注店铺*/
+  private Boolean attentionMerchant;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -409,5 +415,27 @@ import com.ly.model.type.StatusType;
 
   public void setPriority(Integer priority) {
     this.priority = priority;
+  }
+
+  public Boolean getAttentionGoods() {
+    if (attentionGoods == null) {
+      return Boolean.FALSE;
+    }
+    return attentionGoods;
+  }
+
+  public void setAttentionGoods(Boolean attentionGoods) {
+    this.attentionGoods = attentionGoods;
+  }
+
+  public Boolean getAttentionMerchant() {
+    if(attentionMerchant == null){
+      return Boolean.FALSE;
+    }
+    return attentionMerchant;
+  }
+
+  public void setAttentionMerchant(Boolean attentionMerchant) {
+    this.attentionMerchant = attentionMerchant;
   }
 } // end class AbstractOrderInfo

@@ -1,13 +1,13 @@
 package com.ly.model;
 
-import com.ly.model.base.CreatorObject;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.ly.model.base.CreatorObject;
 
 
 /**
@@ -27,17 +27,18 @@ public class Address extends CreatorObject {
     nullable = false
   )
   private String address;
-  @Column(
-    length   = 30,
-    nullable = true
-  )
-  private String area;
 
   @Column(
     length   = 20,
     nullable = true
   )
   private String city;
+
+  @Column(
+    length   = 20,
+    nullable = true
+  )
+  private String county;
 
   @Column(
     length   = 50,
@@ -59,17 +60,16 @@ public class Address extends CreatorObject {
     nullable = true
   )
   private String province;
-
-  @Column(
-    length   = 20,
-    nullable = true
-  )
-  private String state;
   @Column(
     length   = 20,
     nullable = false
   )
   private String telephone;
+  @Column(
+    length   = 30,
+    nullable = true
+  )
+  private String town;
 
   @Column(
     length   = 20,
@@ -78,7 +78,6 @@ public class Address extends CreatorObject {
   private String zipCode;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
-
 
   /**
    * @see  java.lang.Object#equals(java.lang.Object)
@@ -118,7 +117,7 @@ public class Address extends CreatorObject {
       return false;
     }
 
-    if ((state != null) ? (!state.equals(that.state)) : (that.state != null)) {
+    if ((county != null) ? (!county.equals(that.county)) : (that.county != null)) {
       return false;
     }
 
@@ -126,7 +125,7 @@ public class Address extends CreatorObject {
       return false;
     }
 
-    return !((area != null) ? (!area.equals(that.area)) : (that.area != null));
+    return !((town != null) ? (!town.equals(that.town)) : (that.town != null));
 
   } // end method equals
 
@@ -144,23 +143,24 @@ public class Address extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for area.
-   *
-   * @return  String
-   */
-  public String getArea() {
-    return area;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * getter method for city.
    *
    * @return  String
    */
   public String getCity() {
     return city;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * getter method for county.
+   *
+   * @return  String
+   */
+  public String getCounty() {
+    return county;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -175,7 +175,6 @@ public class Address extends CreatorObject {
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
-
 
   /**
    * getter method for id.
@@ -211,23 +210,23 @@ public class Address extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for state.
-   *
-   * @return  String
-   */
-  public String getState() {
-    return state;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * getter method for telephone.
    *
    * @return  String
    */
   public String getTelephone() {
     return telephone;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for town.
+   *
+   * @return  String
+   */
+  public String getTown() {
+    return town;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -253,9 +252,9 @@ public class Address extends CreatorObject {
     result = (31 * result) + ((zipCode != null) ? zipCode.hashCode() : 0);
     result = (31 * result) + ((identityCardNum != null) ? identityCardNum.hashCode() : 0);
     result = (31 * result) + ((province != null) ? province.hashCode() : 0);
-    result = (31 * result) + ((state != null) ? state.hashCode() : 0);
+    result = (31 * result) + ((county != null) ? county.hashCode() : 0);
     result = (31 * result) + ((city != null) ? city.hashCode() : 0);
-    result = (31 * result) + ((area != null) ? area.hashCode() : 0);
+    result = (31 * result) + ((town != null) ? town.hashCode() : 0);
 
     return result;
   }
@@ -274,23 +273,23 @@ public class Address extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * setter method for area.
-   *
-   * @param  area  String
-   */
-  public void setArea(String area) {
-    this.area = area;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * setter method for city.
    *
    * @param  city  String
    */
   public void setCity(String city) {
     this.city = city;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for county.
+   *
+   * @param  county  String
+   */
+  public void setCounty(String county) {
+    this.county = county;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -340,23 +339,23 @@ public class Address extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * setter method for state.
-   *
-   * @param  state  String
-   */
-  public void setState(String state) {
-    this.state = state;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * setter method for telephone.
    *
    * @param  telephone  String
    */
   public void setTelephone(String telephone) {
     this.telephone = telephone;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for town.
+   *
+   * @param  town  String
+   */
+  public void setTown(String town) {
+    this.town = town;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

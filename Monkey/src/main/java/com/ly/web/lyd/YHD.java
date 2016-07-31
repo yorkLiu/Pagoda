@@ -152,7 +152,7 @@ public class YHD extends SeleniumBaseObject {
       // 4. logout for current user
       logout();
 
-      int seconds = new Random().nextInt(30);
+      int seconds = new Random().nextInt(60);
 
       if (logger.isDebugEnabled()) {
         logger.debug("It will delay:" + seconds + " seconds to comment next record.");

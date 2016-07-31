@@ -10,6 +10,7 @@
   <mapping class="com.ly.model.OrderInfo"/>
   <mapping class="com.ly.model.User"/>
   <mapping class="com.ly.model.AppType"/>
+  <mapping class="com.ly.model.Commission"/>
   <mapping class="com.ly.model.history.AccountHistory"/>
   <mapping class="com.ly.model.history.AddressHistory"/>
   <mapping class="com.ly.model.audit.UserAudit"/>

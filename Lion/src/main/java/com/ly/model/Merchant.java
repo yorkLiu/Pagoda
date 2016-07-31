@@ -12,9 +12,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.ly.model.type.AppType;
-import com.ly.model.type.StatusType;
 import org.hibernate.annotations.Type;
+
+import com.ly.model.base.CreatorObject;
+import com.ly.model.type.StatusType;
 
 
 /**
@@ -26,7 +27,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "Merchant")
-public class Merchant {
+public class Merchant extends CreatorObject {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /**首选地址*/
@@ -40,6 +41,12 @@ public class Merchant {
 
   /** how many days delay to confirm receipt. */
   private Integer confirmReceiptDelay;
+
+  /** 闪购. */
+  private Boolean flashBuy;
+
+  /** 闪购 主页面(这个商品所在的闪购页面). */
+  private String flashBuyIndexUrl;
 
   /** 是否是团购. */
   @Type(type = "yes_no")
@@ -66,6 +73,10 @@ public class Merchant {
   @Type(type = "yes_no")
   private Boolean overseas;
 
+  /** 是否快速下单, 不用"关键字"查找, 直接点url buy. */
+  @Type(type = "yes_no")
+  private Boolean quickOrder;
+
   /** SD Date. */
   @Temporal(TemporalType.TIMESTAMP)
   private Date scheduleDate;
@@ -88,12 +99,6 @@ public class Merchant {
 
   /** 每个商品浏览时间 (minute). */
   private Integer viewingTimeForOrder = 1;
-
-  /**
-   * 是否快速下单, 不用"关键字"查找, 直接点url buy
-   */
-  @Type(type = "yes_no")
-  private Boolean quickOrder;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -155,7 +160,6 @@ public class Merchant {
     return addressOption;
   }
 
-
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
@@ -187,6 +191,28 @@ public class Merchant {
    */
   public Integer getConfirmReceiptDelay() {
     return confirmReceiptDelay;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for flash buy.
+   *
+   * @return  Boolean
+   */
+  public Boolean getFlashBuy() {
+    return flashBuy;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for flash buy index url.
+   *
+   * @return  String
+   */
+  public String getFlashBuyIndexUrl() {
+    return flashBuyIndexUrl;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -295,6 +321,21 @@ public class Merchant {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for quick order.
+   *
+   * @return  Boolean
+   */
+  public Boolean getQuickOrder() {
+    if (null == quickOrder) {
+      return Boolean.FALSE;
+    }
+
+    return quickOrder;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for schedule date.
    *
    * @return  Date
@@ -376,7 +417,6 @@ public class Merchant {
     this.addressOption = addressOption;
   }
 
-
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
@@ -408,6 +448,28 @@ public class Merchant {
    */
   public void setConfirmReceiptDelay(Integer confirmReceiptDelay) {
     this.confirmReceiptDelay = confirmReceiptDelay;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for flash buy.
+   *
+   * @param  flashBuy  Boolean
+   */
+  public void setFlashBuy(Boolean flashBuy) {
+    this.flashBuy = flashBuy;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for flash buy index url.
+   *
+   * @param  flashBuyIndexUrl  String
+   */
+  public void setFlashBuyIndexUrl(String flashBuyIndexUrl) {
+    this.flashBuyIndexUrl = flashBuyIndexUrl;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -512,6 +574,17 @@ public class Merchant {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for quick order.
+   *
+   * @param  quickOrder  Boolean
+   */
+  public void setQuickOrder(Boolean quickOrder) {
+    this.quickOrder = quickOrder;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for schedule date.
    *
    * @param  scheduleDate  Date
@@ -562,16 +635,5 @@ public class Merchant {
    */
   public void setViewingTimeForOrder(Integer viewingTimeForOrder) {
     this.viewingTimeForOrder = viewingTimeForOrder;
-  }
-
-  public Boolean getQuickOrder() {
-    if(null == quickOrder){
-      return Boolean.FALSE;
-    }
-    return quickOrder;
-  }
-
-  public void setQuickOrder(Boolean quickOrder) {
-    this.quickOrder = quickOrder;
   }
 } // end class Merchant
