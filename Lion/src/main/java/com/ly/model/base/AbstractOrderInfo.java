@@ -2,6 +2,7 @@ package com.ly.model.base;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -37,6 +38,10 @@ import com.ly.model.type.StatusType;
   protected Address address;
 
   /** How much amount for this order. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   protected BigDecimal commission;
 
   /** TODO: DOCUMENT ME! */
@@ -68,6 +73,10 @@ import com.ly.model.type.StatusType;
   protected StatusType status;
 
   /** This order total amount. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   protected BigDecimal totalAmount;
 
 

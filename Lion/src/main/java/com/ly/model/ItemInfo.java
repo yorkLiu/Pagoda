@@ -29,6 +29,10 @@ public class ItemInfo {
   private String commentContent;
 
   /** when search by price using. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal endPrice;
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +46,10 @@ public class ItemInfo {
   private String name;
 
   /** production price. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal price;
 
   private Integer priority;
@@ -49,6 +57,10 @@ public class ItemInfo {
   private String sku;
 
   /** when search by price using. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal startPrice;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------

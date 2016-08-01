@@ -43,33 +43,79 @@ public class Commission extends CreatorObject {
 
   @Column(
     name     = "price",
-    nullable = false
+    nullable = false,
+    precision = 19,
+    scale     = 2
   )
   private BigDecimal price;
 
   /** 在@price 的成交价格, 如果大于了@priceForDeal1, 则应加价. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDeal1;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDeal2;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDeal3;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDeal4;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDeal5;
 
   /** 在@price 的成交价格, 如果大于了@priceForDeal1, 则应加价@priceForDealOffset1. */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDealOffset1;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDealOffset2;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDealOffset3;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDealOffset4;
 
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForDealOffset5;
 
   /** 每增加一个商品, 拥金增加多少(base price offset). */
+  @Column(
+    precision = 19,
+    scale     = 2
+  )
   private BigDecimal priceForOneMoreOffset;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
