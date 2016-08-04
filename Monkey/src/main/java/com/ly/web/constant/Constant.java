@@ -33,4 +33,12 @@ public class Constant {
   public static final String YHD_ORDER_WRITE_COMMENT_URL="http://e.yhd.com/front-pe/pe/orderProductExperience!orderProductExperience.do?soId=%s&userId=%s&soType=0&hasCommented=false";
   
   public static final String YHD_LOGOUT_URL = "https://passport.yhd.com/passport/logoutJsonp.do?timestamp="+new Date().getTime()+"&callback=?";
+  
+  
+  
+  public static final String JD_LOGIN_PAGE_URL="https://passport.jd.com/uc/login?ReturnUrl=http://order.jd.com/center/list.action";
+  public static final String JD_MY_ORDER_URL="http://order.jd.com/center/list.action";
+  public static final String JD_MY_ORDER_RECYCLE_URL="http://order.jd.com/center/recycle.action?d=1";
+  // http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=20596221140&ot=22&payid=4&shipmentid=70
+  public static final String JD_ORDER_WRITE_COMMENT_URL="http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=%s&ot=%s&payid=%s&shipmentid=%s";
 }

@@ -1,14 +1,23 @@
 package com.ly.web.base;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.ly.web.lyd.YHD;
 
 
 /**
@@ -37,6 +46,33 @@ public abstract class AbstractObject {
   public AbstractObject() { }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for driver type.
+   *
+   * @return  String
+   */
+  public String getDriverType() {
+    String driverType = SeleniumBaseObject.DRIVER_CHROME;
+
+    if (webDriver instanceof ChromeDriver) {
+      driverType = SeleniumBaseObject.DRIVER_CHROME;
+    } else if (webDriver instanceof FirefoxDriver) {
+      driverType = SeleniumBaseObject.DRIVER_FIREFOX;
+    } else if (webDriver instanceof SafariDriver) {
+      driverType = SeleniumBaseObject.DRIVER_SAFARI;
+    } else if (webDriver instanceof InternetExplorerDriver) {
+      driverType = SeleniumBaseObject.DRIVER_IE;
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Find the driver type is: " + driverType);
+    }
+
+    return driverType;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * getter method for url.
@@ -133,6 +169,26 @@ public abstract class AbstractObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * addStyleForElement.
+   *
+   * @param  element   WebElement
+   * @param  cssStyle  String
+   */
+  protected void addStyleForElement(WebElement element, String cssStyle) {
+    if ((null != webDriver) && (null != element)) {
+      JavascriptExecutor jsEngine   = (JavascriptExecutor) webDriver;
+      String             baseScript = "arguments[0].setAttribute('style', '%s')";
+      String             script     = String.format(baseScript, cssStyle);
+      jsEngine.executeScript(script, element);
+
+      // wait 5 seconds
+      webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * delay.
    *
    * @param  seconds  int
@@ -164,6 +220,21 @@ public abstract class AbstractObject {
    */
   protected WebElement findInputElementBySeleniumPath(String seleniumpath) {
     return this.webDriver.findElement(By.xpath("//input[@seleniumpath='" + seleniumpath + "']"));
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * hideElement.
+   *
+   * @param  element  WebElement
+   */
+  protected void hideElement(WebElement element) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Hide element: " + element.getTagName() + " " + element.getAttribute("class"));
+    }
+
+    addStyleForElement(element, "display:none;");
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -221,4 +292,5 @@ public abstract class AbstractObject {
           }
         });
   }
+
 } // end class AbstractObject

@@ -27,6 +27,30 @@ import com.saucelabs.testng.SauceOnDemandTestListener;
  */
 // @Listeners({ SauceOnDemandTestListener.class })
 public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
+  //~ Static fields/initializers ---------------------------------------------------------------------------------------
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_CHROME = "chrome";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_FIREFOX = "firefox";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_SAFARI = "safari";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_IE = "ie";
+
+  /**
+   * <pre>
+   chrome
+   firefox
+   safari
+   IE
+   * </pre>
+   */
+  public static String currentDriver = "chrome";
+
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /** DOCUMENT ME! */
@@ -158,6 +182,29 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
 
     return null;
   } // end method createLocalFireFoxDriver
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * delay.
+   *
+   * @param  seconds  int
+   */
+  protected void delay(int seconds) {
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug(">>>Starting delay " + seconds + " second(s).>>>");
+      }
+
+      Thread.sleep(seconds * 1000);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<End delay " + seconds + " second(s).<<<<");
+      }
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+    }
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

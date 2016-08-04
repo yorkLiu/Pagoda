@@ -42,33 +42,6 @@ public class Login extends AbstractObject {
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for driver type.
-   *
-   * @return  String
-   */
-  public String getDriverType() {
-    String driverType = YHD.DRIVER_CHROME;
-
-    if (webDriver instanceof ChromeDriver) {
-      driverType = YHD.DRIVER_CHROME;
-    } else if (webDriver instanceof FirefoxDriver) {
-      driverType = YHD.DRIVER_FIREFOX;
-    } else if (webDriver instanceof SafariDriver) {
-      driverType = YHD.DRIVER_SAFARI;
-    } else if (webDriver instanceof InternetExplorerDriver) {
-      driverType = YHD.DRIVER_IE;
-    }
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Find the driver type is: " + driverType);
-    }
-
-    return driverType;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
    * DOCUMENT ME!
    *
    * @param   userName  DOCUMENT ME!
@@ -123,6 +96,7 @@ public class Login extends AbstractObject {
       logger.info("After click 'Submit' the vcode div isDisplay:" + vCodeDive.isDisplayed());
 
       if (vCodeDive.isDisplayed()) {
+        logger.info("主人, 赶紧人工打码......");
         String  driverType = getDriverType();
         Integer count      = YHD.vCodeCountMap.get(driverType);
 

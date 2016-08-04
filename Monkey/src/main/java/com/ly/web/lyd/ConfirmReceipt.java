@@ -96,7 +96,7 @@ public class ConfirmReceipt extends YHDAbstractObject {
     }
 
     checkWelcomeShopping();
-    // wait 5 seconds
+    // wait 3 seconds
     webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     
     WebElement confirmReceiptBtnEle = webDriver.findElement(By.id(confirmReceiptId));
@@ -121,7 +121,7 @@ public class ConfirmReceipt extends YHDAbstractObject {
     }
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Finding confirm receipt [OK] button by xpaht:" + ORDER_CONFIRM_OK_BUTTON_XPATH);
+      logger.debug("Finding confirm receipt [OK] button by xpath:" + ORDER_CONFIRM_OK_BUTTON_XPATH);
     }
 
     waitForByXPath(ORDER_CONFIRM_OK_BUTTON_XPATH);
