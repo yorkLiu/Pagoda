@@ -1,6 +1,8 @@
 package com.ly.web.base;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -12,6 +14,7 @@ import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.testng.annotations.Listeners;
 
 import com.saucelabs.common.SauceOnDemandSessionIdProvider;
@@ -28,6 +31,9 @@ import com.saucelabs.testng.SauceOnDemandTestListener;
 // @Listeners({ SauceOnDemandTestListener.class })
 public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
+
+  /** TODO: DOCUMENT ME! */
+  public static final int MAX_INPUT_V_CODE_COUNT = 2;
 
   /** TODO: DOCUMENT ME! */
   public static final String DRIVER_CHROME = "chrome";
@@ -104,15 +110,6 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * DOCUMENT ME!
-   *
-   * @return  DOCUMENT ME!
-   */
-// public SysConfig getSysConfig() {
-// return sysConfig;
-// }
-
-  /**
    * The {@link WebDriver} for the current thread.
    *
    * @return  the {@link WebDriver} for the current thread
@@ -135,53 +132,6 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   public void setDriver(WebDriver driver) {
     this.driver = driver;
   }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @return  dOCUMENT ME!
-   */
-// public void setSysConfig(SysConfig sysConfig) {
-// this.sysConfig = sysConfig;
-// }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @return  DOCUMENT ME!
-   */
-  protected WebDriver createLocalFireFoxDriver() {
-// String webDriverPath = sysConfig.getWebDriverPath();
-//
-// if (webDriverPath != null && StringUtils.isNotEmpty(webDriverPath)) {
-//
-// logger.info("webDriverPath is chrome:"  + (webDriverPath.toLowerCase()).contains("chrome"));
-// if ((webDriverPath.toLowerCase()).contains("chrome")) {
-// try {
-// // System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
-// System.setProperty("webdriver.chrome.driver", sysConfig.getWebDriverPath());
-//
-// return new ChromeDriver();
-// }catch (Exception e){
-// e.printStackTrace();
-// }
-// } else if ((webDriverPath.toLowerCase()).contains("firefox")) {
-// FirefoxProfile profile = new FirefoxProfile();
-// profile.setAcceptUntrustedCertificates(true);
-// profile.setAssumeUntrustedCertificateIssuer(true);
-// profile.setEnableNativeEvents(true);
-// profile.setAlwaysLoadNoFocusLib(true);
-//
-// WebDriver driver = new FirefoxDriver(new FirefoxBinary(new File(sysConfig.getWebDriverPath())), profile);
-//
-// return driver;
-// }
-// }
-
-    return null;
-  } // end method createLocalFireFoxDriver
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -211,70 +161,121 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   /**
    * DOCUMENT ME!
    */
-  protected void initLocalWebDriver() {
-    driver = createLocalFireFoxDriver();
+  protected void initWebDriver(String driverName) {
+    if ((driverName == null) || StringUtils.isEmpty(driverName)) {
+      driverName = DRIVER_CHROME;
+    }
+
+    setupDriver(driverName);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Maximum " + currentDriver);
+    }
 
     driver.manage().window().maximize();
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
-
+  
   /**
-   * DOCUMENT ME!
-   *
-   * @param   userName  DOCUMENT ME!
-   * @param   password  DOCUMENT ME!
-   * @param   first     DOCUMENT ME!
-   *
-   * @throws  Exception  DOCUMENT ME!
+   * random to delay seconds for next account check the current browser is inputted valid code more than
+   * MAX_INPUT_V_CODE_COUNT times 
+   * if chrome and firefox all inputted valid code more than MAX_INPUT_V_CODE_COUNT times
+   * then pause 10 minutes for next account and re-set drive to 'chrome'
+   * @param vCodeCountMap  map
+   * @param maxDelaySecondsForNext max delay seconds for next comment record.
    */
-  protected void loginLocalSys(String userName, String password, Boolean first) throws Exception {
-// if(Consent.SHOPPING_CHANNEL_SUNING.equalsIgnoreCase(sysConfig.getShoppingChannel())){
-// logger.info("Ready login Suning.....");
-// LoginSuning login = new LoginSuning(driver, Consent.SUNING_LOGIN_URL);
-// login.login(userName, password, first);
-// } else if(Consent.SHOPPING_CHANNEL_YHD.equalsIgnoreCase(sysConfig.getShoppingChannel())){
-// logger.info("Ready login YHD");
-// LoginHttp login = new LoginHttp(driver, Consent.YHD_LOGIN_URL);
-// login.login(userName, password, first);
-// } else {
-// logger.info("Ready login YHD");
-// LoginHttp login = new LoginHttp(driver, Consent.YHD_LOGIN_URL);
-// login.login(userName, password, first);
-// }
+  public void checkDriver(Map<String, Integer> vCodeCountMap, int maxDelaySecondsForNext) {
+    // all web driver input valid code gretter than @MAX_INPUT_V_CODE_COUNT
+    if (vCodeCountMap.get(DRIVER_CHROME) != null && (vCodeCountMap.get(DRIVER_CHROME) >= MAX_INPUT_V_CODE_COUNT)
+      && vCodeCountMap.get(DRIVER_FIREFOX) != null && (vCodeCountMap.get(DRIVER_FIREFOX) >= MAX_INPUT_V_CODE_COUNT)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("'Chrome' and 'FireFox' are all need input valid code, I think need pause comment.");
+      }
 
-  } // end method loginLocalSys
+      // need pause comment operation for 10 minutes
+      delay(600);
 
-  //~ ------------------------------------------------------------------------------------------------------------------
+      // after pause 10 minutes, clear the vCodeMap
+      vCodeCountMap.clear();
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param  message         DOCUMENT ME!
-   * @param  sendMessageUrl  DOCUMENT ME!
-   * @param  startShopId     start DOCUMENT ME!
-   * @param  totalCount      DOCUMENT ME!
-   */
-  protected void sendMessageToShop(String message, String sendMessageUrl, String startShopId, Integer totalCount) {
-// String      endShopId   = String.valueOf(new Integer(startShopId) + totalCount);
-    logger.info("Title: " + driver.getTitle());
+      // re-set the driver to chrome.
+      setupDriver(DRIVER_CHROME);
 
-// SendMessage sendMessage = new SendMessage(driver, message, sendMessageUrl, startShopId, totalCount);
-// sendMessage.sendMessage();
+    } else {
+      if (logger.isDebugEnabled()) {
+        logger.debug(".......Start to check web drive is valid code shows more than 2 times.....");
+        logger.debug("Current web drive: " + currentDriver + ", input the valid code time(s): "
+          + vCodeCountMap.get(currentDriver));
+      }
 
-// if(Consent.SHOPPING_CHANNEL_SUNING.equalsIgnoreCase(sysConfig.getShoppingChannel())){
-// SendMessageToSuning sendMessage = new SendMessageToSuning(driver, message, sysConfig.getProductionListUrl(),
-// totalCount);
-// sendMessage.sendMessage();
-// } else if(Consent.SHOPPING_CHANNEL_YHD.equalsIgnoreCase(sysConfig.getShoppingChannel())){
-// SendMessageByCategory sendMessage = new SendMessageByCategory(driver, message, sysConfig.getProductionListUrl(),
-// totalCount);
-// sendMessage.sendMessage();
-// }else {
-// SendMessageByCategory sendMessage = new SendMessageByCategory(driver, message, sysConfig.getProductionListUrl(),
-// totalCount);
-// sendMessage.sendMessage();
-// }
+      if ((vCodeCountMap.get(currentDriver) != null) && (vCodeCountMap.get(currentDriver) >= MAX_INPUT_V_CODE_COUNT)) {
+        if ((vCodeCountMap.get(DRIVER_FIREFOX) == null) || (vCodeCountMap.get(DRIVER_FIREFOX) <= 0)) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Ready change drive from: '" + currentDriver + " To: '" + DRIVER_FIREFOX + "'");
+          }
 
-  }
+          setupDriver(DRIVER_FIREFOX);
+        } else if ((vCodeCountMap.get(DRIVER_CHROME) == null) || (vCodeCountMap.get(DRIVER_CHROME) <= 0)) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Ready change drive from: '" + currentDriver + " To: '" + DRIVER_CHROME + "'");
+          }
+
+          setupDriver(DRIVER_CHROME);
+        }
+      }
+
+      if (logger.isDebugEnabled()) {
+        logger.debug(".......End to check web drive is valid code shows more than 2 times.....");
+      }
+
+      int seconds = new Random().nextInt(maxDelaySecondsForNext);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("It will delay:" + seconds + " seconds to comment next record.");
+      }
+
+      delay(seconds);
+
+    } // end if-else
+  }   // end method checkDriver
+
+  public void setupDriver(String driverType) {
+    if (DRIVER_CHROME.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_CHROME;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Chrome Web Driver.....");
+      }
+
+      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
+      driver = new ChromeDriver();
+
+    } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_FIREFOX;
+
+      FirefoxProfile profile = new FirefoxProfile();
+      profile.setAcceptUntrustedCertificates(true);
+      profile.setAssumeUntrustedCertificateIssuer(true);
+      profile.setEnableNativeEvents(true);
+      profile.setAlwaysLoadNoFocusLib(true);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Firefox Web Driver.....");
+      }
+
+      driver = new FirefoxDriver(new FirefoxBinary(new File("/Applications/Firefox.app/Contents/MacOS/firefox")),
+          profile);
+    } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_IE;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Internet Explorer Web Driver.....");
+      }
+
+      driver = new InternetExplorerDriver();
+    } // end if-else
+  } // end method setupDriver
+
+
 } // end class SeleniumBaseObject

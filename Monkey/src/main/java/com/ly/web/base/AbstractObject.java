@@ -185,6 +185,16 @@ public abstract class AbstractObject {
       webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
   }
+  
+  protected void refreshPage(){
+    String             script = "window.location.reload();";
+    executeJavaScript(script);
+  }
+  
+  protected void executeJavaScript(String script){
+    JavascriptExecutor jsEngine   = (JavascriptExecutor) webDriver;
+    jsEngine.executeScript(script);
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -291,6 +301,15 @@ public abstract class AbstractObject {
             return d.findElement(By.xpath(xpath)) != null;
           }
         });
+  }
+
+  protected Boolean waitForByXPath(final String xpath, Integer seconds) {
+    seconds = seconds != null ? seconds : 10;
+    return (new WebDriverWait(this.webDriver, seconds)).until(new ExpectedCondition<Boolean>() {
+      @Override public Boolean apply(WebDriver d) {
+        return d.findElement(By.xpath(xpath)) != null;
+      }
+    });
   }
 
 } // end class AbstractObject

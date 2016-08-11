@@ -1,12 +1,9 @@
 package com.ly.web.lyd;
 
+import com.ly.web.voice.VoicePlayer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -21,6 +18,16 @@ import com.ly.web.base.AbstractObject;
  * @version  $Revision$, $Date$
  */
 public class Login extends AbstractObject {
+
+  /***
+   * if the valid code shows playSounds = true, then will play the sound to attention user to enter valid code
+   * else will not play voice.
+   * default is TRUE.
+   */
+  private Boolean playVoice = Boolean.TRUE;
+  
+  private VoicePlayer voicePlayer = null;
+  
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
   /**
@@ -56,7 +63,7 @@ public class Login extends AbstractObject {
     }
 
     if (logger.isDebugEnabled()) {
-      logger.debug("begin login-----");
+      logger.debug(">>>>>>>>>Begin Login YHD>>>>>>>>>>>");
     }
 
     if (!webDriver.getCurrentUrl().contains("login")) {
@@ -107,6 +114,14 @@ public class Login extends AbstractObject {
         }
 
         YHD.vCodeCountMap.put(driverType, count);
+        
+        // start play voice
+        if(playVoice){
+          if(voicePlayer == null){
+            voicePlayer = new VoicePlayer();
+          }
+          voicePlayer.playLoop();
+        }
       }
     } else {
       // no need input valid code.
@@ -123,8 +138,13 @@ public class Login extends AbstractObject {
         }
       });
 
+    // stop to play voice
+    if(playVoice && voicePlayer != null){
+      voicePlayer.stopLoop();
+    }
+    
     if (logger.isDebugEnabled()) {
-      logger.debug("login success with ---" + userName);
+      logger.debug("<<<<<<<<<Login YHD Successfully with:[" + userName + "]>>>>>>>>>>>");
     }
   } // end method login
 
@@ -137,5 +157,7 @@ public class Login extends AbstractObject {
     webDriver.quit();
   }
 
-
+  public void setPlayVoice(Boolean playVoice) {
+    this.playVoice = playVoice;
+  }
 } // end class Login

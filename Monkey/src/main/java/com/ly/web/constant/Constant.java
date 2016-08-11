@@ -41,4 +41,6 @@ public class Constant {
   public static final String JD_MY_ORDER_RECYCLE_URL="http://order.jd.com/center/recycle.action?d=1";
   // http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=20596221140&ot=22&payid=4&shipmentid=70
   public static final String JD_ORDER_WRITE_COMMENT_URL="http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=%s&ot=%s&payid=%s&shipmentid=%s";
+  public static final String JD_LOGOUT_URL="https://passport.jd.com/uc/login?ltype=logout";
+  public static final String JD_COMMENT_SUCCESS_URL="http://club.jd.com/myJdcomments/saveCommentSuccess.action";
 }

@@ -1,9 +1,8 @@
 package com.ly.web;
 
+import com.ly.web.dp.JDDataProvider;
 import com.ly.web.dp.YHDDataProvider;
-import com.ly.web.lyd.YHD;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.ly.web.jd.JD;
 import org.testng.TestNG;
 
 
@@ -14,7 +13,7 @@ import org.testng.TestNG;
  * @author $author$
  * @version $Revision$, $Date$
  */
-public class MainEntrance {
+public class MainEntranceJD {
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
@@ -26,11 +25,11 @@ public class MainEntrance {
     try {
       
       // args path
-      String path = "/Users/yongliu/Downloads/YHD.xlsx";
-      YHDDataProvider.path = path;
+      String path = "/Users/yongliu/Downloads/JD.xlsx";
+      JDDataProvider.path = path;
       
       TestNG testng = new TestNG();
-      Class[] classes = new Class[]{YHD.class};
+      Class[] classes = new Class[]{JD.class};
       testng.setTestClasses(classes);
       testng.run();
 

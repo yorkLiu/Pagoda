@@ -20,7 +20,9 @@ public class YHDUtils {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
   // http://item.yhd.com/item/63789609?tp=222.43222_0.212.2_105.54.LMsd^9b-10-EnPos&ti=RGU7NA
-  private static final String P_URL_PREFIX           = "http://item.yhd.com/item/";
+  private static final String P_YHD_URL_PREFIX          = "http://item.yhd.com/item/";
+  private static final String P_JD_URL_PREFIX           = "http://item.jd.com/";
+  private static final String P_JD_URL_HTTPS_PREFIX     = "https://item.jd.com/";
   private static final int    ORDER_ID_COLUMN        = 0;
   private static final int    USER_NAME_COLUMN       = 1;
   private static final int    PASSWORD_COLUMN        = 2;
@@ -162,7 +164,20 @@ public class YHDUtils {
     }
 
     if ((skuOrUrl != null) && StringUtils.hasText(skuOrUrl)) {
-      if (skuOrUrl.contains(P_URL_PREFIX)) {
+      boolean isUrl = Boolean.FALSE;
+      String prefix = null;
+      if(skuOrUrl.contains(P_YHD_URL_PREFIX)){
+        isUrl = Boolean.TRUE;
+        prefix = P_YHD_URL_PREFIX;
+      } else if(skuOrUrl.contains(P_JD_URL_PREFIX)){
+        isUrl = Boolean.TRUE;
+        prefix = P_JD_URL_PREFIX;
+      } else if(skuOrUrl.contains(P_JD_URL_HTTPS_PREFIX)){
+        isUrl = Boolean.TRUE;
+        prefix = P_JD_URL_HTTPS_PREFIX;
+      }
+      
+      if(isUrl && prefix != null){
         if (logger.isDebugEnabled()) {
           logger.debug(skuOrUrl + " is a url, will get sku NO. from this url.");
         }
@@ -173,11 +188,12 @@ public class YHDUtils {
           logger.debug("Analysis the url without parameters is: " + urlWithoutParams);
         }
 
-        sku = urlWithoutParams.replace(P_URL_PREFIX, "");
+        sku = urlWithoutParams.replace(prefix, "").replace(".html", "").trim();
 
         if (logger.isDebugEnabled()) {
           logger.debug("Got the SKU: " + sku + " from the url: " + skuOrUrl);
         }
+        
       } else {
         if (logger.isDebugEnabled()) {
           logger.debug(skuOrUrl + " is not a url, it is a actual sku.");

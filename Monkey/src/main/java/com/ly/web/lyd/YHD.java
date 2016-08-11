@@ -51,9 +51,6 @@ public class YHD extends SeleniumBaseObject {
   /** TODO: DOCUMENT ME! */
   public static ConcurrentMap<String, Integer> vCodeCountMap = new ConcurrentHashMap<>(5);
 
-  /** TODO: DOCUMENT ME! */
-  public static final int MAX_INPUT_V_CODE_COUNT = 2;
-
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   private CommentsInfo commentsInfo = null;
@@ -150,80 +147,12 @@ public class YHD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
-    if (driver == null) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Driver is NULL, then new chrome driver instance.");
-      }
-
-      currentDriver = DRIVER_CHROME;
-
-      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
-      driver = new ChromeDriver();
-    } else {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Driver is not NULL, no need to new driver instance.");
-      }
-    }
+    initWebDriver(DRIVER_CHROME);
 
   } // end method setup
 
   //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setupDriver.
-   *
-   * @param  driverType  String
-   */
-  public void setupDriver(String driverType) {
-    if (DRIVER_CHROME.equalsIgnoreCase(driverType)) {
-      currentDriver = DRIVER_CHROME;
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("Init Chrome Web Driver.....");
-      }
-
-      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
-      driver = new ChromeDriver();
-
-    } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
-      currentDriver = DRIVER_FIREFOX;
-
-      FirefoxProfile profile = new FirefoxProfile();
-      profile.setAcceptUntrustedCertificates(true);
-      profile.setAssumeUntrustedCertificateIssuer(true);
-      profile.setEnableNativeEvents(true);
-      profile.setAlwaysLoadNoFocusLib(true);
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("Init Firefox Web Driver.....");
-      }
-
-      driver = new FirefoxDriver(new FirefoxBinary(new File("/Applications/Firefox.app/Contents/MacOS/firefox")),
-          profile);
-    } // end if-else
-
-// else if (DRIVER_SAFARI.equalsIgnoreCase(driverType)) {
-// currentDriver = DRIVER_SAFARI;
-//
-// if (logger.isDebugEnabled()) {
-// logger.debug("Init Safari Web Driver.....");
-// }
-//
-// // safari path: /Applications/Safari.app/Contents/MacOS/safari
-// driver = new SafariDriver();
-// } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
-// currentDriver = DRIVER_IE;
-//
-// if (logger.isDebugEnabled()) {
-// logger.debug("Init Internet Explorer Web Driver.....");
-// }
-//
-// driver = new InternetExplorerDriver();
-// } // end if-else
-  } // end method setupDriver
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
+  
   /**
    * random to delay seconds for next account check the current browser is inputted valid code more than
    * MAX_INPUT_V_CODE_COUNT times 
@@ -232,57 +161,7 @@ public class YHD extends SeleniumBaseObject {
    */
   private void checkDriver() {
     // all web driver input valid code gretter than @MAX_INPUT_V_CODE_COUNT
-    if (vCodeCountMap.get(DRIVER_CHROME) != null && (vCodeCountMap.get(DRIVER_CHROME) >= MAX_INPUT_V_CODE_COUNT)
-          && vCodeCountMap.get(DRIVER_FIREFOX) != null && (vCodeCountMap.get(DRIVER_FIREFOX) >= MAX_INPUT_V_CODE_COUNT)) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("'Chrome' and 'FireFox' are all need input valid code, I think need pause comment.");
-      }
-
-      // need pause comment operation for 10 minutes
-      delay(600);
-
-      // after pause 10 minutes, clear the vCodeMap
-      vCodeCountMap.clear();
-
-      // re-set the driver to chrome.
-      setupDriver(DRIVER_CHROME);
-
-    } else {
-      if (logger.isDebugEnabled()) {
-        logger.debug(".......Start to check web drive is valid code shows more than 2 times.....");
-        logger.debug("Current web drive: " + currentDriver + ", input the valid code time(s): "
-          + vCodeCountMap.get(currentDriver));
-      }
-
-      if ((vCodeCountMap.get(currentDriver) != null) && (vCodeCountMap.get(currentDriver) >= MAX_INPUT_V_CODE_COUNT)) {
-        if ((vCodeCountMap.get(DRIVER_FIREFOX) == null) || (vCodeCountMap.get(DRIVER_FIREFOX) <= 0)) {
-          if (logger.isDebugEnabled()) {
-            logger.debug("Ready change drive from: '" + currentDriver + " To: '" + DRIVER_FIREFOX + "'");
-          }
-
-          setupDriver(DRIVER_FIREFOX);
-        } else if ((vCodeCountMap.get(DRIVER_CHROME) == null) || (vCodeCountMap.get(DRIVER_CHROME) <= 0)) {
-          if (logger.isDebugEnabled()) {
-            logger.debug("Ready change drive from: '" + currentDriver + " To: '" + DRIVER_CHROME + "'");
-          }
-
-          setupDriver(DRIVER_CHROME);
-        }
-      }
-
-      if (logger.isDebugEnabled()) {
-        logger.debug(".......End to check web drive is valid code shows more than 2 times.....");
-      }
-
-      int seconds = new Random().nextInt(60);
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("It will delay:" + seconds + " seconds to comment next record.");
-      }
-
-      delay(seconds);
-
-    } // end if-else
+    checkDriver(vCodeCountMap, 60);
   }   // end method checkDriver
 
   //~ ------------------------------------------------------------------------------------------------------------------

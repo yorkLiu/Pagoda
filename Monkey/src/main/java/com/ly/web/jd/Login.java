@@ -1,5 +1,6 @@
 package com.ly.web.jd;
 
+import com.ly.web.voice.VoicePlayer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -18,6 +19,15 @@ import com.ly.web.base.AbstractObject;
  */
 public class Login extends AbstractObject {
   //~ Constructors -----------------------------------------------------------------------------------------------------
+
+  /***
+   * if the valid code shows playSounds = true, then will play the sound to attention user to enter valid code
+   * else will not play voice.
+   * default is TRUE.
+   */
+  private Boolean playVoice = Boolean.TRUE;
+
+  private VoicePlayer voicePlayer = null;
 
   /**
    * Creates a new Login object.
@@ -65,10 +75,10 @@ public class Login extends AbstractObject {
       }
 
       loginSuccess = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
-          @Override public Boolean apply(WebDriver d) {
-            return null != d.findElement(By.id("loginname"));
-          }
-        });
+            @Override public Boolean apply(WebDriver d) {
+              return null != d.findElement(By.id("loginname"));
+            }
+          });
 
       WebElement username = this.webDriver.findElement(By.id("loginname"));
       username.clear();
@@ -91,12 +101,12 @@ public class Login extends AbstractObject {
       loginButton.click();
 
       delay(2);
-      
-      
+
+
       // need check the account is locked by jd
       // if locked, skip
       // ToDo
-      
+
 
       // 如果browser 让用户连续几次输入"验证码", count ++
       // 如果不是连续输入,则忽略
@@ -104,6 +114,7 @@ public class Login extends AbstractObject {
         logger.info("After click 'Submit' the vcode div isDisplay:" + vCodeDive.isDisplayed());
 
         if (vCodeDive.isDisplayed()) {
+          logger.info("主人, 赶紧人工打码......");
           String  driverType = getDriverType();
           Integer count      = JD.vCodeCountMap.get(driverType);
 
@@ -114,6 +125,14 @@ public class Login extends AbstractObject {
           }
 
           JD.vCodeCountMap.put(driverType, count);
+
+          // start play voice
+          if(playVoice){
+            if(voicePlayer == null){
+              voicePlayer = new VoicePlayer();
+            }
+            voicePlayer.playLoop();
+          }
         }
       } else {
         // no need input valid code.
@@ -123,25 +142,29 @@ public class Login extends AbstractObject {
           JD.vCodeCountMap.put(driverType, 0);
         }
       }
-      
+
       loginSuccess = (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
-          @Override public Boolean apply(WebDriver d) {
-            return (!d.getCurrentUrl().contains("login"));
-          }
-        });
+            @Override public Boolean apply(WebDriver d) {
+              return (!d.getCurrentUrl().contains("login"));
+            }
+          });
+
+      // stop to play voice
+      if(playVoice && voicePlayer != null){
+        voicePlayer.stopLoop();
+      }
 
       if (logger.isDebugEnabled()) {
         logger.debug("<<<<<<<<<Login JD Successfully with:[" + userName + "]>>>>>>>>>>>");
       }
-    } catch (TimeoutException e){
+    } catch (TimeoutException e) {
       logger.error(e.getMessage(), e);
       loginSuccess = Boolean.FALSE;
-    }catch (Exception e) {
+    } catch (Exception e) {
       logger.error(e.getMessage(), e);
       loginSuccess = Boolean.FALSE;
     } // end try-catch
+
     return loginSuccess;
   } // end method login
-
-
 } // end class Login
