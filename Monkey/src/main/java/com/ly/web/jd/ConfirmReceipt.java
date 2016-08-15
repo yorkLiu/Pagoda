@@ -74,12 +74,18 @@ public class ConfirmReceipt extends AbstractObject {
     // wait 10 seconds
     webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
+
+    // ------- start hide the JD Online Helper ----------------------------------------
     try {
       WebElement jdHelperEle = webDriver.findElement(By.xpath(JD_HELPER_XPATH));
       hideElement(jdHelperEle);
     } catch (NoSuchElementException e) {
       logger.warn("Not found JD Online Helper element");
     }
+    // ------- end hide the JD Online Helper ------------------------------------------
+
+    // delay 10 seconds
+    delay(10);
 
     String confirmReceiptXpath  = String.format(CONFIRM_RECEIPT_BUTTON_XPATH, orderId.trim());
     String confirmOKButtonXpath = String.format(ORDER_CONFIRM_OK_BUTTON_XPATH, orderId.trim());
@@ -97,8 +103,8 @@ public class ConfirmReceipt extends AbstractObject {
       return;
     }
 
-    // wait 3 seconds
-    webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+    // wait 5 seconds
+    webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
     if (logger.isDebugEnabled()) {
       logger.debug("Found order confirm receipt element xpath#'" + confirmReceiptXpath + "'");
@@ -110,6 +116,8 @@ public class ConfirmReceipt extends AbstractObject {
       logger.debug("Try to click confirm receipt button....");
     }
 
+    delay(3);
+    
     confirmReceiptBtn.click();
 
     if (logger.isDebugEnabled()) {
@@ -140,6 +148,8 @@ public class ConfirmReceipt extends AbstractObject {
     }
 
     ExpectedConditions.elementToBeClickable(okBtn);
+    
+    delay(3);
 
     okBtn.click();
 
@@ -147,6 +157,10 @@ public class ConfirmReceipt extends AbstractObject {
       logger.debug("Clicked the 'OK' button in pop-up message window");
       logger.debug("The Order[" + orderId + "] was receipt. You can comments it.");
     }
+    
+    // delay 10 secs
+    delay(10);
+    
   } // end method receipt
 
 } // end class ConfirmReceipt

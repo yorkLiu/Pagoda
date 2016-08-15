@@ -135,7 +135,7 @@ public class JD extends SeleniumBaseObject {
 
 
       // 1. login
-      boolean loginSuccess = login();
+      boolean loginSuccess = login(!(index > 1));
 
       if (loginSuccess) {
         // 2. confirmReceipt
@@ -152,7 +152,7 @@ public class JD extends SeleniumBaseObject {
         // check the current browser is inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // if chrome and firefox all inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // then pause 10 minutes for next account and re-set drive to 'chrome'
-        checkDriver(vCodeCountMap, 60);
+        checkDriver(vCodeCountMap, 180);
       }
     } // end for
 
@@ -214,7 +214,7 @@ public class JD extends SeleniumBaseObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean login() {
+  private boolean login(boolean isFirst) {
     boolean loginSuccess = Boolean.TRUE;
 
     try {
@@ -229,7 +229,7 @@ public class JD extends SeleniumBaseObject {
         logger.debug("Login JD with username: " + commentsInfo.getUsername() + "and password: XXXXX");
       }
 
-      loginSuccess = login.login(commentsInfo.getUsername(), commentsInfo.getPassword(), Boolean.TRUE);
+      loginSuccess = login.login(commentsInfo.getUsername(), commentsInfo.getPassword(), isFirst);
 
       if (loginSuccess) {
         if (logger.isDebugEnabled()) {

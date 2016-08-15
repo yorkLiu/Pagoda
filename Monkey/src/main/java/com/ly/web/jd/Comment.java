@@ -170,6 +170,8 @@ public class Comment extends AbstractObject {
       logger.debug("Redirect to write comment page: " + writeCommentUrl);
     }
     
+    
+    delay(10);
     // go to write comment page
     navigateTo(writeCommentUrl);
 
@@ -197,6 +199,8 @@ public class Comment extends AbstractObject {
 
     }
 
+    // delay 10 seconds then submit
+    delay(10);
     // 5. submit
     submit(orderId);
 
@@ -401,6 +405,8 @@ public class Comment extends AbstractObject {
                 logger.debug("Selected the tag: [" + ele.getText() + "]");
               }
 
+              delay(3);
+              
               ele.click();
             }
           }

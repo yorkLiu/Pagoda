@@ -213,6 +213,11 @@ public class Comment extends YHDAbstractObject {
 
     String sku            = commentElement.getAttribute("pminfoid");
     String commentContent = commentMap.get(sku);
+    
+    // if commentContent is empty, set the default content.
+    if(commentContent == null || !StringUtils.hasText(commentContent)){
+      commentContent = "很不错, 满意, 与描述的一致";
+    }
 
     if (logger.isDebugEnabled()) {
       logger.debug("SKU[" + sku + "] and comment is[" + commentContent + "]");
