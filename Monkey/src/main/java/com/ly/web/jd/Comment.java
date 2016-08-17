@@ -46,6 +46,8 @@ public class Comment extends AbstractObject {
   private static final String PAGE_LOADING_XPATH            = "//div[@class='f-textarea']/textarea";
   private static final String WRITE_COMMENTS_TEXTAREA_XPATH = "//div[contains(@class, 'product-%s')]//div[@class='f-textarea']/textarea";
   private static final String PRODUCT_TAG_XPATH             = "//div[contains(@class, 'product-%s')]//a[@class='tag-item']";
+  private static final String PRODUCT_TAG_WITHOUT_SKU_XPATH = "//div[contains(@class, 'J-mjyx')]//a[@class='tag-item']";
+  private static final String PRODUCT_TAG_SELECT_WITHOUT_SKU_XPATH = PRODUCT_TAG_WITHOUT_SKU_XPATH + "[@data-id='%s']";
   private static final String TAG_SELECT_XPATH              = PRODUCT_TAG_XPATH + "[@data-id='%s']";
   private static final String SUBMIT_BTN_XPATH              = "//a[@class='btn-submit'][contains(text(), '提交')]";
 
@@ -237,11 +239,11 @@ public class Comment extends AbstractObject {
       
       delay(5);
 
-      String script = "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){var span = arr[i]; span.click()}";
+      String script = "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){if(i !=4 && i!=5 && i !=6){var span = arr[i]; span.click();} }";
       executeJavaScript(script);
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Five star clicked successfully!");
+        logger.debug("Five star clicked successfully! and exclude ('安装服务态度', '安装服务及时性', '出示收费标准') ");
       }
 
     } catch (Exception e) {
@@ -304,7 +306,26 @@ public class Comment extends AbstractObject {
 
     String           productTagXpath = String.format(PRODUCT_TAG_XPATH, sku);
     List<String>     tagData         = new ArrayList<>();
-    List<WebElement> tagElements     = webDriver.findElements(By.xpath(productTagXpath));
+    List<WebElement> tagElements     = null;
+    
+    try {
+     // tagElements = webDriver.findElements(By.xpath(productTagXpath));
+      tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
+          webDriver);
+    } catch (NoSuchElementException e) {
+      logger.warn("Find element by xpath: [" + productTagXpath + "] not found element, may be the SKU not match.");
+
+
+      productTagXpath = PRODUCT_TAG_WITHOUT_SKU_XPATH;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Try to find tag elements by xpath: " + productTagXpath);
+      }
+
+      tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
+          webDriver);
+    }
+    
 
     logger.debug("Find tags by xpath: " + productTagXpath);
     logger.debug("From the xpath found [" + tagElements.size() + "]");
@@ -398,8 +419,27 @@ public class Comment extends AbstractObject {
         if (!readySelectTags.isEmpty()) {
           for (String dataId : readySelectTags) {
             String     selectTagXpath = String.format(TAG_SELECT_XPATH, sku, dataId);
-            WebElement ele            = webDriver.findElement(By.xpath(selectTagXpath));
+            WebElement ele            = null;
+            try {
+              ele = ExpectedConditions.presenceOfElementLocated(By.xpath(selectTagXpath)).apply(
+                  webDriver);
 
+              if (logger.isDebugEnabled()) {
+                logger.debug("Found tag data-Id: " + dataId + " by xpath: " + selectTagXpath);
+              }
+            } catch (NoSuchElementException e) {
+              logger.warn("Nof found tag by xpath: " + selectTagXpath);
+
+              selectTagXpath = String.format(PRODUCT_TAG_SELECT_WITHOUT_SKU_XPATH, dataId);
+
+              if (logger.isDebugEnabled()) {
+                logger.debug("Try to find tag data-Id " + dataId + " by xpath: " + selectTagXpath);
+              }
+
+              ele = ExpectedConditions.presenceOfElementLocated(By.xpath(selectTagXpath)).apply(
+                  webDriver);
+            }
+            
             if (ele != null) {
               if (logger.isDebugEnabled()) {
                 logger.debug("Selected the tag: [" + ele.getText() + "]");
@@ -430,11 +470,23 @@ public class Comment extends AbstractObject {
 
     if ((sku != null) && StringUtils.hasText(sku)) {
       String writeCommentTextArea = String.format(WRITE_COMMENTS_TEXTAREA_XPATH, sku);
-
+      WebElement textArea = null;
+      
       try {
-        WebElement textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(writeCommentTextArea)).apply(
+        textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(writeCommentTextArea)).apply(
             webDriver);
+      } catch (NoSuchElementException e) {
+        logger.warn("Not found the text area element by xpath: " + writeCommentTextArea);
 
+        if (logger.isDebugEnabled()) {
+          logger.debug("Try to find the text area element by xpath: " + PAGE_LOADING_XPATH);
+        }
+
+        textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(PAGE_LOADING_XPATH)).apply(
+            webDriver);
+      }
+      
+      if(textArea != null){
         // wait 5 seconds
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -446,8 +498,6 @@ public class Comment extends AbstractObject {
 
         textArea.clear();
         textArea.sendKeys(text);
-      } catch (NoSuchElementException e) {
-        logger.error(e.getMessage(), e);
       }
 
     } else {
