@@ -335,7 +335,7 @@ public class Comment extends AbstractObject {
       String tagText = tagElement.getText();
 
       if ((tagText != null) && StringUtils.hasText(tagText)
-            && EXCLUDE_TAG_LIST.contains(tagText)) {
+            && checkTagInExclusiveTags(tagText)) {
         if (logger.isDebugEnabled()) {
           logger.debug("This tag: " + tagText + " was exclude, skip this tag.");
         }
@@ -356,6 +356,21 @@ public class Comment extends AbstractObject {
 
     return null;
   } // end method getTagData
+  
+  private boolean checkTagInExclusiveTags(String tagText){
+    boolean result  = Boolean.FALSE;
+    
+    if(tagText != null && !StringUtils.isEmpty(tagText)){
+      for (String exclude_tag : EXCLUDE_TAGs) {
+        if(tagText.contains(exclude_tag)){
+          return Boolean.TRUE;
+        }
+      }
+    }
+    
+    return result;
+    
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

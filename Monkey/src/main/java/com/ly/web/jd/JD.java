@@ -152,7 +152,7 @@ public class JD extends SeleniumBaseObject {
         // check the current browser is inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // if chrome and firefox all inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // then pause 10 minutes for next account and re-set drive to 'chrome'
-        checkDriver(vCodeCountMap, 180);
+        checkDriver(vCodeCountMap, 60);
       }
     } // end for
 
