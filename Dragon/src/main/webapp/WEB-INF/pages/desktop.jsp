@@ -5,6 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><fmt:message key="webapp.name"/> </title>
+    <jsp:useBean id="now" class="java.util.Date" />
 
     <!-- load ext js --->
     <%--<link href="<c:url value='/scripts/ext/resources/css/ext-all.css'/>" rel="stylesheet" type="text/css"/>--%>
@@ -14,7 +15,7 @@
     
     <script type="text/javascript" src="<c:url value='/scripts/ext/ext-all-debug.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/scripts/ext/packages/ext-theme-neptune/ext-theme-neptune.js'/>"></script>
-    <script type="text/javascript" src="<c:url value="/jscripts/jscriptRes.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/jscripts/jscriptRes.js?t=${now.time}"/>"></script>
 
     <script type="text/javascript" src="<c:url value='/dwr/engine.js'/>"></script>
 
