@@ -313,8 +313,7 @@ public class Comment extends AbstractObject {
       tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
           webDriver);
     } catch (NoSuchElementException e) {
-      logger.warn("Find element by xpath: [" + productTagXpath + "] not found element, may be the SKU not match.");
-
+      logger.warn("Not found element by xpath: [" + productTagXpath + "], may be the SKU not match.");
 
       productTagXpath = PRODUCT_TAG_WITHOUT_SKU_XPATH;
 
@@ -326,32 +325,50 @@ public class Comment extends AbstractObject {
           webDriver);
     }
     
+    if(tagElements == null){
+      logger.warn("Not found element by xpath: [" + productTagXpath + "], may be the SKU not match.");
+      productTagXpath = PRODUCT_TAG_WITHOUT_SKU_XPATH;
 
-    logger.debug("Find tags by xpath: " + productTagXpath);
-    logger.debug("From the xpath found [" + tagElements.size() + "]");
-    
-    for (WebElement tagElement : tagElements) {
-      String tag     = tagElement.getAttribute("data-id");
-      String tagText = tagElement.getText();
-
-      if ((tagText != null) && StringUtils.hasText(tagText)
-            && checkTagInExclusiveTags(tagText)) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("This tag: " + tagText + " was exclude, skip this tag.");
-        }
-
-        continue;
+      if (logger.isDebugEnabled()) {
+        logger.debug("Try to find tag elements by xpath: " + productTagXpath);
       }
 
-      if ((tag != null) && StringUtils.hasText(tag)) {
-        tagData.add(tag);
+      tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
+        webDriver);
+    }
+    
+
+    if(logger.isDebugEnabled()){
+      logger.debug("Find tags by xpath: " + productTagXpath);
+      if(tagElements != null){
+        logger.debug("From the xpath found [" + tagElements.size() + "] tags");
       }
     }
+    
+    if(tagElements != null && !tagElements.isEmpty()){
+      for (WebElement tagElement : tagElements) {
+        String tag     = tagElement.getAttribute("data-id");
+        String tagText = tagElement.getText();
 
-    if (tagData.size() > 0) {
-      String[] a = new String[tagData.size()];
+        if ((tagText != null) && StringUtils.hasText(tagText)
+          && checkTagInExclusiveTags(tagText)) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("This tag: " + tagText + " was exclude, skip this tag.");
+          }
 
-      return tagData.toArray(a);
+          continue;
+        }
+
+        if ((tag != null) && StringUtils.hasText(tag)) {
+          tagData.add(tag);
+        }
+      }
+
+      if (tagData.size() > 0) {
+        String[] a = new String[tagData.size()];
+
+        return tagData.toArray(a);
+      }
     }
 
     return null;
@@ -455,14 +472,40 @@ public class Comment extends AbstractObject {
                   webDriver);
             }
             
+            if(ele == null){
+              logger.warn("Nof found tag by xpath: " + selectTagXpath);
+
+              selectTagXpath = String.format(PRODUCT_TAG_SELECT_WITHOUT_SKU_XPATH, dataId);
+
+              if (logger.isDebugEnabled()) {
+                logger.debug("Try to find tag data-Id " + dataId + " by xpath: " + selectTagXpath);
+              }
+
+              ele = ExpectedConditions.presenceOfElementLocated(By.xpath(selectTagXpath)).apply(
+                webDriver);
+            }
+            
+            
             if (ele != null) {
               if (logger.isDebugEnabled()) {
                 logger.debug("Selected the tag: [" + ele.getText() + "]");
               }
 
+//              ele = ExpectedConditions.elementToBeClickable(ele).apply(webDriver);
               delay(3);
-              
-              ele.click();
+              try {
+                ele.click();
+              }catch (Exception e){
+                logger.warn(e.getMessage());
+
+                if (logger.isDebugEnabled()) {
+                  logger.debug("Will scroll bottom and then click the element");
+                }
+
+                executeJavaScript("scroll(250, 0)");
+                delay(3);
+                ele.click();
+              }
             }
           }
         }
