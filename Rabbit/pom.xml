@@ -234,6 +234,43 @@
           </dependency>
         </dependencies>
       </plugin>
+
+      <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>sql-maven-plugin</artifactId>
+      <version>1.5</version>
+        <dependencies>
+          <dependency>
+            <groupId>${jdbc.groupId}</groupId>
+            <artifactId>${jdbc.artifactId}</artifactId>
+            <version>${jdbc.version}</version>
+          </dependency>
+        </dependencies>
+
+        <configuration>
+          <driver>${jdbc.driverClassName}</driver>
+          <username>${jdbc.username}</username>
+          <password>${jdbc.password}</password>
+          <url>${jdbc.url}&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</url>
+        </configuration>
+        
+        <executions>
+          <execution>
+            <id>create-pagoda-structure-sample-data</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <autocommit>true</autocommit>
+              <srcFiles>
+                <srcFile>src/main/resources/InitData.sql</srcFile>
+              </srcFiles>
+            </configuration>
+          </execution>
+        </executions>
+        
+      </plugin>
       
     </plugins>
   </build>
