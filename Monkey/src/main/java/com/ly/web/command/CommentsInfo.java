@@ -32,6 +32,8 @@ public class CommentsInfo implements Serializable {
   private String password;
 
   private String username;
+  
+  private Boolean doNotComment = Boolean.FALSE;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -165,6 +167,17 @@ public class CommentsInfo implements Serializable {
    */
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public Boolean getDoNotComment() {
+    if(null == doNotComment){
+      return Boolean.FALSE;
+    }
+    return doNotComment;
+  }
+
+  public void setDoNotComment(Boolean doNotComment) {
+    this.doNotComment = doNotComment;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

@@ -337,7 +337,7 @@ public class ExcelReader implements Serializable {
    */
   public static void main(String[] args) {
     ExcelReader        excelReader      = new ExcelReader();
-    String             path             = "/Users/yongliu/Downloads/7.21TianXun.xlsx";
+    String             path             = "/Users/yongliu/Downloads/YHD.xlsx";
     List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
     System.out.println(commentsInfoList);
 

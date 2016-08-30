@@ -28,6 +28,7 @@ public class YHDUtils {
   private static final int    PASSWORD_COLUMN        = 2;
   private static final int    SKU_COLUMN             = 3;
   private static final int    COMMENT_CONTENT_COLUMN = 4;
+  private static final int    ONLY_RECEIPT_NOT_COMMENT_COLUMN = 5;
 
   private static final Logger logger = Logger.getLogger(YHDUtils.class);
 
@@ -113,10 +114,28 @@ public class YHDUtils {
 
         break;
       }
+      
+      case ONLY_RECEIPT_NOT_COMMENT_COLUMN: {
+        System.out.println("doNotComment:" + cellValue);
+        // column index is 5, it's only receipt not comment column
+        // if 'Y', 'Yes', 'true', '是'
+        // then commentsInfo.doNotComment is "true"
+        commentsInfo.setDoNotComment(getDoNotCommentCellValue(cellValue));
+      }
     } // end switch
   } // end method assembleCommentInfoByCell
 
   //~ ------------------------------------------------------------------------------------------------------------------
+  
+  private static Boolean getDoNotCommentCellValue(String cellValue) {
+    if ((cellValue != null) && !StringUtils.isEmpty(cellValue)
+          && ("Y".equalsIgnoreCase(cellValue) || "YES".equalsIgnoreCase(cellValue) || "true".equals(cellValue)
+            || "是".equals(cellValue))) {
+      return Boolean.TRUE;
+    }
+
+    return Boolean.FALSE;
+  }
 
   /**
    * 获取单元格的值.

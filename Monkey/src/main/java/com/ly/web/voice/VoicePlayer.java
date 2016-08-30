@@ -27,6 +27,7 @@ public class VoicePlayer {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
   private static final String DEFAULT_VOICE = "/voices/clock.wav";
+  private static final String DIDI_VOICE = "/voices/didi.wav";
 
   //~ Instance fields --------------------------------------------------------------------------------------------------
 

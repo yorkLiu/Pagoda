@@ -54,6 +54,8 @@ public class Comment extends AbstractObject {
   private static final String POP_UP_WIN_CLOSE_BUTTON_XPATH = "//a[contains(@class, 'comment-good-cancel')][contains(text(), '关闭')]";
 
   private static final String[] EXCLUDE_TAGs = { "一般", "家用", "家人", "自定义", "还可以" };
+  
+  private static Integer maxSelectTagCount = 2;
 
   private static List EXCLUDE_TAG_LIST = null;
 
@@ -412,14 +414,18 @@ public class Comment extends AbstractObject {
         logger.debug("Found can be used tags count:" + (tags != null ? tags.length : "NULL"));
       }
 
-      if (tags != null) {
+      if (tags != null && tags.length > 0) {
         int          size            = 1;
         Set<String> readySelectTags = new HashSet<>(5);
 
-        if (tags.length >= 5) {
-          size = new Random().nextInt(5);
-        } else if (tags.length >= 3) {
-          size = new Random().nextInt(3);
+//        if (tags.length >= 5) {
+//          size = new Random().nextInt(5);
+//        } else if (tags.length >= 3) {
+//          size = new Random().nextInt(3);
+//        }
+        
+        if(tags.length >= maxSelectTagCount){
+          size = new Random().nextInt(maxSelectTagCount);
         }
         
         // fixed if random size is zero

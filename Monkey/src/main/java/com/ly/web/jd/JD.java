@@ -81,30 +81,6 @@ public class JD extends SeleniumBaseObject {
    */
   @Test(priority = 2)
   public void readComment() {
-// commentsInfo = new CommentsInfo();
-// commentsInfo.setUsername("mqep07084");
-// commentsInfo.setPassword("ylmr40056");
-// commentsInfo.setOrderId("20752493660");
-// Map<String, String> map = new HashMap(2);
-// map.put("10431986857", "宝贝很好。手感非常好。刻度清晰是正品");
-// commentsInfo.setCommentsMap(map);
-
-// // 1. login
-// boolean loginSuccess = login();
-//
-// if(loginSuccess){
-// // 2. confirmReceipt
-// confirmReceipt();
-//
-// // 3. comments production(s)
-// comments();
-//
-// // 4. logout current user
-// logout();
-//
-// }
-
-
     int total = commentsInfoList.size();
     int index = 0;
 
@@ -140,9 +116,16 @@ public class JD extends SeleniumBaseObject {
       if (loginSuccess) {
         // 2. confirmReceipt
         confirmReceipt();
-
-        // 3. comments production(s)
-        comments();
+        
+        // if 只收不评 is  ('Y', 'Yes', 'True', '是')
+        // then skip comment step.
+        if(!commentsInfo.getDoNotComment()){
+          // 3. comments production(s)
+          comments();
+        } else {
+          logger.info("Order#" + commentsInfo.getOrderId()
+            + " doNotComment is 'TRUE' then will not comment this order, continue next order.");
+        }
 
         // 4. logout current user
         logout();
