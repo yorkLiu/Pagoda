@@ -1,6 +1,7 @@
 package com.ly.test.service;
 
 import com.ly.model.Account;
+import com.ly.model.AppType;
 import com.ly.model.type.CategoryType;
 import org.junit.Test;
 
@@ -40,7 +41,6 @@ public class AccountServiceTest extends BaseManagerTestCase {
     account.setUsername("1234234234");
     account.setPassword("abcd123");
     account.setAccountLevel(1);
-    account.setCategoryType(CategoryType.YHD);
     account.setLocked(false);
     account.setDisabled(false);
     account.setCreateDate(new Date());
