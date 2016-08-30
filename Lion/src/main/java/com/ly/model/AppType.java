@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 import com.ly.model.base.BaseObject;
 
 
@@ -15,13 +17,16 @@ import com.ly.model.base.BaseObject;
  *
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  07/28/2016 17:32
- * 
- * PC, WEI_Xin, Phone, PAD ...
+ *
+ *           <p>JD, YHD, JD_M, YHD_M ...</p>
  */
 @Entity
 @Table(name = "AppType")
 public class AppType extends BaseObject {
   //~ Instance fields --------------------------------------------------------------------------------------------------
+
+  @Type(type = "yes_no")
+  private Boolean active;
 
   @Column(
     nullable = false,
@@ -36,6 +41,20 @@ public class AppType extends BaseObject {
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
+  /**
+   * getter method for active.
+   *
+   * @return  Boolean
+   */
+  public Boolean getActive() {
+    if (active == null) {
+      return Boolean.FALSE;
+    }
+
+    return active;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * getter method for app name.
@@ -66,6 +85,17 @@ public class AppType extends BaseObject {
    */
   public Long getId() {
     return id;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for active.
+   *
+   * @param  active  Boolean
+   */
+  public void setActive(Boolean active) {
+    this.active = active;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

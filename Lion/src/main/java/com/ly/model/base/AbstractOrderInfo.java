@@ -10,13 +10,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
+import com.ly.model.type.OrderStatusType;
 import org.hibernate.annotations.Type;
 
 import com.ly.model.Address;
 import com.ly.model.AppType;
 import com.ly.model.Merchant;
 import com.ly.model.type.PaymentType;
-import com.ly.model.type.StatusType;
 
 
 /**
@@ -70,7 +70,7 @@ import com.ly.model.type.StatusType;
 
   /** TODO: DOCUMENT ME! */
   @Enumerated(EnumType.STRING)
-  protected StatusType status;
+  protected OrderStatusType status;
 
   /** This order total amount. */
   @Column(
@@ -259,9 +259,9 @@ import com.ly.model.type.StatusType;
   /**
    * getter method for status.
    *
-   * @return  StatusType
+   * @return  OrderStatusType
    */
-  public StatusType getStatus() {
+  public OrderStatusType getStatus() {
     return status;
   }
 
@@ -401,9 +401,9 @@ import com.ly.model.type.StatusType;
   /**
    * setter method for status.
    *
-   * @param  status  StatusType
+   * @param  status  OrderStatusType
    */
-  public void setStatus(StatusType status) {
+  public void setStatus(OrderStatusType status) {
     this.status = status;
   }
 

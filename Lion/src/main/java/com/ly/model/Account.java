@@ -4,15 +4,19 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 import com.ly.model.base.CreatorObject;
 import com.ly.model.type.CategoryType;
-import org.hibernate.annotations.Type;
 
 
 /**
@@ -29,8 +33,9 @@ public class Account extends CreatorObject {
 
   private Integer accountLevel;
 
-  @Enumerated(EnumType.STRING)
-  private CategoryType categoryType;
+  @JoinColumn(name = "appTypeId")
+  @ManyToOne(fetch = FetchType.LAZY)
+  private AppType appType;
 
   @Type(type = "yes_no")
   private Boolean disabled = Boolean.FALSE;
@@ -83,7 +88,7 @@ public class Account extends CreatorObject {
       return false;
     }
 
-    if (categoryType != account.categoryType) {
+    if ((appType != null) ? (!appType.equals(account.appType)) : (account.appType != null)) {
       return false;
     }
 
@@ -118,12 +123,12 @@ public class Account extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for category type.
+   * getter method for app type.
    *
-   * @return  CategoryType
+   * @return  AppType
    */
-  public CategoryType getCategoryType() {
-    return categoryType;
+  public AppType getAppType() {
+    return appType;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -200,7 +205,7 @@ public class Account extends CreatorObject {
   @Override public int hashCode() {
     int result = (username != null) ? username.hashCode() : 0;
     result = (31 * result) + ((password != null) ? password.hashCode() : 0);
-    result = (31 * result) + ((categoryType != null) ? categoryType.hashCode() : 0);
+    result = (31 * result) + ((appType != null) ? appType.hashCode() : 0);
     result = (31 * result) + ((disabled != null) ? disabled.hashCode() : 0);
     result = (31 * result) + ((disabledDescription != null) ? disabledDescription.hashCode() : 0);
     result = (31 * result) + ((accountLevel != null) ? accountLevel.hashCode() : 0);
@@ -223,12 +228,12 @@ public class Account extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * setter method for category type.
+   * setter method for app type.
    *
-   * @param  categoryType  CategoryType
+   * @param  appType  AppType
    */
-  public void setCategoryType(CategoryType categoryType) {
-    this.categoryType = categoryType;
+  public void setAppType(AppType appType) {
+    this.appType = appType;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -296,6 +301,4 @@ public class Account extends CreatorObject {
   public void setUsername(String username) {
     this.username = username;
   }
-
-
 } // end class Account

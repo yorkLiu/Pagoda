@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,15 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.ly.model.type.OrderStatusType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import com.ly.model.base.AbstractOrderInfo;
 import com.ly.model.type.PaymentType;
-import com.ly.model.type.StatusType;
 
 
 /**
@@ -235,9 +232,9 @@ public class OrderInfo extends AbstractOrderInfo {
   /**
    * getter method for status.
    *
-   * @return  StatusType
+   * @return  OrderStatusType
    */
-  @Override public StatusType getStatus() {
+  @Override public OrderStatusType getStatus() {
     return status;
   }
 
@@ -374,9 +371,9 @@ public class OrderInfo extends AbstractOrderInfo {
   /**
    * setter method for status.
    *
-   * @param  status  StatusType
+   * @param  status  OrderStatusType
    */
-  @Override public void setStatus(StatusType status) {
+  @Override public void setStatus(OrderStatusType status) {
     this.status = status;
   }
 

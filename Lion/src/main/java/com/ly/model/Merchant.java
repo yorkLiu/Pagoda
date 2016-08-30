@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Type;
 
 import com.ly.model.base.CreatorObject;
-import com.ly.model.type.StatusType;
+import com.ly.model.type.OrderStatusType;
 
 
 /**
@@ -92,7 +92,7 @@ public class Merchant extends CreatorObject {
    * </pre>
    */
   @Enumerated(EnumType.STRING)
-  private StatusType status;
+  private OrderStatusType status;
 
   /** SD count. */
   private Integer totalCount;
@@ -360,9 +360,9 @@ public class Merchant extends CreatorObject {
   /**
    * getter method for status.
    *
-   * @return  StatusType
+   * @return  OrderStatusType
    */
-  public StatusType getStatus() {
+  public OrderStatusType getStatus() {
     return status;
   }
 
@@ -609,9 +609,9 @@ public class Merchant extends CreatorObject {
   /**
    * setter method for status.
    *
-   * @param  status  StatusType
+   * @param  status  OrderStatusType
    */
-  public void setStatus(StatusType status) {
+  public void setStatus(OrderStatusType status) {
     this.status = status;
   }
 
