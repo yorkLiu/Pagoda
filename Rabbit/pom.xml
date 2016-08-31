@@ -263,6 +263,7 @@
             </goals>
             <configuration>
               <autocommit>true</autocommit>
+              <skip>${maven.test.skip}</skip>
               <srcFiles>
                 <srcFile>src/main/resources/InitData.sql</srcFile>
               </srcFiles>

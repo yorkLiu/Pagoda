@@ -4,13 +4,19 @@ import java.io.Serializable;
 
 import java.util.List;
 
-import com.ly.service.BaseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.ly.dao.Dao;
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ly.dao.Dao;
+
+import com.ly.service.BaseService;
 
 
 /**
@@ -21,14 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @Service("baseService")
-@Transactional
-public class BaseServiceImpl implements BaseService {
+@Transactional public class BaseServiceImpl implements BaseService {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /** TODO: DOCUMENT ME! */
   @Autowired
   @Qualifier("baseDao")
-  protected Dao dao;
+  protected Dao            dao;
+
+  /** TODO: DOCUMENT ME! */
+  protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -129,4 +137,4 @@ public class BaseServiceImpl implements BaseService {
   @Override public void setDao(Dao dao) {
     this.dao = dao;
   }
-} // end class BaseService
+} // end class BaseServiceImpl
