@@ -34,6 +34,23 @@ Ext.define('Pago.util.Utils', {
         return 'Y';
       }
       return 'N';
+    },
+
+    /**
+     * 
+     * @param value input value
+     * @param numberMaxLength integer max length
+     * @param decimalSeparator default is '.'
+     */
+    checkNumberFieldIntegerLength: function(value, numberMaxLength, decimalSeparator){
+      decimalSeparator = decimalSeparator || '.';
+      if(value){
+        var  precisionPart = value.split(decimalSeparator)[0];
+        if(precisionPart.length > numberMaxLength){
+          return Ext.String.format('整数部分最大允许输入{0}位', numberMaxLength);
+        }
+      }
+      return true;
     }
     
     

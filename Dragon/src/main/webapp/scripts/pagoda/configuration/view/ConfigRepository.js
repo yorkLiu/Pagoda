@@ -10,7 +10,8 @@ Ext.define('Pagoda.configuration.view.ConfigRepository', {
   alias: 'widget.configrepository',
   requires: [
     'Pagoda.configuration.view.AddressList',
-    'Pagoda.configuration.view.AccountList'
+    'Pagoda.configuration.view.AccountList',
+    'Pagoda.configuration.view.CommissionList'
   ],
   
   initComponent: function(){
@@ -22,14 +23,19 @@ Ext.define('Pagoda.configuration.view.ConfigRepository', {
       closable: false,
       items: [
         {
-          title: '地址信息',
+          title: '地址管理',
           xtype: 'addresslist',
           itemId: 'addressItem'
         },
         {
-          title: '账号信息',
+          title: '账号管理',
           xtype: 'accountlist',
           itemId: 'accountItem'
+        },
+        {
+          title: '拥金管理',
+          xtype: 'commissionlist',
+          itemId: 'commissionItem'
         }
       ]
       

@@ -2,7 +2,8 @@ Ext.define('Pagoda.Configuration', {
   extend:'Ext.ux.desktop.Module',
 
   requires:[
-    'Pagoda.configuration.view.ConfigRepository'
+    'Pagoda.configuration.view.ConfigRepository',
+    'Pagoda.configuration.store.AppTypes'
   ],
 
   id:'configuration-win',
@@ -19,6 +20,7 @@ Ext.define('Pagoda.Configuration', {
 
 
   createWindow:function () {
+    var me = this;
     var desktop = this.app.getDesktop();
     var win = desktop.getWindow('configuration-win');
 
@@ -43,12 +45,33 @@ Ext.define('Pagoda.Configuration', {
         },
         items: {
           xtype: 'configrepository'
+        },
+        
+        listeners:{
+          'afterrender': me.onWinAfterRender
+          
         }
       });
     }
     win.show();
     return win;
 
+  },
+  
+  
+  onWinAfterRender: function(){
+    
+    // init app type store
+    var appTypeStore = Ext.StoreManager.lookup('PagodaAppTypeStore');
+    if(!appTypeStore || appTypeStore == null){
+      appTypeStore = Ext.create('Pagoda.configuration.store.AppTypes', {
+        storeId: 'PagodaAppTypeStore'
+      });
+    }
+    if(appTypeStore != null){
+      appTypeStore.load();
+    }
+    
   }
 
 

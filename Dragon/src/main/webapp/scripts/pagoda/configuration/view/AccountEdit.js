@@ -64,13 +64,13 @@ Ext.define('Pagoda.configuration.view.AccountEdit', {
           {
             xtype: 'combo',
             fieldLabel: accountRes.fields.categoryType,
-            displayField: 'label',
-            valueField: 'value',
+            displayField: 'description',
+            valueField: 'id',
             queryMode: 'local',
             triggerAction: 'all',
             editable: false,
-            name: 'categoryType',
-            store: me.getCategoryTypeStore(),
+            name: 'appTypeId',
+            store: me.getAppTypeStore(),
             allowBlank: false
           },
           {
@@ -124,20 +124,9 @@ Ext.define('Pagoda.configuration.view.AccountEdit', {
     me.saveRecord();
   },
 
-  getCategoryTypeStore: function(){
-    var store = Ext.StoreManager.lookup('PagodaCategoryTypeStore');
-    if(!store || store == null){
-      store = Ext.create('Ext.data.ArrayStore', {
-        storeId: 'myStore',
-        fields: ['label', 'value'],
-        data: [
-          ['京东', 'JD'],
-          ['一号店', 'YHD'],
-          ['当当', 'DD']
-        ]
-      });
-    }
-    return store;
+  getAppTypeStore: function(){
+    var appTypeStore = Ext.StoreManager.lookup('PagodaAppTypeStore');
+    return appTypeStore;
   },
 
   onCloseHandler: function () {

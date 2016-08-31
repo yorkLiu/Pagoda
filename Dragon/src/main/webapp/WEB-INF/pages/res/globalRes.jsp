@@ -35,6 +35,7 @@
   <%--}--%>
 <%--};--%>
 
+var accessRes  =[]
 
 var globalRes = {
 
@@ -52,15 +53,18 @@ var globalRes = {
     update: '更新',
     delete: '删除',
     enable: '标记为可用',
-    disable: '标记为不可用'
+    disable: '标记为不可用',
+    publish: '发布',
+    unpublish: '撤销'
   },
 
   title:{
     confirmClose: '关闭当前窗口',
+    markReadOny: '{0}<span style="color:red">[只读]</span>'
   },
   
   message: {
-    confirmClose: '你确定要关闭当前窗口吗?',
+    confirmClose: '你确定要关闭当前窗口吗?'
   },
 
   exception: {

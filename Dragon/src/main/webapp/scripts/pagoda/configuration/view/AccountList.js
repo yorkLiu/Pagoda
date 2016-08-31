@@ -33,7 +33,7 @@ Ext.define('Pagoda.configuration.view.AccountList', {
       },
       {
         header: accountRes.fields.categoryType,
-        dataIndex: 'categoryType',
+        dataIndex: 'appTypeName',
         flex: 130
       },
       {

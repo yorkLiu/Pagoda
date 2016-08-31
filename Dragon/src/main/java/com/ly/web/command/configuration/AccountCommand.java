@@ -1,11 +1,13 @@
 package com.ly.web.command.configuration;
 
-import com.ly.model.Account;
-import com.ly.model.type.CategoryType;
 import org.directwebremoting.annotations.DataTransferObject;
 import org.directwebremoting.annotations.RemoteProperty;
 
 import org.directwebremoting.convert.ObjectConverter;
+
+import com.ly.model.Account;
+import com.ly.model.AppType;
+import com.ly.model.type.CategoryType;
 
 import com.ly.web.command.BaseCommand;
 
@@ -22,7 +24,9 @@ public class AccountCommand extends BaseCommand {
 
   @RemoteProperty private Integer accountLevel;
 
-  @RemoteProperty private String categoryType;
+  @RemoteProperty private Long appTypeId;
+
+  @RemoteProperty private String appTypeName;
 
   @RemoteProperty private Boolean disabled;
 
@@ -38,43 +42,29 @@ public class AccountCommand extends BaseCommand {
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
-
   /**
    * Creates a new AccountCommand object.
    */
   public AccountCommand() { }
-  
-  
-  public AccountCommand(Account account){
-    this.id = account.getId();
-    this.username = account.getUsername();
-    this.password = account.getPassword();
-    this.accountLevel = account.getAccountLevel();
-    this.disabled = account.getDisabled();
-    this.locked = account.getLocked();
+
+
+  /**
+   * Creates a new AccountCommand object.
+   *
+   * @param  account  Account
+   */
+  public AccountCommand(Account account) {
+    this.id                  = account.getId();
+    this.username            = account.getUsername();
+    this.password            = account.getPassword();
+    this.accountLevel        = account.getAccountLevel();
+    this.disabled            = account.getDisabled();
+    this.locked              = account.getLocked();
     this.disabledDescription = account.getDisabledDescription();
-    this.categoryType = account.getCategoryType().toString();
+    this.appTypeId           = account.getAppType().getId();
+    this.appTypeName         = account.getAppType().getAppName();
   }
-  
-  
-  public Account populate(){
-    Account account = new Account();
-    if(null != getId()){
-      account.setId(this.getId());
-      account.setDisabled(this.getDisabled());
-    } else {
-      account.setId(null);
-      account.setDisabled(Boolean.FALSE);
-    }
-    
-    account.setUsername(this.getUsername());
-    account.setPassword(this.getPassword());
-    account.setLocked(this.getLocked());
-    account.setCategoryType(CategoryType.valueOf(this.getCategoryType().toUpperCase()));
-    
-    return account;
-  }
-  
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
@@ -89,12 +79,23 @@ public class AccountCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * getter method for category type.
+   * getter method for app type id.
+   *
+   * @return  Long
+   */
+  public Long getAppTypeId() {
+    return appTypeId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for app type name.
    *
    * @return  String
    */
-  public String getCategoryType() {
-    return categoryType;
+  public String getAppTypeName() {
+    return appTypeName;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -174,6 +175,38 @@ public class AccountCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * populate.
+   *
+   * @return  Account
+   */
+  public Account populate() {
+    Account account = new Account();
+
+    if (null != getId()) {
+      account.setId(this.getId());
+      account.setDisabled(this.getDisabled());
+    } else {
+      account.setId(null);
+      account.setDisabled(Boolean.FALSE);
+    }
+
+    account.setUsername(this.getUsername());
+    account.setPassword(this.getPassword());
+    account.setLocked(this.getLocked());
+
+    if (this.getAppTypeId() != null) {
+      AppType appType = new AppType();
+      appType.setId(this.getAppTypeId());
+
+      account.setAppType(appType);
+    }
+
+    return account;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for account level.
    *
    * @param  accountLevel  Integer
@@ -185,12 +218,23 @@ public class AccountCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * setter method for category type.
+   * setter method for app type id.
    *
-   * @param  categoryType  String
+   * @param  appTypeId  Long
    */
-  public void setCategoryType(String categoryType) {
-    this.categoryType = categoryType;
+  public void setAppTypeId(Long appTypeId) {
+    this.appTypeId = appTypeId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for app type name.
+   *
+   * @param  appTypeName  String
+   */
+  public void setAppTypeName(String appTypeName) {
+    this.appTypeName = appTypeName;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 
-
+/*desktop manager icon css start*/
 .userRole-shortcut img {
   width: 48px;
   height: 48px;
@@ -13,6 +13,7 @@
   background-image: url(icons/configurationManager_48.png);
   filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../styles/default/desktop/icons/configurationManager_48.png', sizingMethod='scale');
 }
+/*desktop manager icon css end*/
 
 
 .required-filed-mark{
@@ -25,3 +26,45 @@
   -ms-word-wrap: break-word;
   white-space: normal;
 }
+
+/*grid row colors css start*/
+.deleted-row .x-grid-cell-inner {
+  color: gray;
+}
+
+.disabled-row .x-grid-cell-inner {
+  color: darkgray;
+}
+.published-row .x-grid-cell-inner {
+  color: blue;
+}
+.retired-row .x-grid-cell-inner {
+  color: orangered;
+}
+/*grid row colors css end*/
+
+
+
+
+/*icons css start*/
+.icon-enable {
+  background-image: url(icons/icon_enable.png) !important;
+  height: 16px;
+  width: 16px;
+}
+.icon-disable {
+  background-image: url(icons/icon_disable.png) !important;
+  height: 16px;
+  width: 16px;
+}
+.icon-publish {
+  background-image: url(icons/icon_publish.png) !important;
+  height: 16px;
+  width: 16px;
+}
+.icon-unpublish {
+  background-image: url(icons/icon_unpublish.png) !important;
+  height: 16px;
+  width: 16px;
+}
+/*icons css end*/
