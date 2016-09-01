@@ -439,6 +439,11 @@
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
+    <dependency>
+      <groupId>net.jawr</groupId>
+      <artifactId>jawr-core</artifactId>
+      <version>${jawr.version}</version>
+    </dependency>
     
     
     
