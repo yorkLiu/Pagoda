@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -336,10 +337,21 @@ public class ExcelReader implements Serializable {
    * @param  args  String[]
    */
   public static void main(String[] args) {
-    ExcelReader        excelReader      = new ExcelReader();
-    String             path             = "/Users/yongliu/Downloads/YHD.xlsx";
-    List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
-    System.out.println(commentsInfoList);
+//    ExcelReader        excelReader      = new ExcelReader();
+//    String             path             = "/Users/yongliu/Downloads/JD.xlsx";
+//    List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
+//    System.out.println(commentsInfoList);
+    
+    Map<String, String> map = new HashedMap();
+    map.put("NONE-SKU-1", "aa");
+    map.put("NONE-SK2U-2", "ab");
+    map.put("NONE-SK3U-3", "ac");
+    
+    Boolean a = map.keySet().stream().anyMatch(k->k.startsWith("NONE-SKU-"));
+
+    System.out.println(map.keySet().contains("NONE-SKU-"));
+
+    System.out.println(a);
 
 
   }

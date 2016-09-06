@@ -43,4 +43,6 @@ public class Constant {
   public static final String JD_ORDER_WRITE_COMMENT_URL="http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=%s&ot=%s&payid=%s&shipmentid=%s";
   public static final String JD_LOGOUT_URL="https://passport.jd.com/uc/login?ltype=logout";
   public static final String JD_COMMENT_SUCCESS_URL="http://club.jd.com/myJdcomments/saveCommentSuccess.action";
+  
+  public static final String NONE_SKU_KEY_PREFIX="NONE-SKU-";
 }

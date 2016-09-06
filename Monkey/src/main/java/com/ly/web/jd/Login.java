@@ -6,6 +6,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ly.web.base.AbstractObject;
@@ -28,6 +29,8 @@ public class Login extends AbstractObject {
   private Boolean playVoice = Boolean.TRUE;
 
   private VoicePlayer voicePlayer = null;
+  
+  private static final String SWITCH_TO_ACCOUNT_LOGIN_XPATH="//a[contains(text(), '账户登录')]";
 
   /**
    * Creates a new Login object.
@@ -73,8 +76,23 @@ public class Login extends AbstractObject {
       if (!webDriver.getCurrentUrl().contains("login")) {
         navigateTo(this.url);
       }
+      
+      delay(5);
 
-      loginSuccess = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Switch to account login.");
+      }
+
+      // switch to account login
+      WebElement accountLogin = ExpectedConditions.presenceOfElementLocated(By.xpath(SWITCH_TO_ACCOUNT_LOGIN_XPATH))
+        .apply(
+          webDriver);
+
+      if (accountLogin != null) {
+        accountLogin.click();
+      }
+      
+      (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
             @Override public Boolean apply(WebDriver d) {
               return null != d.findElement(By.id("loginname"));
             }

@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.map.HashedMap;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
@@ -16,8 +18,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -41,20 +43,25 @@ import com.ly.web.constant.Constant;
 public class Comment extends AbstractObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
-  private static final String ORDER_TR_ID_PREFIX            = "track%s";
-  private static final String SHOW_COMMENTS_BUTTON_XPATH    = "//td[@id='operate%s']/div[@class='operate']/a[contains(text(), '评价')]";
-  private static final String PAGE_LOADING_XPATH            = "//div[@class='f-textarea']/textarea";
-  private static final String WRITE_COMMENTS_TEXTAREA_XPATH = "//div[contains(@class, 'product-%s')]//div[@class='f-textarea']/textarea";
-  private static final String PRODUCT_TAG_XPATH             = "//div[contains(@class, 'product-%s')]//a[@class='tag-item']";
-  private static final String PRODUCT_TAG_WITHOUT_SKU_XPATH = "//div[contains(@class, 'J-mjyx')]//a[@class='tag-item']";
+  private static final String ORDER_TR_ID_PREFIX                   = "track%s";
+  private static final String SHOW_COMMENTS_BUTTON_XPATH           =
+    "//td[@id='operate%s']/div[@class='operate']/a[contains(text(), '评价')]";
+  private static final String PAGE_LOADING_XPATH                   = "//div[@class='f-textarea']/textarea";
+  private static final String WRITE_COMMENTS_TEXTAREA_XPATH        =
+    "//div[contains(@class, 'product-%s')]//div[@class='f-textarea']/textarea";
+  private static final String PRODUCT_TAG_XPATH                    =
+    "//div[contains(@class, 'product-%s')]//a[@class='tag-item']";
+  private static final String PRODUCT_TAG_WITHOUT_SKU_XPATH        =
+    "//div[contains(@class, 'J-mjyx')]//a[@class='tag-item']";
   private static final String PRODUCT_TAG_SELECT_WITHOUT_SKU_XPATH = PRODUCT_TAG_WITHOUT_SKU_XPATH + "[@data-id='%s']";
-  private static final String TAG_SELECT_XPATH              = PRODUCT_TAG_XPATH + "[@data-id='%s']";
-  private static final String SUBMIT_BTN_XPATH              = "//a[@class='btn-submit'][contains(text(), '提交')]";
+  private static final String TAG_SELECT_XPATH                     = PRODUCT_TAG_XPATH + "[@data-id='%s']";
+  private static final String SUBMIT_BTN_XPATH                     = "//a[@class='btn-submit'][contains(text(), '提交')]";
 
-  private static final String POP_UP_WIN_CLOSE_BUTTON_XPATH = "//a[contains(@class, 'comment-good-cancel')][contains(text(), '关闭')]";
+  private static final String POP_UP_WIN_CLOSE_BUTTON_XPATH =
+    "//a[contains(@class, 'comment-good-cancel')][contains(text(), '关闭')]";
 
   private static final String[] EXCLUDE_TAGs = { "一般", "家用", "家人", "自定义", "还可以" };
-  
+
   private static Integer maxSelectTagCount = 2;
 
   private static List EXCLUDE_TAG_LIST = null;
@@ -107,8 +114,8 @@ public class Comment extends AbstractObject {
 
     // wait 10 seconds
     webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-    
-    
+
+
     // If the 确认评价 pop-up message window poped-up
     // that's means this order not comment
     Boolean confirmCommentWinPoppedUp = Boolean.FALSE;
@@ -173,14 +180,14 @@ public class Comment extends AbstractObject {
     if (logger.isDebugEnabled()) {
       logger.debug("Redirect to write comment page: " + writeCommentUrl);
     }
-    
-    
+
     delay(10);
+
     // go to write comment page
     navigateTo(writeCommentUrl);
 
     // wait 10 seconds
-    //webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    // webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     delay(10);
 
     loadWriteCommentPage();
@@ -189,59 +196,122 @@ public class Comment extends AbstractObject {
       logger.debug("Excluded tags: " + EXCLUDE_TAGs);
     }
 
-    for (String sku : commentMap.keySet()) {
+    // if commentMap any one key start with 'NONE-SKU-'
+    // then means this order will ignore sku comment
+    if (findCommentMapContainsNoneSku(commentMap)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Ignore SKU comments: TRUE");
+      }
+
+      // find SKU from front-end (comment page)
+// checkSku(orderId, commentMap);
+    }
+
+    // find SKU from front-end (comment page)
+    checkSku(orderId, commentMap);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("The comment map is: " + commentMap);
+    }
+
+    if ((commentMap != null) && (commentMap.size() > 0)) {
       // 1. five star comments
       // I think this can be move to outside for sentence.
-      fiveStar(sku);
+      fiveStar(orderId);
 
-      // 2. find tags for per product exclude '一般, 家用, 自定义'
-      // and random select 0-3 tag(s)
-      selectTheTags(sku);
+      for (String sku : commentMap.keySet()) {
+        // 2. find tags for per product exclude '一般, 家用, 自定义'
+        // and random select 0-3 tag(s)
+        selectTheTags(orderId, sku);
 
-      // 4. input the comments for per production
-      writeComment(sku, commentMap);
-
+        // 4. input the comments for per production
+        writeComment(sku, commentMap);
+      }
     }
 
     // delay 10 seconds then submit
     delay(10);
+
     // 5. submit
     submit(orderId);
 
   } // end method comment
-  
-  private boolean loadWriteCommentPage(){
-    try {
-      logger.debug("Reload the write comment page....");
-      // if 10 seconds not loaded, then refresh page
-      Boolean founded = waitForByXPath(PAGE_LOADING_XPATH, 10);
-      if(founded){
-        logger.debug("Reload the write comment page found the element, do not reload yet. Return");
-      }
-      return founded;
-    } catch (TimeoutException e) {
-      // refresh page
-      refreshPage();
 
-      return loadWriteCommentPage();
-      // wait 10 seconds
-      //webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * find SKU from front-end (comment page).
+   *
+   * @param  orderId     $param.type$
+   * @param  commentMap  $param.type$
+   */
+  private void checkSku(String orderId, Map<String, String> commentMap) {
+    List<String> skuList = getSkuFromFrontEnd(orderId);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("The sku result found in front-end: " + skuList.toString());
     }
+
+    int                 idx     = 0;
+    Map<String, String> tempMap = new HashedMap();
+
+    for (String key : commentMap.keySet()) {
+      if (key.startsWith(Constant.NONE_SKU_KEY_PREFIX)) {
+        tempMap.put(skuList.get(idx), commentMap.get(key));
+      } else if (!skuList.contains(key)) {
+        tempMap.put(skuList.get(idx), commentMap.get(key));
+      } else {
+        tempMap.put(key, commentMap.get(key));
+      }
+
+      idx++;
+    }
+
+    commentMap.clear();
+    commentMap.putAll(tempMap);
+  } // end method checkSku
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private boolean checkTagInExclusiveTags(String tagText) {
+    boolean result = Boolean.FALSE;
+
+    if ((tagText != null) && !StringUtils.isEmpty(tagText)) {
+      for (String exclude_tag : EXCLUDE_TAGs) {
+        if (tagText.contains(exclude_tag)) {
+          return Boolean.TRUE;
+        }
+      }
+    }
+
+    return result;
+
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean fiveStar(String sku) {
+  private boolean findCommentMapContainsNoneSku(Map<String, String> commentMap) {
+    if (commentMap != null) {
+      return commentMap.keySet().stream().anyMatch(k -> k.startsWith(Constant.NONE_SKU_KEY_PREFIX));
+    }
+
+    return Boolean.FALSE;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private boolean fiveStar(String orderId) {
     boolean result = Boolean.TRUE;
 
     try {
       if (logger.isDebugEnabled()) {
-        logger.debug("Five star comments for production sku[" + sku + "]....");
+        logger.debug("Five star comments for production order[" + orderId + "]....");
       }
-      
+
       delay(5);
 
-      String script = "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){if(i !=4 && i!=5 && i !=6){var span = arr[i]; span.click();} }";
+      String script =
+        "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){if(i !=4 && i!=5 && i !=6){var span = arr[i]; span.click();} }";
       executeJavaScript(script);
 
       if (logger.isDebugEnabled()) {
@@ -256,6 +326,7 @@ public class Comment extends AbstractObject {
       result = Boolean.FALSE;
       logger.error(e.getMessage(), e);
     }
+
     return result;
   } // end method fiveStar
 
@@ -301,6 +372,25 @@ public class Comment extends AbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
+  private List<String> getSkuFromFrontEnd(String orderId) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Find sku from Front-end for orderId#" + orderId);
+    }
+
+    StringBuilder script = new StringBuilder();
+    script.append("var products = []; var arrys = $('textarea'); ");
+    script.append("for(var i = 0;i< arrys.length;i++){");
+    script.append(
+      "var item = arrys[i]; var className = $(item).closest('.f-item').attr('class'); var strStartIdx = className.indexOf('product-');");
+    script.append(
+      "if(strStartIdx > 0){ var cls = className.substr(strStartIdx); var sku = cls.replace('product-', ''); products.push(sku);}}");
+    script.append("return products;");
+
+    return (List) executeJavaScript(script.toString());
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
   private String[] getTagData(String sku) {
     if (logger.isDebugEnabled()) {
       logger.debug("Get all tags for SKU[" + sku + "]");
@@ -309,9 +399,9 @@ public class Comment extends AbstractObject {
     String           productTagXpath = String.format(PRODUCT_TAG_XPATH, sku);
     List<String>     tagData         = new ArrayList<>();
     List<WebElement> tagElements     = null;
-    
+
     try {
-     // tagElements = webDriver.findElements(By.xpath(productTagXpath));
+      // tagElements = webDriver.findElements(By.xpath(productTagXpath));
       tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
           webDriver);
     } catch (NoSuchElementException e) {
@@ -326,8 +416,8 @@ public class Comment extends AbstractObject {
       tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
           webDriver);
     }
-    
-    if(tagElements == null){
+
+    if (tagElements == null) {
       logger.warn("Not found element by xpath: [" + productTagXpath + "], may be the SKU not match.");
       productTagXpath = PRODUCT_TAG_WITHOUT_SKU_XPATH;
 
@@ -336,24 +426,27 @@ public class Comment extends AbstractObject {
       }
 
       tagElements = ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(productTagXpath)).apply(
-        webDriver);
+          webDriver);
     }
-    
 
-    if(logger.isDebugEnabled()){
+
+    if (logger.isDebugEnabled()) {
       logger.debug("Find tags by xpath: " + productTagXpath);
-      if(tagElements != null){
-        logger.debug("From the xpath found [" + tagElements.size() + "] tags");
+
+      if (tagElements != null) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("From the xpath found [" + tagElements.size() + "] tags");
+        }
       }
     }
-    
-    if(tagElements != null && !tagElements.isEmpty()){
+
+    if ((tagElements != null) && !tagElements.isEmpty()) {
       for (WebElement tagElement : tagElements) {
         String tag     = tagElement.getAttribute("data-id");
         String tagText = tagElement.getText();
 
         if ((tagText != null) && StringUtils.hasText(tagText)
-          && checkTagInExclusiveTags(tagText)) {
+              && checkTagInExclusiveTags(tagText)) {
           if (logger.isDebugEnabled()) {
             logger.debug("This tag: " + tagText + " was exclude, skip this tag.");
           }
@@ -371,63 +464,102 @@ public class Comment extends AbstractObject {
 
         return tagData.toArray(a);
       }
-    }
+    } // end if
 
     return null;
   } // end method getTagData
-  
-  private boolean checkTagInExclusiveTags(String tagText){
-    boolean result  = Boolean.FALSE;
-    
-    if(tagText != null && !StringUtils.isEmpty(tagText)){
-      for (String exclude_tag : EXCLUDE_TAGs) {
-        if(tagText.contains(exclude_tag)){
-          return Boolean.TRUE;
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private boolean loadWriteCommentPage() {
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Reload the write comment page....");
+      }
+
+      // if 10 seconds not loaded, then refresh page
+      Boolean founded = waitForByXPath(PAGE_LOADING_XPATH, 10);
+
+      if (founded) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Reload the write comment page found the element, do not reload yet. Return");
         }
       }
+
+      return founded;
+    } catch (TimeoutException e) {
+      // refresh page
+      refreshPage();
+
+      return loadWriteCommentPage();
+        // wait 10 seconds
+        // webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
-    
-    return result;
-    
+  } // end method loadWriteCommentPage
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private void selectTagOnFrontEnd(String orderId, String sku, String tagDataId) {
+    if ((tagDataId == null) || !StringUtils.hasText(tagDataId)) {
+      logger.error("The tag id is NULL or empty for orderId#" + orderId + " and SKU: " + sku);
+
+      return;
+    }
+
+    try {
+      String script =
+        "var arrays = $('.product-%s').find('a.tag-item'); for(var i = 0;i<arrays.length;i++){var a = arrays[i]; var dataAttr = $(a).attr('data-id'); if(dataAttr == '%s'){$(a).click()}}";
+      script = String.format(script, sku, tagDataId);
+      executeJavaScript(script);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Selected the tag[data-id=" + tagDataId + "] for sku:" + sku + " and orderId#" + orderId
+          + " was successfully.");
+      }
+
+
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+    }
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean selectTheTags(String sku) {
+  private boolean selectTheTags(String orderId, String sku) {
     boolean success = Boolean.TRUE;
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Ready for select tag(s) for SKU[" + sku + "] with random.");
+      logger.debug("Ready for select tag(s) for SKU[" + sku + "] with random and orderId#" + orderId);
     }
-    
+
     delay(5);
 
     try {
       String[] tags = getTagData(sku);
-      
-      if(tags == null || tags.length == 0){
+
+      if ((tags == null) || (tags.length == 0)) {
         // re-find the tags again
         tags = getTagData(sku);
       }
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Found can be used tags count:" + (tags != null ? tags.length : "NULL"));
+        logger.debug("Found can be used tags count:" + ((tags != null) ? tags.length : "NULL"));
       }
 
-      if (tags != null && tags.length > 0) {
-        int          size            = 1;
+      if ((tags != null) && (tags.length > 0)) {
+        int         size            = 1;
         Set<String> readySelectTags = new HashSet<>(5);
 
-//        if (tags.length >= 5) {
-//          size = new Random().nextInt(5);
-//        } else if (tags.length >= 3) {
-//          size = new Random().nextInt(3);
-//        }
-        
-        if(tags.length >= maxSelectTagCount){
+// if (tags.length >= 5) {
+// size = new Random().nextInt(5);
+// } else if (tags.length >= 3) {
+// size = new Random().nextInt(3);
+// }
+
+        if (tags.length >= maxSelectTagCount) {
           size = new Random().nextInt(maxSelectTagCount);
         }
-        
+
         // fixed if random size is zero
         // no tag select
         if (size == 0) {
@@ -437,7 +569,7 @@ public class Comment extends AbstractObject {
 
           size = 1;
         }
-        
+
         if (logger.isDebugEnabled()) {
           logger.debug("Random tag seed [size=" + size + "]");
         }
@@ -458,6 +590,7 @@ public class Comment extends AbstractObject {
           for (String dataId : readySelectTags) {
             String     selectTagXpath = String.format(TAG_SELECT_XPATH, sku, dataId);
             WebElement ele            = null;
+
             try {
               ele = ExpectedConditions.presenceOfElementLocated(By.xpath(selectTagXpath)).apply(
                   webDriver);
@@ -477,8 +610,8 @@ public class Comment extends AbstractObject {
               ele = ExpectedConditions.presenceOfElementLocated(By.xpath(selectTagXpath)).apply(
                   webDriver);
             }
-            
-            if(ele == null){
+
+            if (ele == null) {
               logger.warn("Nof found tag by xpath: " + selectTagXpath);
 
               selectTagXpath = String.format(PRODUCT_TAG_SELECT_WITHOUT_SKU_XPATH, dataId);
@@ -488,42 +621,74 @@ public class Comment extends AbstractObject {
               }
 
               ele = ExpectedConditions.presenceOfElementLocated(By.xpath(selectTagXpath)).apply(
-                webDriver);
+                  webDriver);
             }
-            
-            
+
+
             if (ele != null) {
               if (logger.isDebugEnabled()) {
                 logger.debug("Selected the tag: [" + ele.getText() + "]");
               }
 
-//              ele = ExpectedConditions.elementToBeClickable(ele).apply(webDriver);
               delay(3);
+
               try {
                 ele.click();
-              }catch (Exception e){
+              } catch (Exception e) {
                 logger.warn(e.getMessage());
 
+
                 if (logger.isDebugEnabled()) {
-                  logger.debug("Will scroll bottom and then click the element");
+                  logger.debug("Will execute the 'Select the tag on front-end page'");
                 }
 
-                executeJavaScript("scroll(250, 0)");
-                delay(3);
-                ele.click();
+                selectTagOnFrontEnd(orderId, sku, dataId);
               }
             }
-          }
-        }
+          } // end for
+        }   // end if
 
       } // end if
     } catch (Exception e) {
       success = Boolean.FALSE;
       logger.error(e.getMessage(), e);
-    } // end try-catch
+    }   // end try-catch
 
     return success;
   } // end method selectTheTags
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private void submit(String orderId) {
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Ready for submit comment for orderId#" + orderId);
+      }
+
+      WebElement submitBtn = ExpectedConditions.elementToBeClickable(By.xpath(SUBMIT_BTN_XPATH)).apply(
+          webDriver);
+      delay(10);
+      submitBtn.click();
+
+      delay(5);
+
+      (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
+          @Override public Boolean apply(WebDriver d) {
+            return (d.getCurrentUrl().contains(Constant.JD_COMMENT_SUCCESS_URL));
+          }
+        });
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Submit comment for orderId#" + orderId + " successfully!");
+      }
+    } catch (NoSuchElementException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Submit comment for orderId#" + orderId + " failed");
+      }
+
+      logger.error(e.getMessage(), e);
+    } // end try-catch
+  }   // end method submit
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -533,9 +698,9 @@ public class Comment extends AbstractObject {
     }
 
     if ((sku != null) && StringUtils.hasText(sku)) {
-      String writeCommentTextArea = String.format(WRITE_COMMENTS_TEXTAREA_XPATH, sku);
-      WebElement textArea = null;
-      
+      String     writeCommentTextArea = String.format(WRITE_COMMENTS_TEXTAREA_XPATH, sku);
+      WebElement textArea             = null;
+
       try {
         textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(writeCommentTextArea)).apply(
             webDriver);
@@ -549,8 +714,8 @@ public class Comment extends AbstractObject {
         textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(PAGE_LOADING_XPATH)).apply(
             webDriver);
       }
-      
-      if(textArea != null){
+
+      if (textArea != null) {
         // wait 5 seconds
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -568,37 +733,5 @@ public class Comment extends AbstractObject {
       logger.warn("No sku or sku is empty.");
     } // end if-else
   }   // end method writeComment
-  
-  
-  private void submit(String orderId){
-    try {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Ready for submit comment for orderId#" + orderId);
-      }
-
-      WebElement submitBtn = ExpectedConditions.elementToBeClickable(By.xpath(SUBMIT_BTN_XPATH)).apply(
-        webDriver);
-      delay(10);
-      submitBtn.click();
-
-      delay(5);
-      
-      (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
-        @Override public Boolean apply(WebDriver d) {
-          return (d.getCurrentUrl().contains(Constant.JD_COMMENT_SUCCESS_URL));
-        }
-      });
-      
-      if (logger.isDebugEnabled()) {
-        logger.debug("Submit comment for orderId#" + orderId + " successfully!");
-      }
-    } catch (NoSuchElementException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Submit comment for orderId#" + orderId + " failed");
-      }
-
-      logger.error(e.getMessage(), e);
-    }
-  }
 
 } // end class Comment

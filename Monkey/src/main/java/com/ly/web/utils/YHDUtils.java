@@ -1,5 +1,6 @@
 package com.ly.web.utils;
 
+import com.ly.web.constant.Constant;
 import org.apache.log4j.Logger;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,6 +30,8 @@ public class YHDUtils {
   private static final int    SKU_COLUMN             = 3;
   private static final int    COMMENT_CONTENT_COLUMN = 4;
   private static final int    ONLY_RECEIPT_NOT_COMMENT_COLUMN = 5;
+  
+  private static int INDEX = 1;
 
   private static final Logger logger = Logger.getLogger(YHDUtils.class);
 
@@ -110,6 +113,11 @@ public class YHDUtils {
 
         if (sku != null) {
           commentsInfo.getCommentsMap().put(sku, cellValue);
+        } else {
+          // if no sku, then do process without sku comments
+          String key = Constant.NONE_SKU_KEY_PREFIX + (INDEX++);
+          logger.info("key:" + key);
+          commentsInfo.getCommentsMap().put(key, cellValue);
         }
 
         break;

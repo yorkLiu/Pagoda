@@ -191,9 +191,9 @@ public abstract class AbstractObject {
     executeJavaScript(script);
   }
   
-  protected void executeJavaScript(String script){
+  protected Object executeJavaScript(String script){
     JavascriptExecutor jsEngine   = (JavascriptExecutor) webDriver;
-    jsEngine.executeScript(script);
+    return jsEngine.executeScript(script);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
