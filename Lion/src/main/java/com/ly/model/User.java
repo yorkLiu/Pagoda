@@ -1,18 +1,31 @@
 package com.ly.model;
 
-import com.ly.model.base.AbstractUserInfo;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.io.Serializable;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.io.Serializable;
-import java.util.Collection;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.ly.model.base.AbstractUserInfo;
 
 
 /**
@@ -23,16 +36,69 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "User")
-public class User extends AbstractUserInfo 
-//  implements Serializable, UserDetails 
-{
+public class User extends AbstractUserInfo implements Serializable, UserDetails {
+  //~ Static fields/initializers ---------------------------------------------------------------------------------------
+
+  private static final long serialVersionUID = -2549173191097161611L;
+
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
+  /** DOCUMENT ME! */
+  @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.REMOVE })
+  @JoinTable(
+    name               = "UserRole",
+    joinColumns        = {
+      @JoinColumn(
+        name           = "userId",
+        nullable       = false,
+        updatable      = false
+      )
+    },
+    inverseJoinColumns = {
+      @JoinColumn(
+        name           = "roleId",
+        nullable       = false,
+        updatable      = false
+      )
+    }
+  )
+  @ManyToMany(fetch = FetchType.EAGER)
+  protected Set<Role> roles = new HashSet<Role>();
+
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Id
-  private Long id;
+  @Id private Long id;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * addLoginFailureCount.
+   */
+  public void addLoginFailureCount() {
+    if (this.loginFailureCount == null) {
+      this.loginFailureCount = 1;
+    } else {
+      this.loginFailureCount++;
+    }
+
+    if (loginFailureCount >= retryCount) {
+      this.setLocked(Boolean.TRUE);
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * addRole.
+   *
+   * @param  role  Role
+   */
+  public void addRole(Role role) {
+    if (role != null) {
+      this.roles.add(role);
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * deepCopy.
@@ -105,39 +171,105 @@ public class User extends AbstractUserInfo
 
   } // end method equals
 
+  //~ ------------------------------------------------------------------------------------------------------------------
 
+  /**
+   * @see  org.springframework.security.core.userdetails.UserDetails#getAuthorities()
+   */
+  @Override @Transient public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Arrays.asList(roles.toArray(new GrantedAuthority[0]));
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for id.
+   *
+   * @return  Long
+   */
   public Long getId() {
     return id;
   }
 
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for roles.
+   *
+   * @return  Set
+   */
+  public Set<Role> getRoles() {
+    return roles;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  org.springframework.security.core.userdetails.UserDetails#isAccountNonExpired()
+   */
+  @Override public boolean isAccountNonExpired() {
+    return !getExpired();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  org.springframework.security.core.userdetails.UserDetails#isAccountNonLocked()
+   */
+  @Override public boolean isAccountNonLocked() {
+    return !getLocked();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  org.springframework.security.core.userdetails.UserDetails#isCredentialsNonExpired()
+   */
+  @Override public boolean isCredentialsNonExpired() {
+    return !getCredentialsExpired();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  org.springframework.security.core.userdetails.UserDetails#isEnabled()
+   */
+  @Override public boolean isEnabled() {
+    return getEnable();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * removeRole.
+   *
+   * @param  role  Role
+   */
+  public void removeRole(Role role) {
+    if ((role != null) && (this.roles.size() > 0)) {
+      this.roles.remove(role);
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for id.
+   *
+   * @param  id  Long
+   */
   public void setId(Long id) {
     this.id = id;
   }
 
+  //~ ------------------------------------------------------------------------------------------------------------------
 
-
-//  @Override
-//  public Collection<? extends GrantedAuthority> getAuthorities() {
-//    return null;
-//  }
-//
-//  @Override
-//  public boolean isAccountNonExpired() {
-//    return !getExpired();
-//  }
-//
-//  @Override
-//  public boolean isAccountNonLocked() {
-//    return !getLocked();
-//  }
-//
-//  @Override
-//  public boolean isCredentialsNonExpired() {
-//    return !getCredentialsExpired();
-//  }
-//
-//  @Override
-//  public boolean isEnabled() {
-//    return getEnable();
-//  }
+  /**
+   * setter method for roles.
+   *
+   * @param  roles  Set
+   */
+  public void setRoles(Set<Role> roles) {
+    this.roles = roles;
+  }
 } // end class User

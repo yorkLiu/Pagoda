@@ -1,11 +1,15 @@
 package com.ly.model.base;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
@@ -25,19 +29,16 @@ import org.hibernate.annotations.Type;
   protected Boolean changePassword;
 
   /** TODO: DOCUMENT ME! */
-  @Type(type = "yes_no")
-  protected Boolean disabled = Boolean.FALSE;
-  @Column(
-    nullable = false
-  )
-  protected Boolean expired = Boolean.FALSE;
-
   @Column(
     name     = "credentialsExpired",
     nullable = false
   )
   @Type(type = "yes_no")
   protected Boolean credentialsExpired = Boolean.FALSE;
+
+  /** TODO: DOCUMENT ME! */
+  @Type(type = "yes_no")
+  protected Boolean disabled = Boolean.FALSE;
 
   /** TODO: DOCUMENT ME! */
   protected String email;
@@ -47,10 +48,21 @@ import org.hibernate.annotations.Type;
   protected Boolean enable;
 
   /** TODO: DOCUMENT ME! */
+  @Column(nullable = false)
+  @Type(type = "yes_no")
+  protected Boolean expired = Boolean.FALSE;
+
+  /** TODO: DOCUMENT ME! */
   protected String firstName;
 
   /** TODO: DOCUMENT ME! */
   @Transient protected String fullName;
+
+
+  /** DOCUMENT ME! */
+  @Column(name = "lastLoginFailureDate")
+  @Temporal(TemporalType.TIMESTAMP)
+  protected Date lastLoginFailureDate;
 
   /** TODO: DOCUMENT ME! */
   protected String lastName;
@@ -68,6 +80,22 @@ import org.hibernate.annotations.Type;
 
   /** TODO: DOCUMENT ME! */
   protected String passwordHint;
+
+  /** TODO: DOCUMENT ME! */
+  @Transient protected Integer retryCount = 6;
+
+  /** second to last web login date for this accoun. */
+  @Column(name = "secondToLastLoginDate")
+  @Temporal(TemporalType.TIMESTAMP)
+  protected Date secondToLastLoginDate;
+
+  /** DOCUMENT ME! */
+  @Column(name = "secondToLastLoginFailureDate")
+  @Temporal(TemporalType.TIMESTAMP)
+  protected Date secondToLastLoginFailureDate;
+
+  @Column(name = "loginFailureCount")
+  protected Integer loginFailureCount = 0;
 
   /**
    * <pre>
@@ -105,6 +133,21 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for credentials expired.
+   *
+   * @return  Boolean
+   */
+  public Boolean getCredentialsExpired() {
+    if (null == credentialsExpired) {
+      return Boolean.FALSE;
+    }
+
+    return credentialsExpired;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for disabled.
    *
    * @return  Boolean
@@ -132,10 +175,26 @@ import org.hibernate.annotations.Type;
    * @return  Boolean
    */
   public Boolean getEnable() {
-    if(null == enable){
+    if (null == enable) {
+      return Boolean.TRUE;
+    }
+
+    return enable;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for expired.
+   *
+   * @return  Boolean
+   */
+  public Boolean getExpired() {
+    if (null == expired) {
       return Boolean.FALSE;
     }
-    return enable;
+
+    return expired;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -163,6 +222,17 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for last login failure date.
+   *
+   * @return  Date
+   */
+  public Date getLastLoginFailureDate() {
+    return lastLoginFailureDate;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for last name.
    *
    * @return  String
@@ -179,9 +249,10 @@ import org.hibernate.annotations.Type;
    * @return  Boolean
    */
   public Boolean getLocked() {
-    if(locked == null){
+    if (locked == null) {
       return Boolean.FALSE;
     }
+
     return locked;
   }
 
@@ -216,6 +287,39 @@ import org.hibernate.annotations.Type;
    */
   public String getPasswordHint() {
     return passwordHint;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for retry count.
+   *
+   * @return  Integer
+   */
+  public Integer getRetryCount() {
+    return retryCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for second to last login date.
+   *
+   * @return  Date
+   */
+  public Date getSecondToLastLoginDate() {
+    return secondToLastLoginDate;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for second to last login failure date.
+   *
+   * @return  Date
+   */
+  public Date getSecondToLastLoginFailureDate() {
+    return secondToLastLoginFailureDate;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -276,6 +380,17 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for credentials expired.
+   *
+   * @param  credentialsExpired  Boolean
+   */
+  public void setCredentialsExpired(Boolean credentialsExpired) {
+    this.credentialsExpired = credentialsExpired;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for disabled.
    *
    * @param  disabled  Boolean
@@ -309,6 +424,17 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for expired.
+   *
+   * @param  expired  Boolean
+   */
+  public void setExpired(Boolean expired) {
+    this.expired = expired;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for first name.
    *
    * @param  firstName  String
@@ -326,6 +452,17 @@ import org.hibernate.annotations.Type;
    */
   public void setFullName(String fullName) {
     this.fullName = fullName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for last login failure date.
+   *
+   * @param  lastLoginFailureDate  Date
+   */
+  public void setLastLoginFailureDate(Date lastLoginFailureDate) {
+    this.lastLoginFailureDate = lastLoginFailureDate;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -386,6 +523,39 @@ import org.hibernate.annotations.Type;
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for retry count.
+   *
+   * @param  retryCount  Integer
+   */
+  public void setRetryCount(Integer retryCount) {
+    this.retryCount = retryCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for second to last login date.
+   *
+   * @param  secondToLastLoginDate  Date
+   */
+  public void setSecondToLastLoginDate(Date secondToLastLoginDate) {
+    this.secondToLastLoginDate = secondToLastLoginDate;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for second to last login failure date.
+   *
+   * @param  secondToLastLoginFailureDate  Date
+   */
+  public void setSecondToLastLoginFailureDate(Date secondToLastLoginFailureDate) {
+    this.secondToLastLoginFailureDate = secondToLastLoginFailureDate;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for status.
    *
    * @param  status  String
@@ -425,27 +595,5 @@ import org.hibernate.annotations.Type;
    */
   public void setUsername(String username) {
     this.username = username;
-  }
-
-  public Boolean getExpired() {
-    if(null == expired){
-      return Boolean.FALSE;
-    }
-    return expired;
-  }
-
-  public void setExpired(Boolean expired) {
-    this.expired = expired;
-  }
-
-  public Boolean getCredentialsExpired() {
-    if(null == credentialsExpired){
-      return Boolean.FALSE;
-    }
-    return credentialsExpired;
-  }
-
-  public void setCredentialsExpired(Boolean credentialsExpired) {
-    this.credentialsExpired = credentialsExpired;
   }
 } // end class AbstractUserInfo
