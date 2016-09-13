@@ -45,12 +45,15 @@
 
      After setting "order" property, the physical order is not important any more.
    -->
+  
   <bean id="exceptionResolver"
         class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
     <property name="defaultErrorView" value="sysError"/>
     <property name="order" value="2"/>
     <property name="exceptionMappings">
       <props>
+        <prop key="org.springframework.security.core.userdetails.UsernameNotFoundException">login</prop>
+        <prop key="org.springframework.security.access.AccessDeniedException">login</prop>
         <prop key="org.springframework.dao.DataAccessException">dataError</prop>
         <prop key="org.springframework.orm.ObjectRetrievalFailureException">dataError</prop>
       </props>
@@ -64,8 +67,8 @@
     <property name="maxUploadSize" value="2097152"/>
   </bean>
 
-  <!--<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">-->
-  <bean id="messageSource" class="com.ly.web.view.PagodaResourceBundleMessageSource">
+  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+  <!--<bean id="messageSource" class="com.ly.web.view.PagodaResourceBundleMessageSource">-->
     <property name="basename" value="ApplicationResources"/>
     <property name="useCodeAsDefaultMessage" value="true"/>
   </bean>

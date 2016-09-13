@@ -1,0 +1,122 @@
+body {
+	background: #254d79;
+	font-family: Arial
+}
+#content {
+	width: 1280px;
+	height: 600px;
+	margin: 0 auto;
+	background: url(../images/bg.jpg) no-repeat;
+	overflow: hidden;
+}
+#login.login-panel {
+	border-radius: 5px;
+	height: 292px;
+	left: 50%;
+	margin-left: -215px;
+	margin-top: -134px;
+	position: absolute;
+	z-index: 2;
+	top: 300px;
+	width: 452px;
+	background: #fff;
+}
+#login .header {
+	width: 452px;
+	height: 72px;
+	border-radius: 5px 5px 0 0;
+}
+#login .header.pagoda{
+	background: url(../images/bg-loginbox-pagoda.jpg) no-repeat;
+}
+#login .version{
+	display: block;
+	float: right;
+	margin: 35px 10px 0 0;
+	font-size: 11px;
+	font-weight: bold;
+	color: #7c7d7d;
+}
+#login .bg-loginform {
+	width: 452px;
+	height: 193px;
+	background: url(../images/bg-loginbox-main.jpg) no-repeat;
+}
+#login .bg-loginform #loginForm {
+	overflow: hidden;
+}
+#login .bg-loginform #loginForm .valid-user {
+	position: fixed;
+	left: 10px;
+	right: 10px;
+	top: 10px;
+	height: 50px;
+	line-height: 50px;
+	font-size: 14px;
+	color: #fbf0f0;
+	text-align: center;
+	background: #d04437;
+	box-shadow: 0 5px 10px rgba(0,0,0,.4);
+}
+#login .bg-loginform #loginForm .valid-psw {
+	position: fixed;
+	left: 10px;
+	right: 10px;
+	top: 10px;
+	height: 50px;
+	line-height: 50px;
+	font-size: 14px;
+	color: #fbf0f0;
+	text-align: center;
+	background: #d04437;
+	box-shadow: 0 5px 10px rgba(0,0,0,.4);
+}
+#login .bg-loginform #loginForm .username,
+#login .bg-loginform #loginForm .password {
+	width: 248px;
+	height: 38px;
+	border-radius: 5px;
+	background: #f9f9f9;
+	line-height: 33px;
+	text-indent: 24px;
+	border: solid 1px #295a7b;
+	display: block;
+	margin: 10px auto;
+	color: #666;
+	font-size: 12px;
+}
+#login .bg-loginform #loginForm .username {
+	background: url(../images/icon-user.png) no-repeat 5px 12px #fff;
+}
+#login .bg-loginform #loginForm .password {
+	background: url(../images/icon-password.png) no-repeat 5px 12px #fff;
+}
+#login .bg-loginform #loginForm .btn-login {
+	font-family: Verdana;
+	width: 250px;
+	height: 41px;
+	line-height: 39px;
+	border: none;
+	display: block;
+	margin: 20px auto;
+	cursor: pointer;
+	color: #fff;
+	text-shadow: 0 1px 0 #1b4c67;
+	font-size: 14px;
+	background: url(../images/login-btn.jpg) no-repeat;
+}
+.loginbox-footer{
+	width: 452px;
+	height: 27px;
+	background: url(../images/bg-loginbox-footer.jpg) no-repeat;
+}
+.shadow-loginbox{
+	position: absolute;
+	top: 387px;
+	z-index: 1;
+	left: 50%;
+	margin-left: -300px;
+	width: 632px;
+	height: 164px;
+	background: url(../images/bg-loginbox-shadow.png) no-repeat;
+}
