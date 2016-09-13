@@ -17,20 +17,21 @@ public class UserServiceTest extends BaseManagerTestCase {
   
   @Test
   public void testCreateUser(){
-    User user = new User();
-    
-    user.setUsername("admin2");
-    user.setPassword("tomcat");
-    user.setEmail("test01@pagoda.com");
-    user.setFirstName("Tester");
-    user.setLastName("Pagoda");
-    user.setTelephone("12213123");
-    user.setTelephone2("234234234");
-    user.setPasswordHint("don't forget me");
-    userService.saveObject(user);
+//    User user = new User();
+//    
+//    user.setUsername("admin2");
+//    user.setPassword("tomcat");
+//    user.setEmail("test01@pagoda.com");
+//    user.setFirstName("Tester");
+//    user.setLastName("Pagoda");
+//    user.setTelephone("12213123");
+//    user.setTelephone2("234234234");
+//    user.setPasswordHint("don't forget me");
+//    userService.saveObject(user);
 
-    System.out.println("user.id:" + user.getId());
-    
+//    System.out.println("user.id:" + user.getId());
+
+    System.out.println("Test Save User...");
     
   }
   

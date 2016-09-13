@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+  "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
   <session-factory>
-  <mapping class="com.ly.model.Account"/>
-  <mapping class="com.ly.model.Address"/>
-  <mapping class="com.ly.model.ItemInfo"/>
-  <mapping class="com.ly.model.Merchant"/>
-  <mapping class="com.ly.model.OrderInfo"/>
-  <mapping class="com.ly.model.User"/>
-  <mapping class="com.ly.model.AppType"/>
-  <mapping class="com.ly.model.Commission"/>
-  <mapping class="com.ly.model.history.AccountHistory"/>
-  <mapping class="com.ly.model.history.AddressHistory"/>
-  <mapping class="com.ly.model.audit.UserAudit"/>
-  <mapping class="com.ly.model.audit.OrderInfoAudit"/>
+    <mapping class="com.ly.model.User"/>
+    <mapping class="com.ly.model.Role"/>
+    <mapping class="com.ly.model.Feature"/>
+    <mapping class="com.ly.model.RoleFeature"/>
+    <mapping class="com.ly.model.Account"/>
+    <mapping class="com.ly.model.Address"/>
+    <mapping class="com.ly.model.ItemInfo"/>
+    <mapping class="com.ly.model.Merchant"/>
+    <mapping class="com.ly.model.OrderInfo"/>
+    <mapping class="com.ly.model.AppType"/>
+    <mapping class="com.ly.model.Commission"/>
+    <mapping class="com.ly.model.history.AccountHistory"/>
+    <mapping class="com.ly.model.history.AddressHistory"/>
+    <mapping class="com.ly.model.audit.UserAudit"/>
+    <mapping class="com.ly.model.audit.OrderInfoAudit"/>
   </session-factory>
 </hibernate-configuration>
