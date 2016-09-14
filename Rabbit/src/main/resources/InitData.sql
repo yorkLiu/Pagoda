@@ -19,14 +19,18 @@ VALUES
 (3, now(), now(), 1, 3);
 
 -- INIT User data
-INSERT INTO `User` (id, createDate, lastUpdateDate, firstName, lastName, username, password, enable, expired, locked, disabled)
+INSERT INTO `User` (id, createDate, lastUpdateDate, firstName, lastName, username, password, email, enable, expired, locked, disabled, credentialsExpired, changePassword)
 VALUES
-(1, now(), now(), 'System', 'Amdin', 'admin', '$2a$08$BfGIccyHocY7oBitGAIhE.NBhM78.k1fK6fnzP96Ccid5ynnsM/Tm', 'Y', 'N', 'N','N');
+(1, now(), now(), 'System', 'Amdin', 'admin', '$2a$08$BfGIccyHocY7oBitGAIhE.NBhM78.k1fK6fnzP96Ccid5ynnsM/Tm', 'admin@pagodao.com', 'Y', 'N', 'N','N', 'N', 'N'),
+(2, now(), now(), 'System', 'Pagoda', 'pagoda', '$2a$08$BfGIccyHocY7oBitGAIhE.NBhM78.k1fK6fnzP96Ccid5ynnsM/Tm', 'pagoda@pagodao.com', 'Y', 'N', 'N','N', 'N', 'N'),
+(3, now(), now(), 'Pagoda', 'Tester', 'pagodatester', '$2a$08$BfGIccyHocY7oBitGAIhE.NBhM78.k1fK6fnzP96Ccid5ynnsM/Tm', 'pagodaTester@pagodao.com', 'Y', 'N', 'N','N', 'N', 'N');
 
 -- INIT UserRole data
 INSERT INTO UserRole(userId, roleId)
 VALUES
-(1,1);
+(1,1),
+(2,1),
+(3,1);
 
 -- INIT AppType data
 INSERT INTO AppType (createDate, lastUpdateDate, active, appName, description)
