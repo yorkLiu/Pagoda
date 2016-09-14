@@ -31,6 +31,13 @@ public class Merchant extends CreatorObject {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /**首选地址*/
+  /**
+   * <pre>
+   *   All,
+   *   江浙沪
+   *   北上广
+   * </pre>
+   */
   private String addressOption;
 
   /** comment total count, default is all @totalCount. */
@@ -63,7 +70,7 @@ public class Merchant extends CreatorObject {
   /** 每单间隔时间 (minute). */
   private Integer intervalForOrder = 3;
 
-  private String merchantId;
+  private String merchantNo;
 
   private String merchantName;
 
@@ -269,18 +276,7 @@ public class Merchant extends CreatorObject {
   public Integer getIntervalForOrder() {
     return intervalForOrder;
   }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * getter method for merchant id.
-   *
-   * @return  String
-   */
-  public String getMerchantId() {
-    return merchantId;
-  }
-
+  
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
@@ -527,16 +523,14 @@ public class Merchant extends CreatorObject {
     this.intervalForOrder = intervalForOrder;
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for merchant id.
-   *
-   * @param  merchantId  String
-   */
-  public void setMerchantId(String merchantId) {
-    this.merchantId = merchantId;
+  public String getMerchantNo() {
+    return merchantNo;
   }
+
+  public void setMerchantNo(String merchantNo) {
+    this.merchantNo = merchantNo;
+  }
+
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
