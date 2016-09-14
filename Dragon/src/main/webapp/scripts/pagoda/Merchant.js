@@ -6,19 +6,19 @@
  * To change this template use File | Settings | File Templates.
  */
 
-Ext.define('Pagoda.UserRole', {
+Ext.define('Pagoda.Merchant', {
   extend:'Ext.ux.desktop.Module',
 
   requires:[
-    'Pagoda.userrole.view.UserList'
+    'Pagoda.merchant.view.MerchantList'
   ],
 
-  id:'userRole-win',
-  moduleName: 'userRole-win',
+  id:'merchant-win',
+  moduleName: 'merchant-win',
 
   init:function () {
     this.launcher = {
-      text:'User & Role Manager',
+      text:'商家信息管理',
       iconCls:'tabs',
       handler:this.createWindow,
       scope:this
@@ -28,12 +28,12 @@ Ext.define('Pagoda.UserRole', {
 
   createWindow:function () {
     var desktop = this.app.getDesktop();
-    var win = desktop.getWindow('userRole-win');
+    var win = desktop.getWindow('merchant-win');
 
     if (!win) {
       win = desktop.createWindow({
-        id:'userRole-win',
-        title:'用户与权限管理',
+        id:'merchant-win',
+        title:'商家信息管理',
         width:800,
         height:600,
         shim:false,
@@ -50,7 +50,7 @@ Ext.define('Pagoda.UserRole', {
           animate:false
         },
         items: {
-          xtype: 'userlist'
+          xtype: 'merchantlist'
         }
       });
     }

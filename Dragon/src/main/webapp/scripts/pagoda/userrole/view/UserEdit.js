@@ -70,6 +70,8 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
             name: 'password',
             maxLength: 100,
             allowBlank: false,
+            disabled: me.activeRecord ? true : false,
+            hidden: me.activeRecord ? true : false,
             validator: Pago.Utils.trimValidator
           },
           {
@@ -78,6 +80,8 @@ Ext.define('Pagoda.userrole.view.UserEdit', {
             name: 'confirmPassword',
             maxLength: 100,
             allowBlank: false,
+            disabled: me.activeRecord ? true : false,
+            hidden: me.activeRecord ? true : false,
             validator: function(v){
               var password = this.previousSibling('[name=password]');
               return (v === password.getValue()) ? true : userRoleRes.error.newPasswordNotMatch

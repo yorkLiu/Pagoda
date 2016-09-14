@@ -1,53 +1,70 @@
 /**
- * Created by yongliu on 7/26/16.
+ * Created by yongliu on 9/14/16.
  */
 
-Ext.define('Pagoda.userrole.view.UserList', {
+Ext.define('Pagoda.merchant.view.MerchantList', {
   extend:'Ext.grid.Panel',
-  alias: 'widget.userlist',
+  alias: 'widget.merchantlist',
   requires:[
-    'Pagoda.userrole.store.Users',
-    'Pagoda.userrole.view.UserEdit'
+    'Pagoda.merchant.store.Merchants',
+    'Pagoda.merchant.view.MerchantEdit'
   ],
 
   forceFit: true,
   selType: 'rowmodel',
-
+  
   initComponent: function(){
     var me = this;
-    this.store = this.getStore();
+    
+    this.store = me.getStore();
     
     this.columns = [
       {
-        header: userRoleRes.fields.username,
-        dataIndex: 'username'
+        header: '别名',
+        dataIndex: 'name',
+        flex: 100
       },
       {
-        header: userRoleRes.fields.fullName,
-        dataIndex: 'fullName'
+        header: '商家名称',
+        dataIndex: 'merchantName',
+        flex: 100
       },
       {
-        header: userRoleRes.fields.email,
-        dataIndex: 'email'
+        header: '商家ID',
+        dataIndex: 'merchantNo',
+        flex: 100
       },
       {
-        header: userRoleRes.fields.telephone,
-        dataIndex: 'telephone'
+        header: '刷单数量(单)',
+        dataIndex: 'totalCount',
+        flex: 100
       },
       {
-        header: userRoleRes.fields.telephone2,
-        dataIndex: 'telephone2'
+        xtype: 'datecolumn',
+        format:'Y-m-d H:i',
+        header: '开始时间',
+        dataIndex: 'scheduleDateTime',
+        flex: 100
       },
       {
-        header: userRoleRes.fields.status,
-        dataIndex: 'status'
+        header: '状态',
+        dataIndex: 'status',
+        flex: 100
       },
       {
-        header: userRoleRes.fields.enabled,
-        dataIndex: 'enabled',
+        header: '团购?',
+        dataIndex: 'groupBuy',
+        flex: 100,
+        renderer: Pago.Utils.booleanRenderer
+      },
+      {
+        header: '海购?',
+        dataIndex: 'overseas',
+        flex: 100,
         renderer: Pago.Utils.booleanRenderer
       }
     ];
+
 
     this.dockedItems = [
       {
@@ -106,16 +123,16 @@ Ext.define('Pagoda.userrole.view.UserList', {
       itemdblclick: this.onItemDblClickHandler,
       selectionchange : this.onRowSelectChanged
     };
-    
-    
+
+
     this.callParent();
   },
-
+  
   getStore: function(){
-    var store = Ext.StoreManager.lookup('PagodaUserListStore');
+    var store = Ext.StoreManager.lookup('PagodaMerchantStore');
     if(!store || store == null){
-      store = Ext.create('Pagoda.userrole.store.Users',{
-        storeId: 'PagodaUserListStore'
+      store = Ext.create('Pagoda.merchant.store.Merchants', {
+        storeId: 'PagodaMerchantStore'
       });
       store.load();
     }
@@ -136,28 +153,22 @@ Ext.define('Pagoda.userrole.view.UserList', {
 
   addOrUpdate: function(record){
     var me = this,
-      title = '添加新用户';
+      title = '添加商家';
     if(record){
-      title = '更新用户信息';
+      title = '更改商家信息';
     }
-    var win = Ext.widget('useredit',{
+    var win = Ext.widget('merchantedit',{
       title: title,
       modal: true,
       width: 600,
       autoHeight: true,
-//      autoWidth: true,
-//      autoHeight: true,
-//      maxWidth: 800,
-//      maxHeight: 600,
       activeRecord: record,
       addRecord: function(record){
-        console.log('record:', record);
         me.store.add(record);
       },
       saveRecord: function(){
         me.store.sync({
           success: function(){
-            // todo after success
             win.close();
           },
           failed: function(){
@@ -198,11 +209,10 @@ Ext.define('Pagoda.userrole.view.UserList', {
           if(btn === 'yes'){
             // do remove this record
             me.store.remove(record);
-            me.store.sync();
+            //me.store.sync();
           }
         }
       });
     }
   }
-  
 });

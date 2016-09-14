@@ -56,10 +56,10 @@ var userRoleRes = {
     email: '电子邮件地址',
     telephone: '手机号码',
     telephone2: '备用手机号码',
-    status: '密码提示',
-    enabled: '状态',
-    locked: '可用?',
-    disabled: '不可用?'
+    status: '状态',
+    enabled: '可用',
+    locked: '已锁',
+    disabled: '不可用'
   },
 
   error: {

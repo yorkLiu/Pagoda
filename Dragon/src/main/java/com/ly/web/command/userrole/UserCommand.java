@@ -24,7 +24,11 @@ public class UserCommand extends BaseCommand {
 
   @RemoteProperty private Boolean changePassword;
 
+  @RemoteProperty private Boolean disabled;
+
   @RemoteProperty private String email;
+
+  @RemoteProperty private Boolean enabled;
 
   @RemoteProperty private String firstName;
 
@@ -35,8 +39,6 @@ public class UserCommand extends BaseCommand {
   @RemoteProperty private String lastName;
 
   @RemoteProperty private Boolean locked;
-  
-  @RemoteProperty private Boolean disabled;
 
   @RemoteProperty private String password;
 
@@ -76,6 +78,7 @@ public class UserCommand extends BaseCommand {
     this.status         = user.getStatus();
     this.telephone      = user.getTelephone();
     this.telephone2     = user.getTelephone2();
+    this.enabled        = user.getEnable();
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
@@ -117,6 +120,21 @@ public class UserCommand extends BaseCommand {
    */
   public String getEmail() {
     return email;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for enabled.
+   *
+   * @return  Boolean
+   */
+  public Boolean getEnabled() {
+    if (null == enabled) {
+      return Boolean.TRUE;
+    }
+
+    return enabled;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -305,6 +323,17 @@ public class UserCommand extends BaseCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for enabled.
+   *
+   * @param  enabled  Boolean
+   */
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for first name.
    *
    * @param  firstName  String
@@ -422,6 +451,4 @@ public class UserCommand extends BaseCommand {
   public void setUsername(String username) {
     this.username = username;
   }
-  
-  
 } // end class UserCommand

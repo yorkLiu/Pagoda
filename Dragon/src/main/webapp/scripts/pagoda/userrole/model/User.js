@@ -17,6 +17,7 @@ Ext.define('Pagoda.userrole.model.User',{
     {name: 'telephone',type:'string'} ,
     {name: 'telephone2',type:'string'}, 
     {name: 'locked',type:'bool'} ,
-    {name: 'disabled',type:'bool'}
+    {name: 'disabled',type:'bool'},
+    {name: 'enabled',type:'bool'}
   ]
 });

@@ -21,7 +21,8 @@ Ext.define('Pagoda.App', {
 
     // import modules
     'Pagoda.UserRole',
-    'Pagoda.Configuration'
+    'Pagoda.Configuration',
+    'Pagoda.Merchant'
 
     // todo import you modules
   ],
@@ -347,7 +348,8 @@ Ext.define('Pagoda.App', {
 
     return [
       new Pagoda.UserRole(),
-      new Pagoda.Configuration()
+      new Pagoda.Configuration(),
+      new Pagoda.Merchant()
     ];
 //      eg:
 //    return [
@@ -368,7 +370,7 @@ Ext.define('Pagoda.App', {
     return Ext.apply(ret, {
       //cls: 'ux-desktop-black',
       contextMenuItems: [
-        { text: 'Change Settings', handler: me.onSettings, scope: me }
+        { text: '更改设置', handler: me.onSettings, scope: me }
       ],
 
       shortcuts: Ext.create('Ext.data.Store', {
@@ -376,7 +378,8 @@ Ext.define('Pagoda.App', {
         data: [
           // todo add your module @module: 'your defined module id'
           { name: '用户与权限管理', iconCls: 'userRole-shortcut', module: 'userRole-win' },
-          { name: '配置管理', iconCls: 'configuration-shortcut', module: 'configuration-win' }
+          { name: '配置管理', iconCls: 'configuration-shortcut', module: 'configuration-win' },
+          { name: '商家信息管理', iconCls: 'configuration-shortcut', module: 'merchant-win' }
           //eg:
 //          { name: 'Grid Window', iconCls: 'grid-shortcut', module: 'grid-win' },
 //          { name: 'Accordion Window', iconCls: 'accordion-shortcut', module: 'acc-win' },
@@ -419,14 +422,14 @@ Ext.define('Pagoda.App', {
         width: 100,
         items: [
           {
-            text:'Settings',
+            text:'设置',
             iconCls:'settings',
             handler: me.onSettings,
             scope: me
           },
           '-',
           {
-            text:'Logout',
+            text:'退出',
             iconCls:'logout',
             handler: me.onLogout,
             scope: me
@@ -437,7 +440,7 @@ Ext.define('Pagoda.App', {
   },
 
   onLogout: function () {
-    Ext.Msg.confirm('Logout', 'Are you sure you want to logout?');
+    Ext.Msg.confirm('退出', '确定要退出吗?');
   },
 
   onSettings: function () {
