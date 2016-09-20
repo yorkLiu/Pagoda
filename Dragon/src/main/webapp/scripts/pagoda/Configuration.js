@@ -11,7 +11,7 @@ Ext.define('Pagoda.Configuration', {
 
   init:function () {
     this.launcher = {
-      text:'User & Role Manager',
+      text:'配置管理',
       iconCls:'tabs',
       handler:this.createWindow,
       scope:this
@@ -54,8 +54,7 @@ Ext.define('Pagoda.Configuration', {
       });
     }
     win.show();
-    return win;
-
+    //return win;
   },
   
   

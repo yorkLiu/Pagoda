@@ -2,8 +2,6 @@
  * Created by yongliu on 9/14/16.
  */
 
-
-
 Ext.define('Pagoda.merchant.store.Merchants',{
   extend: 'Pagoda.store.Base',
   requires: [
@@ -14,15 +12,15 @@ Ext.define('Pagoda.merchant.store.Merchants',{
   model: 'Pagoda.merchant.model.Merchant',
 
 
-  pageSize: 50,
+  pageSize: 20,
 
   proxy: {
     type: 'dwr',
 
     api : {
-      read:userRoleController.listUsers,
-      create:userRoleController.createUser,
-      update:userRoleController.createUser
+      read:merchantController.readMerchant,
+      create:merchantController.updateMerchant,
+      update:merchantController.updateMerchant
     },
 
     reader: {

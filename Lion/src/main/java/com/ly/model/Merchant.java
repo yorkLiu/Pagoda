@@ -33,9 +33,9 @@ public class Merchant extends CreatorObject {
   /**首选地址*/
   /**
    * <pre>
-   *   All,
-   *   江浙沪
-   *   北上广
+       All,
+       江浙沪
+       北上广
    * </pre>
    */
   private String addressOption;
@@ -48,6 +48,8 @@ public class Merchant extends CreatorObject {
 
   /** how many days delay to confirm receipt. */
   private Integer confirmReceiptDelay;
+
+  private Long copyFromId;
 
   /** 闪购. */
   private Boolean flashBuy;
@@ -70,9 +72,9 @@ public class Merchant extends CreatorObject {
   /** 每单间隔时间 (minute). */
   private Integer intervalForOrder = 3;
 
-  private String merchantNo;
-
   private String merchantName;
+
+  private String merchantNo;
 
   private String name;
 
@@ -203,6 +205,17 @@ public class Merchant extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for copy from id.
+   *
+   * @return  Long
+   */
+  public Long getCopyFromId() {
+    return copyFromId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for flash buy.
    *
    * @return  Boolean
@@ -276,7 +289,7 @@ public class Merchant extends CreatorObject {
   public Integer getIntervalForOrder() {
     return intervalForOrder;
   }
-  
+
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
@@ -286,6 +299,17 @@ public class Merchant extends CreatorObject {
    */
   public String getMerchantName() {
     return merchantName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for merchant no.
+   *
+   * @return  String
+   */
+  public String getMerchantNo() {
+    return merchantNo;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -449,6 +473,17 @@ public class Merchant extends CreatorObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for copy from id.
+   *
+   * @param  copyFromId  Long
+   */
+  public void setCopyFromId(Long copyFromId) {
+    this.copyFromId = copyFromId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for flash buy.
    *
    * @param  flashBuy  Boolean
@@ -523,15 +558,6 @@ public class Merchant extends CreatorObject {
     this.intervalForOrder = intervalForOrder;
   }
 
-  public String getMerchantNo() {
-    return merchantNo;
-  }
-
-  public void setMerchantNo(String merchantNo) {
-    this.merchantNo = merchantNo;
-  }
-
-
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
@@ -541,6 +567,17 @@ public class Merchant extends CreatorObject {
    */
   public void setMerchantName(String merchantName) {
     this.merchantName = merchantName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for merchant no.
+   *
+   * @param  merchantNo  String
+   */
+  public void setMerchantNo(String merchantNo) {
+    this.merchantNo = merchantNo;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

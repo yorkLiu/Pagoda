@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.util.StringUtils;
+
 import com.ly.dao.UserDao;
 
 import com.ly.model.User;
@@ -38,6 +40,10 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
    * @see  com.ly.service.UserService#getUserByUsername(java.lang.String)
    */
   @Override public User getUserByUsername(String username) {
-    return (User) userDao.loadUserByUsername(username);
+    if ((username != null) && StringUtils.hasText(username)) {
+      return (User) userDao.loadUserByUsername(username);
+    }
+
+    return null;
   }
-}
+} // end class UserServiceImpl

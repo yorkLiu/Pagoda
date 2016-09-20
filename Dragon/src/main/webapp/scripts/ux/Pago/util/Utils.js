@@ -5,6 +5,8 @@
 Ext.define('Pago.util.Utils', {
   alternateClassName: 'Pago.Utils',
   statics: {
+    
+    readOnlyTitleTpl: '&nbsp;[<span class="highlight-text-readOnly">只读</span>]',
 
     trim: function(str) {
       var str = str.replace(/^\s\s*/, ''),
@@ -31,9 +33,9 @@ Ext.define('Pago.util.Utils', {
     
     booleanRenderer: function(v, metaData, rec, rowIdx, colIdx, store, view){
       if(v){
-        return 'Y';
+        return '是';
       }
-      return 'N';
+      return '否';
     },
 
     /**
@@ -51,6 +53,13 @@ Ext.define('Pago.util.Utils', {
         }
       }
       return true;
+    },
+
+    markReadOnlyTitle : function (title){
+      var activeTemplate = new Ext.Template(this.readOnlyTitleTpl);
+      var htmlSeg,activeTitle;
+      activeTitle = activeTemplate.apply(htmlSeg);
+      return title + activeTitle;
     }
     
     

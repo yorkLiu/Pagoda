@@ -380,11 +380,6 @@ Ext.define('Pagoda.App', {
           { name: '用户与权限管理', iconCls: 'userRole-shortcut', module: 'userRole-win' },
           { name: '配置管理', iconCls: 'configuration-shortcut', module: 'configuration-win' },
           { name: '商家信息管理', iconCls: 'configuration-shortcut', module: 'merchant-win' }
-          //eg:
-//          { name: 'Grid Window', iconCls: 'grid-shortcut', module: 'grid-win' },
-//          { name: 'Accordion Window', iconCls: 'accordion-shortcut', module: 'acc-win' },
-//          { name: 'Notepad', iconCls: 'notepad-shortcut', module: 'notepad' },
-//          { name: 'System Status', iconCls: 'cpu-shortcut', module: 'systemstatus'}
         ]
       }),
 

@@ -34,13 +34,14 @@ Ext.define('Pagoda.Merchant', {
       win = desktop.createWindow({
         id:'merchant-win',
         title:'商家信息管理',
-        width:800,
-        height:600,
-        shim:false,
-        animCollapse:false,
-        border:true,
-        constrainHeader:true,
-        resizable:true,
+        width: 1100,
+        height: 600,
+        shim: false,
+        animCollapse: false,
+        border: true,
+        constrainHeader: true,
+        resizable: true,
+        maximized: true,
 
         defaults:{
           border:false
@@ -55,8 +56,7 @@ Ext.define('Pagoda.Merchant', {
       });
     }
     win.show();
-    return win;
-
+    //return win;
   }
 
 

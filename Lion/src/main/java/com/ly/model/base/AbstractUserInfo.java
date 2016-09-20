@@ -216,7 +216,7 @@ import org.hibernate.annotations.Type;
    * @return  String
    */
   public String getFullName() {
-    return fullName;
+    return firstName + " " + lastName;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

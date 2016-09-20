@@ -26,6 +26,10 @@ Ext.define('Pagoda.merchant.model.Merchant', {
     {name: 'scheduleTime', type: 'string'},
     {name: 'scheduleDateTime', type: 'date'},
     {name: 'status', type: 'string'},
-    {name: 'viewingTimeForOrder', type: 'int'}
+    {name: 'viewingTimeForOrder', type: 'int'},
+    {name: 'copyFromId', type: 'int'},
+    {name: 'fromCopy', type: 'bool'},
+    {name: 'creatorName', type: 'string'},
+    {name: 'createDate', type: 'date'}
   ]
 });

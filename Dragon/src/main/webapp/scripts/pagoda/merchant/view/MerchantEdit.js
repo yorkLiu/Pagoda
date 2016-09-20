@@ -15,6 +15,12 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
 
   activeRecord: undefined,
   layout: 'fit',
+
+  saveRecord: Ext.emptyFn,
+  addRecord: Ext.emptyFn,
+  
+  existsNameErrorMsg: '别名[<span style="color:blue">{0}</span>]已存在,请重新输入',
+  
   initComponent: function () {
     var me = this,
       today = new Date();
@@ -110,6 +116,17 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             minValue: '8:00 AM',
             maxValue: '11:00 PM',
             increment: 30
+          },
+          {
+            xtype: 'combo',
+            name: 'addressOption',
+            fieldLabel: '首选地址',
+            displayField: 'label',
+            valueField: 'value',
+            queryMode: 'local',
+            triggerAction: 'all',
+            value: 'ALL',
+            store: me.getAddressOptionStore()
           },
           {
             xtype: 'numberfield',
@@ -240,8 +257,10 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
         buttons:[
           {
             text: globalRes.buttons.save,
+            action: 'save',
             scope: me,
-            formBind: true,
+            formBind: me.activeRecord ? false : true,
+            disabled: me.activeRecord? true : false,
             plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             handler: me.onSaveHandler
           }, {
@@ -249,7 +268,12 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             scope: me,
             handler: me.onCloseHandler
           }
-        ]
+        ],
+        listeners: {
+          dirtychange: function(form, dirty){
+            me.down('button[action=save]')[dirty ? 'enable' : 'disable']()
+          }
+        }
       }
     ];
 
@@ -257,8 +281,80 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
     this.callParent();
   },
 
-  onSaveHandler: function(){
+  afterRender: function () {
+    this.callParent();
+    if (this.activeRecord && this.activeRecord != null) {
+      this.down('form').getForm().loadRecord(this.activeRecord);
+    }
+  },
+
+  getAddressOptionStore: function(){
+    var store = Ext.StoreManager.lookup('PagodaAddressOptionStore');
+    if(!store || store == null){
+      store = Ext.create('Ext.data.ArrayStore', {
+        storeId: 'PagodaAddressOptionStore',
+        fields: ['label', 'value'],
+        data: [
+          ['全部', 'ALL'],
+          ['北上广', '北上广'],
+          ['江淅沪', '江淅沪']
+        ]
+      });
+    }
+    return store;
+  },
+
+  checkUniqueName: function(){
+    var me = this,
+      form = me.down('#form').getForm(),
+      values = form.getValues(),
+      ret = false;
     
+    var checkValues = {
+      name : values.name,
+      id: values.id
+    };
+    
+    if(values.name){
+      merchantController.checkUniqueName(checkValues, {
+        async: false,
+        callback: function(resp){
+          ret = resp.success;
+        }
+      });
+    }
+    
+    return ret;
+  },
+
+  onSaveHandler: function(){
+    var me = this,
+      form = me.down('#form').getForm(),
+      values = form.getValues();
+    if(form.isValid()){
+      if(me.checkUniqueName()){
+        if(me.activeRecord && me.activeRecord != null){
+          form.updateRecord(me.activeRecord);
+        } else {
+          me.addRecord(values);
+        }
+        me.saveRecord();
+      } else {
+        var errorMsg = Ext.String.format(me.existsNameErrorMsg, values.name);
+        var nameField = form.findField('name');
+        Ext.MessageBox.show({
+          title: me.title,
+          msg: errorMsg,
+          closable: false,
+          icon: Ext.MessageBox.WARNING,
+          buttons: Ext.MessageBox.OK,
+          fn: function (btn) {
+            nameField.markInvalid(errorMsg);
+            nameField.focus();
+          }
+        });
+      }
+    }
   },
 
   onCloseHandler: function(){

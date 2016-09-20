@@ -13,6 +13,14 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
   forceFit: true,
   selType: 'rowmodel',
   
+  orderStatus: {
+    'INIT': '安排中',
+    'PENDING': '已安排',
+    'IN_PROGRESS': '正在刷单',
+    'CANCELLED': '已取消',
+    'COMPLETED': '已完成'
+  },
+  
   initComponent: function(){
     var me = this;
     
@@ -49,7 +57,13 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
       {
         header: '状态',
         dataIndex: 'status',
-        flex: 100
+        flex: 100,
+        renderer: function(v){
+          if(v){
+            return me.orderStatus[v.toUpperCase()];
+          }
+          return v;
+        }
       },
       {
         header: '团购?',
@@ -62,6 +76,18 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
         dataIndex: 'overseas',
         flex: 100,
         renderer: Pago.Utils.booleanRenderer
+      },
+      {
+        header: '创建者',
+        dataIndex: 'creatorName',
+        flex: 100
+      },
+      {
+        xtype: 'datecolumn',
+        format:'Y-m-d H:i:s',
+        header: '创建时间',
+        dataIndex: 'createDate',
+        flex: 100
       }
     ];
 
@@ -77,6 +103,11 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
             scope: me,
             handler: me.onAddHandler
           },{
+            text: globalRes.buttons.copy,
+            iconCls: 'copy',
+            scope: me,
+            handler: me.onCopyHandler
+          }, {
             text: globalRes.buttons.update,
             iconCls: 'edit',
             action: 'edit',
@@ -151,12 +182,15 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
     this.down('button[action=remove]')[enabled ? 'enable' : 'disable']();
   },
 
-  addOrUpdate: function(record){
+  addOrUpdate: function(record, title){
     var me = this,
-      title = '添加商家';
-    if(record){
-      title = '更改商家信息';
+      readOnly = false;
+      title = title ? title : '添加商家';
+    
+    if(readOnly){
+      title = Pago.util.Utils.markReadOnlyTitle(title);
     }
+    
     var win = Ext.widget('merchantedit',{
       title: title,
       modal: true,
@@ -173,8 +207,8 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
           },
           failed: function(){
             Ext.MessageBox.show({
-              title: title + " Error",
-              msg: "There is some errors when " + title,
+              title: title + "错误",
+              msg: title + '发生错误了',
               icon: Ext.MessageBox.ERROR,
               buttons: Ext.MessageBox.YES
             });
@@ -188,10 +222,28 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
     this.addOrUpdate(null);
 
   },
+
+  onCopyHandler: function(){
+    var record = this.getSelectionModel().getLastSelected();
+    if(record){
+      var title = '拷贝商家信息', 
+        copyFromId = record.get('id'),
+        newRecord = this.store.createModel(record.data);
+      var newName = Ext.Date.format(new Date(), 'm.d') + ' ' + record.data.name;
+
+      newRecord.data['id'] = null;
+      newRecord.data['copyFromId'] = copyFromId;
+      newRecord.data['fromCopy'] = true;
+      newRecord.set('name', newName);
+      
+      this.addOrUpdate(newRecord, title);
+    }
+  },
+  
   onUpdateHandler: function(){
     var record = this.getSelectionModel().getLastSelected();
     if(record){
-      this.addOrUpdate(record);
+      this.addOrUpdate(record, '更改商家信息');
     }
   },
   onRemoveHandler: function(){

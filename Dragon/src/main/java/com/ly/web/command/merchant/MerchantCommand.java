@@ -8,8 +8,12 @@ import org.directwebremoting.annotations.RemoteProperty;
 import org.directwebremoting.convert.ObjectConverter;
 
 import com.ly.model.Merchant;
+import com.ly.model.User;
+import com.ly.model.type.OrderStatusType;
 
 import com.ly.utils.DateUtil;
+
+import com.ly.web.command.BaseCommand;
 
 
 /**
@@ -19,7 +23,7 @@ import com.ly.utils.DateUtil;
  * @version  09/14/2016 16:31
  */
 @DataTransferObject(converter = ObjectConverter.class)
-public class MerchantCommand {
+public class MerchantCommand extends BaseCommand {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   @RemoteProperty private String addressOption;
@@ -30,9 +34,12 @@ public class MerchantCommand {
 
   @RemoteProperty private Integer confirmReceiptDelay;
 
+  @RemoteProperty private Long copyFromId;
+
   @RemoteProperty private Boolean flashBuy;
 
-  @RemoteProperty private String flashBuyIndexUrl;
+  @RemoteProperty private String  flashBuyIndexUrl;
+  @RemoteProperty private Boolean fromCopy;
 
   @RemoteProperty private Boolean groupBuy;
 
@@ -47,7 +54,7 @@ public class MerchantCommand {
   @RemoteProperty private String  merchantNo;
   @RemoteProperty private String  name;
 
-  private Boolean overseas;
+  @RemoteProperty private Boolean overseas;
 
   @RemoteProperty private Boolean quickOrder;
 
@@ -103,6 +110,9 @@ public class MerchantCommand {
       scheduleDateTime = DateUtil.toDate(scheduleDate + " " + scheduleTime + ":00");
     }
 
+    this.creatorName = (merchant.getCreator() != null) ? merchant.getCreator().getFullName() : null;
+    this.createDate  = merchant.getCreateDate();
+
   } // end ctor MerchantCommand
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
@@ -152,6 +162,17 @@ public class MerchantCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for copy from id.
+   *
+   * @return  Long
+   */
+  public Long getCopyFromId() {
+    return copyFromId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for flash buy.
    *
    * @return  Boolean
@@ -169,6 +190,21 @@ public class MerchantCommand {
    */
   public String getFlashBuyIndexUrl() {
     return flashBuyIndexUrl;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for from copy.
+   *
+   * @return  Boolean
+   */
+  public Boolean getFromCopy() {
+    if (null == fromCopy) {
+      return Boolean.FALSE;
+    }
+
+    return fromCopy;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -350,6 +386,50 @@ public class MerchantCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * populate.
+   *
+   * @param   user  User
+   *
+   * @return  Merchant
+   */
+  public Merchant populate(User user) {
+    Merchant merchant = new Merchant();
+
+    if ((getId() != null) && (getId().intValue() > 0)) {
+      merchant.setId(this.getId());
+      merchant.setLastUpdateDate(new Date());
+      merchant.setLastUpdater(user);
+    } else {
+      merchant.setStatus(OrderStatusType.INIT);
+      merchant.setCreator(user);
+    }
+
+    merchant.setName(this.getName());
+    merchant.setMerchantNo(this.getMerchantNo());
+    merchant.setMerchantName(this.getMerchantName());
+    merchant.setAddressOption(this.getAddressOption());
+    merchant.setTotalCount(this.getTotalCount());
+    merchant.setCommentCount(this.getCommentCount());
+    merchant.setCommentDelay(this.getCommentDelay());
+    merchant.setConfirmReceiptDelay(this.getConfirmReceiptDelay());
+    merchant.setScheduleDate(this.getScheduleDate());
+    merchant.setScheduleTime(this.getScheduleTime());
+    merchant.setFlashBuy(this.getFlashBuy());
+    merchant.setFlashBuyIndexUrl(this.getFlashBuyIndexUrl());
+    merchant.setGroupBuy(this.getGroupBuy());
+    merchant.setGroupBuyIndexUrl(this.getGroupBuyIndexUrl());
+    merchant.setIndexUrl(this.getIndexUrl());
+    merchant.setIntervalForOrder(this.getIntervalForOrder());
+    merchant.setOverseas(this.getOverseas());
+    merchant.setQuickOrder(this.getQuickOrder());
+    merchant.setViewingTimeForOrder(this.getViewingTimeForOrder());
+
+    return merchant;
+  } // end method populate
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for address option.
    *
    * @param  addressOption  String
@@ -394,6 +474,17 @@ public class MerchantCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for copy from id.
+   *
+   * @param  copyFromId  Long
+   */
+  public void setCopyFromId(Long copyFromId) {
+    this.copyFromId = copyFromId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for flash buy.
    *
    * @param  flashBuy  Boolean
@@ -411,6 +502,17 @@ public class MerchantCommand {
    */
   public void setFlashBuyIndexUrl(String flashBuyIndexUrl) {
     this.flashBuyIndexUrl = flashBuyIndexUrl;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for from copy.
+   *
+   * @param  fromCopy  Boolean
+   */
+  public void setFromCopy(Boolean fromCopy) {
+    this.fromCopy = fromCopy;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -587,5 +689,24 @@ public class MerchantCommand {
    */
   public void setViewingTimeForOrder(Integer viewingTimeForOrder) {
     this.viewingTimeForOrder = viewingTimeForOrder;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#toString()
+   */
+  @Override public String toString() {
+    final StringBuffer sb = new StringBuffer("MerchantCommand{");
+    sb.append("name='").append(name).append('\'');
+    sb.append(", merchantNo='").append(merchantNo).append('\'');
+    sb.append(", merchantName='").append(merchantName).append('\'');
+    sb.append(", intervalForOrder=").append(intervalForOrder);
+    sb.append(", status='").append(status).append('\'');
+    sb.append(", totalCount=").append(totalCount);
+    sb.append(", indexUrl='").append(indexUrl).append('\'');
+    sb.append('}');
+
+    return sb.toString();
   }
 } // end class MerchantCommand

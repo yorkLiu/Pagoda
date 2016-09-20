@@ -48,6 +48,7 @@ var globalRes = {
 
   buttons: {
     save: '保存',
+    copy: '拷贝',
     cancel: '取消',
     create: '新建',
     update: '更新',
