@@ -379,7 +379,7 @@ Ext.define('Pagoda.App', {
           // todo add your module @module: 'your defined module id'
           { name: '用户与权限管理', iconCls: 'userRole-shortcut', module: 'userRole-win' },
           { name: '配置管理', iconCls: 'configuration-shortcut', module: 'configuration-win' },
-          { name: '商家信息管理', iconCls: 'configuration-shortcut', module: 'merchant-win' }
+          { name: '商家信息管理', iconCls: 'merchant-shortcut', module: 'merchant-win' }
         ]
       }),
 

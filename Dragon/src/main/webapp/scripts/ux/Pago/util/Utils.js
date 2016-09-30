@@ -5,6 +5,14 @@
 Ext.define('Pago.util.Utils', {
   alternateClassName: 'Pago.Utils',
   statics: {
+
+    ORDER_STATUS: {
+      'INIT': '安排中',
+      'PENDING': '已安排',
+      'IN_PROGRESS': '正在刷单',
+      'CANCELLED': '已取消',
+      'COMPLETED': '已完成'
+    },
     
     readOnlyTitleTpl: '&nbsp;[<span class="highlight-text-readOnly">只读</span>]',
 

@@ -19,7 +19,7 @@ Ext.define('Pagoda.UserRole', {
   init:function () {
     this.launcher = {
       text:'用户与权限管理',
-      iconCls:'tabs',
+      iconCls:'icon-userRole',
       handler:this.createWindow,
       scope:this
     }
@@ -33,6 +33,7 @@ Ext.define('Pagoda.UserRole', {
     if (!win) {
       win = desktop.createWindow({
         id:'userRole-win',
+        iconCls: 'icon-userRole',
         title:'用户与权限管理',
         width:800,
         height:600,

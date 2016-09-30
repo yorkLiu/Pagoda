@@ -13,7 +13,31 @@
   background-image: url(icons/configurationManager_48.png);
   filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../styles/default/desktop/icons/configurationManager_48.png', sizingMethod='scale');
 }
+.merchant-shortcut img {
+  width: 48px;
+  height: 48px;
+  background-image: url(icons/merchantManager_48.png);
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../styles/default/desktop/icons/configurationManager_48.png', sizingMethod='scale');
+}
+
+
+.icon-userRole{
+  background-image: url(icons/icon_userRole.png) !important;
+  width: 16px;
+  height: 16px;
+}
+.icon-configuration{
+  background-image: url(icons/icon_configuration.png) !important;
+  width: 16px;
+  height: 16px;
+}
+.icon-merchant{
+  background-image: url(icons/icon_merchant.png) !important;
+  width: 16px;
+  height: 16px;
+}
 /*desktop manager icon css end*/
+
 
 
 .required-filed-mark{
@@ -47,6 +71,11 @@
 
 
 /*icons css start*/
+.icon-copy {
+  background-image: url(icons/icon_copy.png) !important;
+  height: 16px;
+  width: 16px;
+}
 .icon-enable {
   background-image: url(icons/icon_enable.png) !important;
   height: 16px;

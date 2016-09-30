@@ -12,6 +12,7 @@
     <mapping class="com.ly.model.Address"/>
     <mapping class="com.ly.model.ItemInfo"/>
     <mapping class="com.ly.model.Merchant"/>
+    <mapping class="com.ly.model.PreOrderInfo"/>
     <mapping class="com.ly.model.OrderInfo"/>
     <mapping class="com.ly.model.AppType"/>
     <mapping class="com.ly.model.Commission"/>

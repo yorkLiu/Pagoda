@@ -1,27 +1,28 @@
 /**
- * Created by yongliu on 9/14/16.
+ * Created by yongliu on 9/22/16.
  */
 
-Ext.define('Pagoda.merchant.store.Merchants',{
+Ext.define('Pagoda.merchant.store.PreOrders',{
   extend: 'Pagoda.store.Base',
   requires: [
     'Pago.data.DwrProxy',
-    'Pagoda.merchant.model.Merchant'
+    'Pagoda.merchant.model.PreOrder'
   ],
 
-  model: 'Pagoda.merchant.model.Merchant',
+  model: 'Pagoda.merchant.model.PreOrder',
 
 
-  pageSize: 20,
+  pageSize: 50,
 
   proxy: {
     type: 'dwr',
 
     api : {
-      read:merchantController.readMerchant,
-      create:merchantController.updateMerchant,
-      update:merchantController.updateMerchant,
-      destroy:merchantController.removeMerchant
+      read:merchantController.readPreOrder,
+      create:merchantController.updatePreOrder,
+      update:merchantController.updatePreOrder
+      //,
+      //destroy:merchantController.removeMerchant
     },
 
     reader: {
@@ -44,6 +45,7 @@ Ext.define('Pagoda.merchant.store.Merchants',{
       }
     }
   },
+  sorters: [{property: 'priority', direction: 'ASC'}],
   autoSync: false,
   autoLoad: false
 });

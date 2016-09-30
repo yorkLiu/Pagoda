@@ -1,136 +1,77 @@
-package com.ly.model;
-
-import java.io.Serializable;
+package com.ly.web.command.merchant;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.Date;
 
-import com.ly.model.base.CreatorObject;
+import org.directwebremoting.annotations.DataTransferObject;
+import org.directwebremoting.annotations.RemoteProperty;
+
+import org.directwebremoting.convert.ObjectConverter;
+
+import com.ly.model.ItemInfo;
+import com.ly.model.User;
 
 
 /**
- * Created by yongliu on 7/20/16.
+ * Created by yongliu on 9/22/16.
  *
- * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
- * @version  07/21/2016 11:57
+ * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
+ * @version  09/22/2016 15:18
  */
-@Entity
-@Table(name = "ItemInfo")
-public class ItemInfo extends CreatorObject implements Serializable {
-  //~ Static fields/initializers ---------------------------------------------------------------------------------------
-
-  private static final long serialVersionUID = 4716784808350136362L;
-
+@DataTransferObject(converter = ObjectConverter.class)
+public class ItemInfoCommand {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  /** comment content for this item. */
-  private String commentContent;
+  @RemoteProperty private String commentContent;
 
-  @Column(nullable = false)
-  private Integer count;
+  @RemoteProperty private Integer count;
 
-  /** when search by price using. */
-  @Column(
-    precision = 19,
-    scale     = 2
-  )
-  private BigDecimal endPrice;
+  @RemoteProperty private BigDecimal endPrice;
 
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Id private Long id;
+  @RemoteProperty private Long id;
 
-  private String itemUrl;
+  @RemoteProperty private String itemUrl;
 
-  @Column(length = 100)
-  private String keyword;
+  @RemoteProperty private String keyword;
 
-  private String name;
+  @RemoteProperty private String name;
 
-  /** production price. */
-  @Column(
-    precision = 19,
-    scale     = 2
-  )
-  private BigDecimal price;
+  @RemoteProperty private BigDecimal price;
 
-  private Integer priority;
+  @RemoteProperty private Integer priority;
 
-  private String sku;
+  @RemoteProperty private String sku;
 
-  /** when search by price using. */
-  @Column(
-    precision = 19,
-    scale     = 2
-  )
-  private BigDecimal startPrice;
+  @RemoteProperty private BigDecimal startPrice;
 
-  //~ Methods ----------------------------------------------------------------------------------------------------------
+  //~ Constructors -----------------------------------------------------------------------------------------------------
 
   /**
-   * @see  java.lang.Object#equals(java.lang.Object)
+   * Creates a new ItemInfoCommand object.
    */
-  @Override public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
+  public ItemInfoCommand() { }
 
-    if ((o == null) || (getClass() != o.getClass())) {
-      return false;
-    }
+  /**
+   * Creates a new ItemInfoCommand object.
+   *
+   * @param  itemInfo  ItemInfo
+   */
+  public ItemInfoCommand(ItemInfo itemInfo) {
+    this.id             = itemInfo.getId();
+    this.keyword        = itemInfo.getKeyword();
+    this.itemUrl        = itemInfo.getItemUrl();
+    this.sku            = itemInfo.getSku();
+    this.name           = itemInfo.getName();
+    this.price          = itemInfo.getPrice();
+    this.count          = itemInfo.getCount();
+    this.startPrice     = itemInfo.getStartPrice();
+    this.endPrice       = itemInfo.getEndPrice();
+    this.priority       = itemInfo.getPriority();
+    this.commentContent = itemInfo.getCommentContent();
+  }
 
-    ItemInfo itemInfo = (ItemInfo) o;
-
-    if ((commentContent != null) ? (!commentContent.equals(itemInfo.commentContent))
-                                 : (itemInfo.commentContent != null)) {
-      return false;
-    }
-
-    if ((endPrice != null) ? (!endPrice.equals(itemInfo.endPrice)) : (itemInfo.endPrice != null)) {
-      return false;
-    }
-
-    if ((itemUrl != null) ? (!itemUrl.equals(itemInfo.itemUrl)) : (itemInfo.itemUrl != null)) {
-      return false;
-    }
-
-    if ((keyword != null) ? (!keyword.equals(itemInfo.keyword)) : (itemInfo.keyword != null)) {
-      return false;
-    }
-
-    if ((name != null) ? (!name.equals(itemInfo.name)) : (itemInfo.name != null)) {
-      return false;
-    }
-
-    if ((price != null) ? (!price.equals(itemInfo.price)) : (itemInfo.price != null)) {
-      return false;
-    }
-
-    if ((sku != null) ? (!sku.equals(itemInfo.sku)) : (itemInfo.sku != null)) {
-      return false;
-    }
-
-    if ((priority != null) ? (!priority.equals(itemInfo.priority)) : (itemInfo.priority != null)) {
-      return false;
-    }
-
-    if ((count != null) ? (!count.equals(itemInfo.count)) : (itemInfo.count != null)) {
-      return false;
-    }
-
-    return !((startPrice != null) ? (!startPrice.equals(itemInfo.startPrice)) : (itemInfo.startPrice != null));
-
-  } // end method equals
-
-  //~ ------------------------------------------------------------------------------------------------------------------
+  //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
    * getter method for comment content.
@@ -254,22 +195,37 @@ public class ItemInfo extends CreatorObject implements Serializable {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
-   * @see  java.lang.Object#hashCode()
+   * popup.
+   *
+   * @param   user  User
+   *
+   * @return  ItemInfo
    */
-  @Override public int hashCode() {
-    int result = (commentContent != null) ? commentContent.hashCode() : 0;
-    result = (31 * result) + ((endPrice != null) ? endPrice.hashCode() : 0);
-    result = (31 * result) + ((itemUrl != null) ? itemUrl.hashCode() : 0);
-    result = (31 * result) + ((keyword != null) ? keyword.hashCode() : 0);
-    result = (31 * result) + ((name != null) ? name.hashCode() : 0);
-    result = (31 * result) + ((price != null) ? price.hashCode() : 0);
-    result = (31 * result) + ((sku != null) ? sku.hashCode() : 0);
-    result = (31 * result) + ((startPrice != null) ? startPrice.hashCode() : 0);
-    result = (31 * result) + ((priority != null) ? priority.hashCode() : 0);
-    result = (31 * result) + ((count != null) ? count.hashCode() : 0);
+  public ItemInfo popup(User user) {
+    ItemInfo itemInfo = new ItemInfo();
 
-    return result;
-  }
+    if ((this.getId() != null) && (this.getId().longValue() > 0)) {
+      itemInfo.setId(this.getId());
+      itemInfo.setLastUpdateDate(new Date());
+      itemInfo.setLastUpdater(user);
+    } else {
+      itemInfo.setCreateDate(new Date());
+      itemInfo.setCreator(user);
+    }
+
+    itemInfo.setKeyword(this.keyword);
+    itemInfo.setItemUrl(this.itemUrl);
+    itemInfo.setSku(this.getSku());
+    itemInfo.setName(this.name);
+    itemInfo.setPrice(this.getPrice());
+    itemInfo.setCount(this.count);
+    itemInfo.setStartPrice(this.getStartPrice());
+    itemInfo.setEndPrice(this.getEndPrice());
+    itemInfo.setPriority(this.priority);
+    itemInfo.setCommentContent(this.commentContent);
+
+    return itemInfo;
+  } // end method popup
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -391,4 +347,4 @@ public class ItemInfo extends CreatorObject implements Serializable {
   public void setStartPrice(BigDecimal startPrice) {
     this.startPrice = startPrice;
   }
-} // end class ItemInfo
+} // end class ItemInfoCommand

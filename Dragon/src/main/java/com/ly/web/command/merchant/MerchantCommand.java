@@ -399,6 +399,7 @@ public class MerchantCommand extends BaseCommand {
       merchant.setId(this.getId());
       merchant.setLastUpdateDate(new Date());
       merchant.setLastUpdater(user);
+      merchant.setStatus(OrderStatusType.convert(this.status));
     } else {
       merchant.setStatus(OrderStatusType.INIT);
       merchant.setCreator(user);

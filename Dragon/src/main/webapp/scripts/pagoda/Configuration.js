@@ -12,7 +12,7 @@ Ext.define('Pagoda.Configuration', {
   init:function () {
     this.launcher = {
       text:'配置管理',
-      iconCls:'tabs',
+      iconCls:'icon-configuration',
       handler:this.createWindow,
       scope:this
     }
@@ -27,6 +27,7 @@ Ext.define('Pagoda.Configuration', {
     if (!win) {
       win = desktop.createWindow({
         id:'configuration-win',
+        iconCls: 'icon-configuration',
         title:'配置管理',
         width:880,
         height:600,

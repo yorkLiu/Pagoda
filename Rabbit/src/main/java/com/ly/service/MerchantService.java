@@ -3,6 +3,7 @@ package com.ly.service;
 import java.util.List;
 
 import com.ly.model.Merchant;
+import com.ly.model.User;
 
 
 /**
@@ -13,6 +14,18 @@ import com.ly.model.Merchant;
  */
 public interface MerchantService extends BaseService {
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * checkNameUnique.
+   *
+   * @param   name        String
+   * @param   merchantId  Long
+   *
+   * @return  boolean
+   */
+  boolean checkNameUnique(String name, Long merchantId);
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * countMerchant.
@@ -36,5 +49,13 @@ public interface MerchantService extends BaseService {
    */
   List<Merchant> readMerchants(String queryText, Integer start, Integer limit);
 
-  boolean checkNameUnique(String name, Long merchantId);
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * removeMerchant.
+   *
+   * @param  merchantId  Long
+   * @param  user        User
+   */
+  void removeMerchant(Long merchantId, User user);
 } // end interface MerchantService

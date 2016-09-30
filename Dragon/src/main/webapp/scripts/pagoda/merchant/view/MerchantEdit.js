@@ -44,6 +44,14 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             name: 'id'
           },
           {
+            xtype: 'hidden',
+            name: 'copyFromId'
+          },
+          {
+            xtype: 'hidden',
+            name: 'fromCopy'
+          },
+          {
             fieldLabel: '别名',
             name: 'name',
             allowBlank: false,
@@ -333,7 +341,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
       values = form.getValues();
     if(form.isValid()){
       if(me.checkUniqueName()){
-        if(me.activeRecord && me.activeRecord != null){
+        if(me.activeRecord && me.activeRecord != null && !me.activeRecord.get("fromCopy")){
           form.updateRecord(me.activeRecord);
         } else {
           me.addRecord(values);

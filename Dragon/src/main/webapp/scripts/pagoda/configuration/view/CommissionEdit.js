@@ -92,7 +92,7 @@ Ext.define('Pagoda.configuration.view.CommissionEdit', {
         },
         {
           xtype: 'combo',
-          fieldLabel: '所属平台',
+          fieldLabel: '刷单平台',
           name: 'appTypeId',
           displayField: 'description',
           valueField: 'id',

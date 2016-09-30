@@ -7,7 +7,8 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
   alias: 'widget.merchantlist',
   requires:[
     'Pagoda.merchant.store.Merchants',
-    'Pagoda.merchant.view.MerchantEdit'
+    'Pagoda.merchant.view.MerchantEdit',
+    'Pagoda.merchant.view.PreOrderList'
   ],
 
   forceFit: true,
@@ -104,7 +105,9 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
             handler: me.onAddHandler
           },{
             text: globalRes.buttons.copy,
-            iconCls: 'copy',
+            iconCls: 'icon-copy',
+            disabled: true,
+            action: 'copy',
             scope: me,
             handler: me.onCopyHandler
           }, {
@@ -121,9 +124,16 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
             disabled: true,
             scope: me,
             handler: me.onRemoveHandler
+          }, {
+            text: '商家刷单详情',
+            action: 'orderManager',
+            disabled: true,
+            scope: me,
+            handler: me.onOrderManagerHandler
           }
         ]
-      },{
+      },
+      {
         dock: 'bottom',
         xtype:'pagingtoolbar',
         store:this.store,
@@ -180,6 +190,8 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
     var enabled = model.hasSelection();
     this.down('button[action=edit]')[enabled ? 'enable' : 'disable']();
     this.down('button[action=remove]')[enabled ? 'enable' : 'disable']();
+    this.down('button[action=copy]')[enabled ? 'enable' : 'disable']();
+    this.down('button[action=orderManager]')[enabled ? 'enable' : 'disable']();
   },
 
   addOrUpdate: function(record, title){
@@ -203,6 +215,7 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
       saveRecord: function(){
         me.store.sync({
           success: function(){
+            me.store.load();
             win.close();
           },
           failed: function(){
@@ -246,25 +259,67 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
       this.addOrUpdate(record, '更改商家信息');
     }
   },
+  
   onRemoveHandler: function(){
     var me = this,
       model = me.getSelectionModel(),
-      record = model.getLastSelected();
+      record = model.getLastSelected(),
+      delTitle = '删除商家信息';
 
     if(model.hasSelection() && record){
       Ext.MessageBox.show({
-        title: 'Delete MyTestModel',
-        msg: 'Are you sure you want to delete all information of this MyTestModel?',
+        title: delTitle,
+        msg: Ext.String.format('你确定要删除[<span style="color:blue">{0}</span>]此商家及该商家的所有订单信息吗?', record.get('name')),
         buttons: Ext.MessageBox.YESNO,
         icon: Ext.MessageBox.QUESTION,
         fn: function(btn){
           if(btn === 'yes'){
             // do remove this record
             me.store.remove(record);
-            //me.store.sync();
+            me.store.sync({
+              success: function(){
+                me.store.load();
+                Ext.MessageBox.show({
+                  title: delTitle,
+                  msg: '商家信息已删除成功',
+                  icon: Ext.MessageBox.INFO,
+                  buttons: Ext.MessageBox.OK
+                });
+              },
+              failed: function(){
+                Ext.MessageBox.show({
+                  title: delTitle,
+                  msg: '该商家信息暂时不能删除',
+                  icon: Ext.MessageBox.ERROR,
+                  buttons: Ext.MessageBox.YES
+                });
+              }
+            });
           }
         }
       });
+    }
+  },
+
+  onOrderManagerHandler: function(){
+    var me = this,
+      model = me.getSelectionModel(),
+      record = model.getLastSelected(),
+      merchantId  = record ? record.get('id'): null;
+
+    if(model.hasSelection() && record){
+      var win = Ext.createWidget('window', {
+        title: Ext.String.format("<span style='color: blue'>{0}</span>刷单详情", record.data.name),
+        modal: true,
+        width: 800,
+        height: 500,
+        layout: 'fit',
+        items:{
+          xtype: 'preorderlist',
+          merchantId: merchantId
+        },
+        activeRecord: record
+      }).show();
     }
   }
 });

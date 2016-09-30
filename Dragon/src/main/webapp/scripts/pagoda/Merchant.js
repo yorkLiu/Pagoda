@@ -10,6 +10,7 @@ Ext.define('Pagoda.Merchant', {
   extend:'Ext.ux.desktop.Module',
 
   requires:[
+    'Pagoda.configuration.store.AppTypes',
     'Pagoda.merchant.view.MerchantList'
   ],
 
@@ -19,7 +20,7 @@ Ext.define('Pagoda.Merchant', {
   init:function () {
     this.launcher = {
       text:'商家信息管理',
-      iconCls:'tabs',
+      iconCls:'icon-merchant',
       handler:this.createWindow,
       scope:this
     }
@@ -27,12 +28,14 @@ Ext.define('Pagoda.Merchant', {
 
 
   createWindow:function () {
+    var me = this;
     var desktop = this.app.getDesktop();
     var win = desktop.getWindow('merchant-win');
 
     if (!win) {
       win = desktop.createWindow({
         id:'merchant-win',
+        iconCls: 'icon-merchant',
         title:'商家信息管理',
         width: 1100,
         height: 600,
@@ -52,11 +55,31 @@ Ext.define('Pagoda.Merchant', {
         },
         items: {
           xtype: 'merchantlist'
+        },
+
+        listeners:{
+          'afterrender': me.onWinAfterRender
+
         }
       });
     }
     win.show();
     //return win;
+  },
+
+  onWinAfterRender: function(){
+
+    // init app type store
+    var appTypeStore = Ext.StoreManager.lookup('PagodaAppTypeStore');
+    if(!appTypeStore || appTypeStore == null){
+      appTypeStore = Ext.create('Pagoda.configuration.store.AppTypes', {
+        storeId: 'PagodaAppTypeStore'
+      });
+    }
+    if(appTypeStore != null){
+      appTypeStore.load();
+    }
+
   }
 
 
