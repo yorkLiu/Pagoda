@@ -63,6 +63,8 @@ public class Logout extends YHDAbstractObject {
           logger.debug("Driver was closed.");
         }
       }
+      
+      navigateTo(Constant.YHD_LOGIN_PAGE_URL);
 
     } catch (Exception e) {
       logger.error(e.getMessage(), e);

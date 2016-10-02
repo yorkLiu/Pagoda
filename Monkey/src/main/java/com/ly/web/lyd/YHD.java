@@ -93,23 +93,24 @@ public class YHD extends SeleniumBaseObject {
       this.commentsInfo = commentsInfo;
 
       // 1. login
-      login();
+      boolean loginSuccess = login(!(index > 1));
+      if(loginSuccess){
+        // 2. confirm receipt
+        confirmReceipt();
 
-      // 2. confirm receipt
-      confirmReceipt();
+        // 3. comment production(s)
+        comments();
 
-      // 3. comment production(s)
-      comments();
+        // 4. logout for current user
+        logout();
 
-      // 4. logout for current user
-      logout();
-
-      // 5. check driver
-      // random to delay seconds for next account
-      // check the current browser is inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
-      // if chrome and firefox all inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
-      // then pause 10 minutes for next account and re-set drive to 'chrome'
-      checkDriver();
+        // 5. check driver
+        // random to delay seconds for next account
+        // check the current browser is inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
+        // if chrome and firefox all inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
+        // then pause 10 minutes for next account and re-set drive to 'chrome'
+        checkDriver();
+      }
     } // end for
 
     if (logger.isDebugEnabled()) {
@@ -217,7 +218,8 @@ public class YHD extends SeleniumBaseObject {
    * login.
    */
 // @Test(priority = 1)
-  private void login() {
+  private Boolean login(boolean isFirst) {
+    boolean loginSuccess = Boolean.TRUE;
     try {
       if (logger.isDebugEnabled()) {
         logger.debug("Starting login....");
@@ -230,7 +232,7 @@ public class YHD extends SeleniumBaseObject {
         logger.debug("Login YHD with username: " + commentsInfo.getUsername() + "and password: XXXXX");
       }
 
-      login.login(commentsInfo.getUsername(), commentsInfo.getPassword(), Boolean.TRUE);
+      loginSuccess = login.login(commentsInfo.getUsername(), commentsInfo.getPassword(), isFirst);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Login successfully for user:" + commentsInfo.getUsername());
@@ -238,9 +240,11 @@ public class YHD extends SeleniumBaseObject {
 
 
     } catch (Exception e) {
+      loginSuccess = Boolean.FALSE;
       logger.error(e.getMessage(), e);
     }
 
+    return loginSuccess;
   } // end method login
 
   //~ ------------------------------------------------------------------------------------------------------------------

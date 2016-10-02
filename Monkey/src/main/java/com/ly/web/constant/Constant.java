@@ -25,6 +25,8 @@ public class Constant {
 
 //  public static final String YHD_LOGIN_PAGE_URL = "https://passport.yhd.com/passport/login_input.do";
   public static final String YHD_LOGIN_PAGE_URL = "https://passport.yhd.com/passport/login_input.do?returnUrl=http://my.yhd.com/order/myOrder.do";
+  
+  public static final String YHD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER = "https://passport.yhd.com/passport/login_input.do";
 
   public static final String YHD_INDEX_PAGE_URL = "http://www.yhd.com/";
   
