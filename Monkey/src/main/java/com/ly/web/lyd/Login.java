@@ -2,7 +2,6 @@ package com.ly.web.lyd;
 
 import com.ly.web.constant.Constant;
 import com.ly.web.voice.VoicePlayer;
-import com.oracle.tools.packager.Log;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
