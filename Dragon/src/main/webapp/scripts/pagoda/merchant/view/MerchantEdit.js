@@ -56,6 +56,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             name: 'name',
             allowBlank: false,
             maxLength: 200,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             validator: Pago.Utils.trimValidator
           },
           {
@@ -63,18 +64,21 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             name: 'merchantName',
             allowBlank: false,
             maxLength: 200,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: '商家编号',
             name: 'merchantNo',
             maxLength: 50,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             validator: Pago.Utils.trimValidator
           },
           {
             fieldLabel: '商铺首页地址',
             name: 'indexUrl',
             maxLength: 255,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             validator: Pago.Utils.trimValidator
           },
           {
@@ -85,6 +89,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             maxValue: 50000,
             minValue: 1,
             allowDecimals: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             listeners: {
               'blur': function(){
                 var v = this.value;
@@ -106,7 +111,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             allowBlank: false,
             maxValue: 50000,
             minValue: 0,
-            allowDecimals: false
+            allowDecimals: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'datefield',
@@ -115,7 +121,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             format: 'Y-m-d',
             value: today,
             minValue: today,
-            maxValue: Ext.Date.add(today, Ext.Date.DAY, 7)
+            maxValue: Ext.Date.add(today, Ext.Date.DAY, 7),
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'timefield',
@@ -123,7 +130,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             name: 'scheduleTime',
             minValue: '8:00 AM',
             maxValue: '11:00 PM',
-            increment: 30
+            increment: 30,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'combo',
@@ -134,7 +142,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             queryMode: 'local',
             triggerAction: 'all',
             value: 'ALL',
-            store: me.getAddressOptionStore()
+            store: me.getAddressOptionStore(),
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'numberfield',
@@ -145,6 +154,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             minValue: 1,
             value: 4,
             allowDecimals: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             listeners:{
               'blur': function(){
                 var v = this.value;
@@ -167,7 +177,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             maxValue: 15,
             minValue: 4,
             value: 4,
-            allowDecimals: false
+            allowDecimals: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           
           {
@@ -183,6 +194,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
                 name: 'groupBuy',
                 inputValue: 'true',
                 width: 80,
+                plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
                 handler: function(checkbox, checked){
                   var field = me.down('#groupBuyIndexUrl');
                   if(field){
@@ -198,6 +210,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
                 name: 'flashBuy',
                 inputValue: 'true',
                 width: 80,
+                plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
                 handler: function(checkbox, checked){
                   var field = me.down('#flashBuyIndexUrl');
                   if(field){
@@ -211,13 +224,15 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
                 boxLabel: '海购',
                 name: 'overseas',
                 inputValue: 'true',
-                width: 80
+                width: 80,
+                plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
               },
               {
                 xtype: 'checkbox',
                 boxLabel: '快速下单(直接点击商品链接)',
                 name: 'quickOrder',
-                inputValue: 'true'
+                inputValue: 'true',
+                plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
               }
             ]
           },
@@ -229,6 +244,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             disabled: true,
             hidden: true,
             maxLength: 255,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             validator: Pago.Utils.trimValidator
           },
           {
@@ -239,6 +255,7 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             disabled: true,
             hidden: true,
             maxLength: 255,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             validator: Pago.Utils.trimValidator
           },
           {
@@ -249,7 +266,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             maxValue: 15,
             minValue: 1,
             value: 3,
-            allowDecimals: false
+            allowDecimals: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'numberfield',
@@ -259,7 +277,8 @@ Ext.define('Pagoda.merchant.view.MerchantEdit', {
             maxValue: 15,
             minValue: 1,
             value: 1,
-            allowDecimals: false
+            allowDecimals: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
           }
         ],
         buttons:[

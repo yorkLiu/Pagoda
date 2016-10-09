@@ -127,6 +127,7 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
           }, {
             text: '商家刷单详情',
             action: 'orderManager',
+            iconCls: 'icon-detail',
             disabled: true,
             scope: me,
             handler: me.onOrderManagerHandler
@@ -188,8 +189,10 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
 
   onRowSelectChanged: function(model){
     var enabled = model.hasSelection();
+    var record = model.getLastSelected();
+    var readOnly = this.isStatusReadOnly(record.get('status'));
     this.down('button[action=edit]')[enabled ? 'enable' : 'disable']();
-    this.down('button[action=remove]')[enabled ? 'enable' : 'disable']();
+    this.down('button[action=remove]')[!readOnly && enabled ? 'enable' : 'disable']();
     this.down('button[action=copy]')[enabled ? 'enable' : 'disable']();
     this.down('button[action=orderManager]')[enabled ? 'enable' : 'disable']();
   },
@@ -198,6 +201,10 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
     var me = this,
       readOnly = false;
       title = title ? title : '添加商家';
+    
+    if(record){
+      readOnly = me.isStatusReadOnly(record.get('status'));
+    }
     
     if(readOnly){
       title = Pago.util.Utils.markReadOnlyTitle(title);
@@ -269,7 +276,7 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
     if(model.hasSelection() && record){
       Ext.MessageBox.show({
         title: delTitle,
-        msg: Ext.String.format('你确定要删除[<span style="color:blue">{0}</span>]此商家及该商家的所有订单信息吗?', record.get('name')),
+        msg: Ext.String.format('你确定要删除[<span style="color:blue">{0}</span>]此商家及该商家的所有刷单信息吗?', record.get('name')),
         buttons: Ext.MessageBox.YESNO,
         icon: Ext.MessageBox.QUESTION,
         fn: function(btn){
@@ -300,14 +307,22 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
       });
     }
   },
+  
+  isStatusReadOnly: function(status){
+    return !(status == 'INIT' ||  status == 'PENDING' ||  status == 'IN_PROGRESS');
+  },
 
   onOrderManagerHandler: function(){
     var me = this,
       model = me.getSelectionModel(),
       record = model.getLastSelected(),
       merchantId  = record ? record.get('id'): null;
-
+    
     if(model.hasSelection() && record){
+      var status = record.get('status');
+      
+      var readOnly = me.isStatusReadOnly(status);
+      
       var win = Ext.createWidget('window', {
         title: Ext.String.format("<span style='color: blue'>{0}</span>刷单详情", record.data.name),
         modal: true,
@@ -316,9 +331,9 @@ Ext.define('Pagoda.merchant.view.MerchantList', {
         layout: 'fit',
         items:{
           xtype: 'preorderlist',
-          merchantId: merchantId
-        },
-        activeRecord: record
+          merchantId: merchantId,
+          readOnly: readOnly
+        }
       }).show();
     }
   }

@@ -13,6 +13,8 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
   forceFit: true,
   selType: 'rowmodel',
   merchantId: undefined,
+  merchantRecord: undefined,
+  readOnly: false,
 
   initComponent: function () {
     var me = this;
@@ -63,6 +65,7 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
             text: globalRes.buttons.create,
             iconCls: 'add',
             scope: me,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             handler: me.onAddHandler
           },{
             text: globalRes.buttons.update,
@@ -76,6 +79,7 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
             iconCls: 'remove',
             action: 'remove',
             disabled: true,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             scope: me,
             handler: me.onRemoveHandler
           }
@@ -121,12 +125,12 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
       store = Ext.create('Pagoda.merchant.store.PreOrders', {
         storeId: 'PagodaPreOrdersStore'
       });
-      
-      if(this.merchantId){
-        store.setBaseParams('merchantId', this.merchantId);
-      }
-      store.load();
     }
+
+    if(this.merchantId){
+      store.setBaseParams('merchantId', this.merchantId);
+    }
+    store.load();
     
     return store;
   },
@@ -138,9 +142,9 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
   },
 
   onRowSelectChanged: function(model){
-    var enabled = model.hasSelection();
+    var me = this, enabled = model.hasSelection();
     this.down('button[action=edit]')[enabled ? 'enable' : 'disable']();
-    this.down('button[action=remove]')[enabled ? 'enable' : 'disable']();
+    this.down('button[action=remove]')[!me.readOnly && enabled ? 'enable' : 'disable']();
   },
 
   onAddHandler: function(){
@@ -155,11 +159,10 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
   },
 
   addOrUpdate: function(record, title) {
-    var me = this,
-      readOnly = false;
+    var me = this;
     title = title ? title : '添加刷单信息';
 
-    if (readOnly) {
+    if (me.readOnly) {
       title = Pago.util.Utils.markReadOnlyTitle(title);
     }
 
@@ -168,7 +171,7 @@ Ext.define('Pagoda.merchant.view.PreOrderList', {
       modal: true,
       width: 800,
       autoHeight: true,
-      readOnly: readOnly,
+      readOnly: me.readOnly,
       merchantId: me.merchantId,
       activeRecord: record,
       addRecord: function(record){

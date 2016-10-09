@@ -96,4 +96,13 @@
   height: 16px;
   width: 16px;
 }
+.icon-detail {
+  background-image: url(icons/icon_detail.png) !important;
+  height: 16px;
+  width: 16px;
+}
 /*icons css end*/
+
+.highlight-text-readOnly {
+  color:red;
+}

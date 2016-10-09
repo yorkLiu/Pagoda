@@ -79,7 +79,6 @@ Ext.define('Pagoda.merchant.view.PreOrderItemList', {
             action: 'edit',
             disabled: true,
             scope: me,
-            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)}),
             handler: me.onUpdateHandler
           },{
             text: '删除商品信息',
@@ -198,8 +197,6 @@ Ext.define('Pagoda.merchant.view.PreOrderItemList', {
     me.getStore().each(function(rec){
       data.push(rec.data);
     });
-    
-    console.log("***data:", data);
     
     return data;
   }

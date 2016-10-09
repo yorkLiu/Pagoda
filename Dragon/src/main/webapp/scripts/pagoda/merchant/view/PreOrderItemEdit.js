@@ -44,25 +44,29 @@ Ext.define('Pagoda.merchant.view.PreOrderItemEdit', {
             fieldLabel: '搜索关键字',
             name: 'keyword',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             fieldLabel: '商品链接',
             name: 'itemUrl',
             maxLength: 255,
-            allowBlank: true
+            allowBlank: true,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             fieldLabel: '商品编号(SKU)',
             name: 'sku',
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             fieldLabel: '商品名称',
             name: 'name',
             maxLength: 255,
-            allowBlank: false
+            allowBlank: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'numberfield',
@@ -71,7 +75,8 @@ Ext.define('Pagoda.merchant.view.PreOrderItemEdit', {
             decimalPrecision: 2,
             minValue: 0,
             maxLength: 10,
-            allowBlank: false
+            allowBlank: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'numberfield',
@@ -80,7 +85,8 @@ Ext.define('Pagoda.merchant.view.PreOrderItemEdit', {
             allowDecimals : false,
             minValue: 1,
             maxLength: 50,
-            allowBlank: false
+            allowBlank: false,
+            plugins: Ext.create('Pago.ux.RoleAccess', {featureName: '#allowAll#', disableAll: (me.readOnly)})
           },
           {
             xtype: 'textarea',
