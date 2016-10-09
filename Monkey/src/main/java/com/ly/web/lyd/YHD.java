@@ -47,6 +47,8 @@ import com.ly.web.dp.YHDDataProvider;
  */
 public class YHD extends SeleniumBaseObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
+  
+  public static String voiceFilePath = null;
 
   /** TODO: DOCUMENT ME! */
   public static ConcurrentMap<String, Integer> vCodeCountMap = new ConcurrentHashMap<>(5);
@@ -226,7 +228,7 @@ public class YHD extends SeleniumBaseObject {
         logger.debug("Open Login Page:" + Constant.YHD_LOGIN_PAGE_URL);
       }
 
-      Login login = new Login(driver, Constant.YHD_LOGIN_PAGE_URL);
+      Login login = new Login(driver, Constant.YHD_LOGIN_PAGE_URL, voiceFilePath);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Login YHD with username: " + commentsInfo.getUsername() + "and password: XXXXX");

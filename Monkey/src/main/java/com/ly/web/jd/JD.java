@@ -43,6 +43,8 @@ import com.ly.web.dp.JDDataProvider;
  */
 public class JD extends SeleniumBaseObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
+  
+  public static String voiceFilePath = null;
 
   /** TODO: DOCUMENT ME! */
   public static ConcurrentMap<String, Integer> vCodeCountMap = new ConcurrentHashMap<>(5);
@@ -206,7 +208,7 @@ public class JD extends SeleniumBaseObject {
         logger.debug("Open Login Page:" + Constant.JD_LOGIN_PAGE_URL);
       }
 
-      Login login = new Login(driver, Constant.JD_LOGIN_PAGE_URL);
+      Login login = new Login(driver, Constant.JD_LOGIN_PAGE_URL, voiceFilePath);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Login JD with username: " + commentsInfo.getUsername() + "and password: XXXXX");

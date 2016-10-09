@@ -35,7 +35,7 @@ public class VoicePlayer {
 
   private ContinuousAudioDataStream loopAudioData = null;
 
-  private String voiceFile = null;
+  public static String voiceFile = null;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 

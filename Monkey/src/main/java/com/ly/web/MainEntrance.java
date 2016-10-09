@@ -29,6 +29,10 @@ public class MainEntrance {
       String path = "/Users/yongliu/Downloads/YHD.xlsx";
       YHDDataProvider.path = path;
       
+      // the voice file path
+      String voiceFilePath = "/Users/yongliu/Project/receiptSys/voice/didi.wav";
+      YHD.voiceFilePath = voiceFilePath;
+      
       TestNG testng = new TestNG();
       Class[] classes = new Class[]{YHD.class};
       testng.setTestClasses(classes);

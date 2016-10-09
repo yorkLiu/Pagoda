@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ly.web.base.AbstractObject;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -31,6 +32,8 @@ public class Login extends AbstractObject {
    */
   private Boolean playVoice = Boolean.TRUE;
   
+  private String voiceFilePath = null;
+  
   private VoicePlayer voicePlayer = null;
   
   //~ Constructors -----------------------------------------------------------------------------------------------------
@@ -49,6 +52,12 @@ public class Login extends AbstractObject {
   public Login(WebDriver webDriver, String url) {
     this.webDriver = webDriver;
     this.url       = url;
+  }
+
+  public Login(WebDriver webDriver, String url, String voiceFilePath) {
+    this.webDriver = webDriver;
+    this.url       = url;
+    this.voiceFilePath = voiceFilePath;
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
@@ -128,7 +137,12 @@ public class Login extends AbstractObject {
           // start play voice
           if(playVoice){
             if(voicePlayer == null){
-              voicePlayer = new VoicePlayer();
+              
+              if(voiceFilePath != null && StringUtils.hasText(voiceFilePath)){
+                voicePlayer = new VoicePlayer(voiceFilePath);
+              } else {
+                voicePlayer = new VoicePlayer();
+              }
             }
             voicePlayer.playLoop();
           }

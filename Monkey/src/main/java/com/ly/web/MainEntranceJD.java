@@ -27,6 +27,10 @@ public class MainEntranceJD {
       // args path
       String path = "/Users/yongliu/Downloads/JD.xlsx";
       JDDataProvider.path = path;
+
+      // the voice file path
+      String voiceFilePath = "/Users/yongliu/Project/receiptSys/voice/clock.wav";
+      JD.voiceFilePath = voiceFilePath;
       
       TestNG testng = new TestNG();
       Class[] classes = new Class[]{JD.class};
