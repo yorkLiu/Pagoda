@@ -28,13 +28,15 @@ public class Constant {
   
   public static final String YHD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER = "https://passport.yhd.com/passport/login_input.do";
 
-  public static final String YHD_INDEX_PAGE_URL = "http://www.yhd.com/";
+  public static final String YHD_INDEX_PAGE_URL = "http://www.yhd.com";
   
   public static final String YHD_MY_ORDER_URL = "http://my.yhd.com/order/myOrder.do";
   
   public static final String YHD_ORDER_WRITE_COMMENT_URL="http://e.yhd.com/front-pe/pe/orderProductExperience!orderProductExperience.do?soId=%s&userId=%s&soType=0&hasCommented=false";
   
   public static final String YHD_LOGOUT_URL = "https://passport.yhd.com/passport/logoutJsonp.do?timestamp="+new Date().getTime()+"&callback=?";
+  
+  public static final String YHD_ITEM_URL_PREFIX="http://item.yhd.com/item/";
   
   
   

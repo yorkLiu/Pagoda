@@ -2,11 +2,14 @@ package com.ly.web.base;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.util.Assert;
 
 import com.ly.web.constant.Constant;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -105,6 +108,51 @@ public abstract class YHDAbstractObject extends AbstractObject {
     }
 
     return writeCommentUrl;
+  }
+
+  /**
+   * Generate YHD item url with sku parameter.
+   * @param sku
+   * @return
+   */
+  protected String getProductionUrl(String sku){
+    if(sku != null && StringUtils.hasText(sku)){
+      return Constant.NONE_SKU_KEY_PREFIX + sku;
+    }
+    return null;
+  }
+  
+  
+  /**
+   * closePopUpWinByXpath.
+   *
+   * @param   xpath  String
+   *
+   * @return  boolean
+   */
+  protected boolean closePopUpWinByXpath(String xpath) {
+    Boolean closed = Boolean.TRUE;
+    logger.debug("..........Ready close pop up window......");
+    try{
+
+      logger.debug("Find pop up window by xpath: " + xpath);
+
+      Boolean foundedPopUpWin = waitForByXPath(xpath, 10);
+      if(foundedPopUpWin){
+        WebElement closeBtn = ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)).apply(webDriver);  
+        
+        logger.debug("Ready fire click close button");
+        closeBtn.click();
+      }
+    }catch (NoSuchElementException e){
+      closed = Boolean.FALSE;
+      logger.error(e.getMessage(), e);
+    } catch (TimeoutException e){
+      closed = Boolean.FALSE;
+      logger.error("The pop up window does not popped up");
+      logger.error(e.getMessage(), e);
+    }
+    return closed;
   }
 
 } // end class YHDAbstractObject

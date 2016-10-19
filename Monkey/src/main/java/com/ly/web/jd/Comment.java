@@ -191,6 +191,10 @@ public class Comment extends AbstractObject {
     delay(10);
 
     loadWriteCommentPage();
+    
+    // the original comment map
+    Map<String, String> originalCommentMap = new HashedMap();
+    originalCommentMap.putAll(commentMap);
 
     if (logger.isDebugEnabled()) {
       logger.debug("Excluded tags: " + EXCLUDE_TAGs);
@@ -208,7 +212,7 @@ public class Comment extends AbstractObject {
     }
 
     // find SKU from front-end (comment page)
-    checkSku(orderId, commentMap);
+    List<String> itemsOnFrontEnd = checkSku(orderId, commentMap);
 
     if (logger.isDebugEnabled()) {
       logger.debug("The comment map is: " + commentMap);
@@ -217,7 +221,9 @@ public class Comment extends AbstractObject {
     if ((commentMap != null) && (commentMap.size() > 0)) {
       // 1. five star comments
       // I think this can be move to outside for sentence.
-      fiveStar(orderId);
+      // if front-end need comment production size > the excel file wrote, 
+      // then the gift production will not comment (comment part of productions)
+      fiveStar(orderId, originalCommentMap, (itemsOnFrontEnd.size() > originalCommentMap.size()));
 
       for (String sku : commentMap.keySet()) {
         // 2. find tags for per product exclude '一般, 家用, 自定义'
@@ -244,8 +250,10 @@ public class Comment extends AbstractObject {
    *
    * @param  orderId     $param.type$
    * @param  commentMap  $param.type$
+   *                     
+   * @return the sku founded in front-end                     
    */
-  private void checkSku(String orderId, Map<String, String> commentMap) {
+  private List<String> checkSku(String orderId, Map<String, String> commentMap) {
     List<String> skuList = getSkuFromFrontEnd(orderId);
 
     if (logger.isDebugEnabled()) {
@@ -269,6 +277,8 @@ public class Comment extends AbstractObject {
 
     commentMap.clear();
     commentMap.putAll(tempMap);
+    
+    return skuList;
   } // end method checkSku
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -300,7 +310,7 @@ public class Comment extends AbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean fiveStar(String orderId) {
+  private boolean fiveStar(String orderId, Map<String, String> originalCommentMap, boolean partOfComments) {
     boolean result = Boolean.TRUE;
 
     try {
@@ -309,10 +319,39 @@ public class Comment extends AbstractObject {
       }
 
       delay(5);
+      
+      if (!partOfComments) {
+        // comment all productions
+        if (logger.isDebugEnabled()) {
+          logger.debug("This order has no gift or ignore the gift production(s) comment.");
+        }
 
-      String script =
-        "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){if(i !=4 && i!=5 && i !=6){var span = arr[i]; span.click();} }";
-      executeJavaScript(script);
+        String script =
+          "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){if(i !=4 && i!=5 && i !=6){var span = arr[i]; span.click();} }";
+        executeJavaScript(script);
+      } else {
+        if (logger.isDebugEnabled()) {
+          // part of comments
+          logger.debug("A part of comments (not all productions need comments)");
+        }
+
+        // 1. five star the global part
+        String script1 =
+          "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){if(i<5){var span = arr[i]; span.click();} }";
+        executeJavaScript(script1);
+
+        // 2. five star the associated production only (not all)
+        for (String sku : originalCommentMap.keySet()) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Five star the sku[" + sku + "]");
+          }
+
+          String script2 =
+            "var arr = $('.star.star5'); for(var i = 0; i< arr.length;i++){ if(i>6){var span = arr[i]; var parentDiv = $(span).parents('.product-%s'); if(parentDiv && parentDiv.length>0){span.click();}} }";
+          script2 = String.format(script2, sku);
+          executeJavaScript(script2);
+        }
+      } // end if-else
 
       if (logger.isDebugEnabled()) {
         logger.debug("Five star clicked successfully! and exclude ('安装服务态度', '安装服务及时性', '出示收费标准') ");
@@ -674,7 +713,7 @@ public class Comment extends AbstractObject {
 
       (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
           @Override public Boolean apply(WebDriver d) {
-            return (d.getCurrentUrl().contains(Constant.JD_COMMENT_SUCCESS_URL));
+            return (d.getCurrentUrl().contains(Constant.JD_COMMENT_SUCCESS_URL) || d.getCurrentUrl().contains("partFinish"));
           }
         });
 

@@ -312,4 +312,25 @@ public abstract class AbstractObject {
     });
   }
 
+
+  protected void scrollToElementPosition(WebElement element) {
+    if (element != null) {
+      int positionY = element.getLocation().getY();
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Will scroll to overflowY:" + positionY);
+      }
+
+      executeJavaScript("scrollTo(0, " + (positionY - 200) + ")");
+    }
+  }
+
+  protected void scrollOverflowY(int positionY) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Scroll overflowY to: " + positionY);
+    }
+
+    executeJavaScript("scrollTo(0, " + positionY + ")");
+  }
+  
 } // end class AbstractObject
