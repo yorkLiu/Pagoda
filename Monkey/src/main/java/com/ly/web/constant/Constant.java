@@ -38,6 +38,8 @@ public class Constant {
   
   public static final String YHD_ITEM_URL_PREFIX="http://item.yhd.com/item/";
   
+  public static final String YHD_SHOPPING_CAR_URL="http://cart.yhd.com/cart/cart.do?action=view";
+  
   
   
   public static final String JD_LOGIN_PAGE_URL="https://passport.jd.com/uc/login?ReturnUrl=http://order.jd.com/center/list.action";

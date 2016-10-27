@@ -30,6 +30,7 @@ public class YHDUtils {
   private static final int    SKU_COLUMN             = 3;
   private static final int    COMMENT_CONTENT_COLUMN = 4;
   private static final int    ONLY_RECEIPT_NOT_COMMENT_COLUMN = 5;
+  private static final int    MUST_SELECT_TAG_COLUMN = 6;
   
   private static int INDEX = 1;
 
@@ -124,11 +125,16 @@ public class YHDUtils {
       }
       
       case ONLY_RECEIPT_NOT_COMMENT_COLUMN: {
-        System.out.println("doNotComment:" + cellValue);
+        logger.info("doNotComment:" + cellValue);
         // column index is 5, it's only receipt not comment column
         // if 'Y', 'Yes', 'true', '是'
         // then commentsInfo.doNotComment is "true"
         commentsInfo.setDoNotComment(getDoNotCommentCellValue(cellValue));
+        break;
+      }
+      case MUST_SELECT_TAG_COLUMN:{
+        logger.info("Must select " + cellValue + " tags for sku");
+        commentsInfo.setTagsCount(getMustSelectTagsCount(cellValue));
       }
     } // end switch
   } // end method assembleCommentInfoByCell
@@ -143,6 +149,17 @@ public class YHDUtils {
     }
 
     return Boolean.FALSE;
+  }
+  
+  private static Integer getMustSelectTagsCount(String cellValue){
+    if(cellValue != null && StringUtils.hasText(cellValue)){
+      try{
+        return Integer.parseInt(cellValue);
+      }catch (NumberFormatException e){
+        logger.error(cellValue + ", " + e.getMessage());
+      }
+    }
+    return null;
   }
 
   /**

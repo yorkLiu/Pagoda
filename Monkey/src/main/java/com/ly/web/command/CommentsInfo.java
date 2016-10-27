@@ -27,13 +27,21 @@ public class CommentsInfo implements Serializable {
    */
   private Map<String, String> commentsMap = new HashedMap(10);
 
+  private Boolean doNotComment = Boolean.FALSE;
+
   private String orderId;
 
   private String password;
 
+  /**
+   * TODO: DOCUMENT ME!
+   *
+   * @tagsCount  means must select @tagsCount tag(s) default is null. if this property has value, means for every sku,
+   *             must select @tagsCount tag(s) if it is null, means random select tags from 1~2.
+   */
+  private Integer tagsCount;
+
   private String username;
-  
-  private Boolean doNotComment = Boolean.FALSE;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -81,6 +89,21 @@ public class CommentsInfo implements Serializable {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for do not comment.
+   *
+   * @return  Boolean
+   */
+  public Boolean getDoNotComment() {
+    if (null == doNotComment) {
+      return Boolean.FALSE;
+    }
+
+    return doNotComment;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for order id.
    *
    * @return  String
@@ -98,6 +121,17 @@ public class CommentsInfo implements Serializable {
    */
   public String getPassword() {
     return password;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for tags count.
+   *
+   * @return  Integer
+   */
+  public Integer getTagsCount() {
+    return tagsCount;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -139,6 +173,17 @@ public class CommentsInfo implements Serializable {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for do not comment.
+   *
+   * @param  doNotComment  Boolean
+   */
+  public void setDoNotComment(Boolean doNotComment) {
+    this.doNotComment = doNotComment;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for order id.
    *
    * @param  orderId  String
@@ -161,23 +206,23 @@ public class CommentsInfo implements Serializable {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for tags count.
+   *
+   * @param  tagsCount  Integer
+   */
+  public void setTagsCount(Integer tagsCount) {
+    this.tagsCount = tagsCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for username.
    *
    * @param  username  String
    */
   public void setUsername(String username) {
     this.username = username;
-  }
-
-  public Boolean getDoNotComment() {
-    if(null == doNotComment){
-      return Boolean.FALSE;
-    }
-    return doNotComment;
-  }
-
-  public void setDoNotComment(Boolean doNotComment) {
-    this.doNotComment = doNotComment;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

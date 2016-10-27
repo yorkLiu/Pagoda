@@ -43,7 +43,8 @@ import com.ly.web.dp.JDDataProvider;
  */
 public class JD extends SeleniumBaseObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
-  
+
+  /** TODO: DOCUMENT ME! */
   public static String voiceFilePath = null;
 
   /** TODO: DOCUMENT ME! */
@@ -101,8 +102,10 @@ public class JD extends SeleniumBaseObject {
 
       index++;
 
+      String indexInfo = "[" + index + "/" + total + "]";
+
       if (logger.isDebugEnabled()) {
-        logger.debug("<<<<<<Ready comment: [" + index + "/" + total + "]>>>>>>>");
+        logger.debug("<<<<<<Ready comment: " + indexInfo + ">>>>>>>");
       }
 
       if (logger.isDebugEnabled()) {
@@ -118,11 +121,15 @@ public class JD extends SeleniumBaseObject {
       if (loginSuccess) {
         // 2. confirmReceipt
         confirmReceipt();
-        
+
         // if 只收不评 is  ('Y', 'Yes', 'True', '是')
         // then skip comment step.
-        if(!commentsInfo.getDoNotComment()){
-          // 3. comments production(s)
+        if (!commentsInfo.getDoNotComment()) {
+          if (logger.isDebugEnabled()) {
+            // 3. comments production(s)
+            logger.debug("Ready comment " + indexInfo);
+          }
+
           comments();
         } else {
           logger.info("Order#" + commentsInfo.getOrderId()
@@ -137,8 +144,14 @@ public class JD extends SeleniumBaseObject {
         // check the current browser is inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // if chrome and firefox all inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // then pause 10 minutes for next account and re-set drive to 'chrome'
+        if (index >= total) {
+          logger.info("Comment finished >>>>>>current/total[" + index + "/" + total + "]>>>>>>>");
+
+          break;
+        }
+
         checkDriver(vCodeCountMap, 60);
-      }
+      } // end if
     } // end for
 
     if (logger.isDebugEnabled()) {
@@ -168,7 +181,7 @@ public class JD extends SeleniumBaseObject {
       }
 
       Comment comment = new Comment(driver);
-      comment.comment(commentsInfo.getOrderId(), commentsInfo.getCommentsMap());
+      comment.comment(commentsInfo.getOrderId(), commentsInfo.getTagsCount(), commentsInfo.getCommentsMap());
 
       if (logger.isDebugEnabled()) {
         logger.debug("'Comment' successfully for order#" + commentsInfo.getOrderId());

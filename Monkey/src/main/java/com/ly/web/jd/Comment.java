@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.ly.web.utils.PagodaRandom;
 import org.apache.commons.collections.map.HashedMap;
 
 import org.openqa.selenium.By;
@@ -60,7 +61,7 @@ public class Comment extends AbstractObject {
   private static final String POP_UP_WIN_CLOSE_BUTTON_XPATH =
     "//a[contains(@class, 'comment-good-cancel')][contains(text(), '关闭')]";
 
-  private static final String[] EXCLUDE_TAGs = { "一般", "家用", "家人", "自定义", "还可以" };
+  private static final String[] EXCLUDE_TAGs = { "一般", "家用", "家人", "自定义", "还可以", "较差", "偏小", "偏大", "有偏差", "不符" };
 
   private static Integer maxSelectTagCount = 2;
 
@@ -89,15 +90,8 @@ public class Comment extends AbstractObject {
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
-  /**
-   * comment.
-   *
-   * @param   orderId     String
-   * @param   commentMap  Map
-   *
-   * @throws  Exception  exception
-   */
-  public void comment(String orderId, Map<String, String> commentMap) throws Exception {
+
+  public void comment(String orderId, Integer mustSelectTagCount, Map<String, String> commentMap) throws Exception {
     Assert.notNull(orderId);
 
     String writeCommentUrl      = getCommentUrl(orderId);
@@ -228,7 +222,8 @@ public class Comment extends AbstractObject {
       for (String sku : commentMap.keySet()) {
         // 2. find tags for per product exclude '一般, 家用, 自定义'
         // and random select 0-3 tag(s)
-        selectTheTags(orderId, sku);
+        // if @mustSelectTagCount is not null, means for every sku must select @mustSelectTagCount tag(s)
+        selectTheTags(orderId, sku, mustSelectTagCount);
 
         // 4. input the comments for per production
         writeComment(sku, commentMap);
@@ -261,9 +256,13 @@ public class Comment extends AbstractObject {
     }
 
     int                 idx     = 0;
+    int                 totalSize = skuList.size();
     Map<String, String> tempMap = new HashedMap();
-
+    
     for (String key : commentMap.keySet()) {
+      if(idx>=totalSize){
+        break;
+      }
       if (key.startsWith(Constant.NONE_SKU_KEY_PREFIX)) {
         tempMap.put(skuList.get(idx), commentMap.get(key));
       } else if (!skuList.contains(key)) {
@@ -564,11 +563,11 @@ public class Comment extends AbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean selectTheTags(String orderId, String sku) {
+  private boolean selectTheTags(String orderId, String sku, Integer mustSelectTagCount) {
     boolean success = Boolean.TRUE;
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Ready for select tag(s) for SKU[" + sku + "] with random and orderId#" + orderId);
+      logger.debug("Ready for select tag(s) for SKU[" + sku + "] with random and orderId#" + orderId + " and mustSelectTagCount=" + mustSelectTagCount);
     }
 
     delay(5);
@@ -594,8 +593,10 @@ public class Comment extends AbstractObject {
 // } else if (tags.length >= 3) {
 // size = new Random().nextInt(3);
 // }
-
-        if (tags.length >= maxSelectTagCount) {
+        
+        if(mustSelectTagCount!= null && mustSelectTagCount>0 && tags.length >= mustSelectTagCount){
+          size = mustSelectTagCount;
+        }else if (tags.length >= maxSelectTagCount) {
           size = new Random().nextInt(maxSelectTagCount);
         }
 
@@ -613,8 +614,10 @@ public class Comment extends AbstractObject {
           logger.debug("Random tag seed [size=" + size + "]");
         }
 
+        PagodaRandom pagodaRandom = new PagodaRandom(tags.length, size);
         for (int i = 0; i < size; i++) {
-          String value = tags[new Random().nextInt(tags.length)];
+//          String value = tags[new Random().nextInt(tags.length)];
+          String value = tags[pagodaRandom.nextInt()];
 
           if ((value != null) && StringUtils.hasText(value)) {
             readySelectTags.add(value);
@@ -668,6 +671,8 @@ public class Comment extends AbstractObject {
               if (logger.isDebugEnabled()) {
                 logger.debug("Selected the tag: [" + ele.getText() + "]");
               }
+              
+              scrollToElementPosition(ele);
 
               delay(3);
 

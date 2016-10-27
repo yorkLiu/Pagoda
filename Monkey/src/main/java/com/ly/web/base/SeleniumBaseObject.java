@@ -248,7 +248,8 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
         logger.debug("Init Chrome Web Driver.....");
       }
 
-      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
+//      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
+      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/webDriver/chromedriver");
       driver = new ChromeDriver();
 
     } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
