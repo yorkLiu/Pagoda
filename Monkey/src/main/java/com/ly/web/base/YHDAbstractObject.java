@@ -155,4 +155,9 @@ public abstract class YHDAbstractObject extends AbstractObject {
     return closed;
   }
 
+  protected void refreshPage(){
+    String             script = "window.location.reload();";
+    executeJavaScript(script);
+  }
+
 } // end class YHDAbstractObject

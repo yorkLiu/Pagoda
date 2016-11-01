@@ -40,6 +40,10 @@ public class Constant {
   
   public static final String YHD_SHOPPING_CAR_URL="http://cart.yhd.com/cart/cart.do?action=view";
   
+  public static final String YHD_CHECKOUT_ORDER_URL="http://buy.yhd.com/checkoutV3/index.do";
+  
+  public static final String YHD_PAYMENT_ORDER_PAGE_URL_PREFIX="http://cashier.yhd.com/order/finishOrder.do";
+  
   
   
   public static final String JD_LOGIN_PAGE_URL="https://passport.jd.com/uc/login?ReturnUrl=http://order.jd.com/center/list.action";

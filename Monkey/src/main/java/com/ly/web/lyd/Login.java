@@ -162,7 +162,11 @@ public class Login extends AbstractObject {
       });
 
       // stop to play voice
-      if(playVoice && voicePlayer != null){
+      if (loginSuccessfully && (voicePlayer != null)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Stop to play the warn voice.");
+        }
+
         voicePlayer.stopLoop();
       }
 

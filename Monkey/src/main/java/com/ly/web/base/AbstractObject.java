@@ -286,6 +286,16 @@ public abstract class AbstractObject {
         });
   }
 
+  protected Boolean waitForById(final String elementId, Integer seconds) {
+    seconds = seconds != null ? seconds : 10;
+    return (new WebDriverWait(this.webDriver, seconds)).until(new ExpectedCondition<Boolean>() {
+      @Override public Boolean apply(WebDriver d) {
+        return d.findElement(By.id(elementId)) != null;
+      }
+    });
+  }
+
+
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**

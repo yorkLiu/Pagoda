@@ -101,10 +101,18 @@ public class VoicePlayer {
   }
 
 
-// public static void main(String[] args) {
-//
-// VoicePlayer playSounds = new VoicePlayer();
-// playSounds.playLoop();
-// }
+ public static void main(String[] args) {
+
+   String voiceFilePath = "/Users/yongliu/Project/receiptSys/voice/didi.wav";
+   VoicePlayer playSounds = new VoicePlayer(voiceFilePath);
+   playSounds.playLoop();
+   
+   try{
+     Thread.sleep(5000);
+     playSounds.stopLoop();
+   }catch (Exception e){
+     
+   }
+ }
 
 } // end class VoicePlayer

@@ -41,6 +41,8 @@
     <module>Monkey</module>
     <!--Pagoda Manager Desktop-->
     <module>Dragon</module>
+    <!--Pagoda Order-->
+    <module>Cheetah</module>
     
 
   </modules>
@@ -182,8 +184,6 @@
       <artifactId>spring-beans</artifactId>
       <version>${spring.version}</version>
     </dependency>
-
-   
     
   </dependencies>
   
