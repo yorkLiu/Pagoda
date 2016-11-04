@@ -175,7 +175,7 @@ public class Comment extends AbstractObject {
       logger.debug("Redirect to write comment page: " + writeCommentUrl);
     }
 
-    delay(10);
+    delay(3);
 
     // go to write comment page
     navigateTo(writeCommentUrl);

@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import com.ly.config.WebDriverProperties;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,10 +20,15 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.ly.web.base.SeleniumBaseObject;
@@ -47,19 +53,25 @@ import com.ly.web.dp.YHDDataProvider;
  */
 public class YHD extends SeleniumBaseObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
-  
-  public static String voiceFilePath = null;
 
   /** TODO: DOCUMENT ME! */
   public static ConcurrentMap<String, Integer> vCodeCountMap = new ConcurrentHashMap<>(5);
 
   //~ Instance fields --------------------------------------------------------------------------------------------------
+  
+  private static final String applicationContext = "applicationContext-resources.xml";
 
   private CommentsInfo commentsInfo = null;
 
   private List<CommentsInfo> commentsInfoList = new LinkedList<>();
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+  @BeforeTest
+  public void init(){
+    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
+    context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
+      AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+  }
 
   /**
    * comment.
@@ -96,7 +108,8 @@ public class YHD extends SeleniumBaseObject {
 
       // 1. login
       boolean loginSuccess = login(!(index > 1));
-      if(loginSuccess){
+
+      if (loginSuccess) {
         // 2. confirm receipt
         confirmReceipt();
 
@@ -111,6 +124,11 @@ public class YHD extends SeleniumBaseObject {
         // check the current browser is inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // if chrome and firefox all inputted valid code more than @MAX_INPUT_V_CODE_COUNT times
         // then pause 10 minutes for next account and re-set drive to 'chrome'
+        if (index >= total) {
+          logger.info("Comment finished >>>>>>current/total[" + index + "/" + total + "]>>>>>>>");
+
+          break;
+        }
         checkDriver();
       }
     } // end for
@@ -150,22 +168,25 @@ public class YHD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
+    initProperties();
     initWebDriver(DRIVER_CHROME);
 
   } // end method setup
 
   //~ ------------------------------------------------------------------------------------------------------------------
-  
+
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
   /**
    * random to delay seconds for next account check the current browser is inputted valid code more than
-   * MAX_INPUT_V_CODE_COUNT times 
-   * if chrome and firefox all inputted valid code more than MAX_INPUT_V_CODE_COUNT times
+   * MAX_INPUT_V_CODE_COUNT times if chrome and firefox all inputted valid code more than MAX_INPUT_V_CODE_COUNT times
    * then pause 10 minutes for next account and re-set drive to 'chrome'
    */
   private void checkDriver() {
     // all web driver input valid code gretter than @MAX_INPUT_V_CODE_COUNT
-    checkDriver(vCodeCountMap, 60);
-  }   // end method checkDriver
+    checkDriver(vCodeCountMap);
+  } // end method checkDriver
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -218,10 +239,15 @@ public class YHD extends SeleniumBaseObject {
 
   /**
    * login.
+   *
+   * @param   isFirst  boolean
+   *
+   * @return  login.
    */
 // @Test(priority = 1)
   private Boolean login(boolean isFirst) {
     boolean loginSuccess = Boolean.TRUE;
+
     try {
       if (logger.isDebugEnabled()) {
         logger.debug("Starting login....");

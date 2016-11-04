@@ -15,6 +15,9 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.safari.SafariDriver;
 
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -45,18 +48,27 @@ public class JD extends SeleniumBaseObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
   /** TODO: DOCUMENT ME! */
-  public static String voiceFilePath = null;
-
-  /** TODO: DOCUMENT ME! */
   public static ConcurrentMap<String, Integer> vCodeCountMap = new ConcurrentHashMap<>(5);
 
   //~ Instance fields --------------------------------------------------------------------------------------------------
+
+  /** TODO: DOCUMENT ME! */
+  public String voiceFilePath = null;
 
   private CommentsInfo commentsInfo = null;
 
   private List<CommentsInfo> commentsInfoList = new LinkedList<>();
 
+  private static final String applicationContext = "applicationContext-resources.xml";
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  @BeforeTest
+  public void init(){
+    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
+    context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
+      AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+  }
 
   /**
    * initData.
@@ -150,9 +162,9 @@ public class JD extends SeleniumBaseObject {
           break;
         }
 
-        checkDriver(vCodeCountMap, 60);
+        checkDriver(vCodeCountMap);
       } // end if
-    } // end for
+    }   // end for
 
     if (logger.isDebugEnabled()) {
       logger.debug("Comment successfully, close the web driver.");
@@ -167,8 +179,20 @@ public class JD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
+    initProperties();
     initWebDriver(DRIVER_CHROME);
 
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for voice file path.
+   *
+   * @param  voiceFilePath  String
+   */
+  public void setVoiceFilePath(String voiceFilePath) {
+    this.voiceFilePath = voiceFilePath;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

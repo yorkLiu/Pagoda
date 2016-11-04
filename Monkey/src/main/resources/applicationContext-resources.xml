@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-    http://www.springframework.org/schema/context
-    http://www.springframework.org/schema/context/spring-context-2.5.xsd"
-       default-autowire="byName" default-lazy-init="true">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <util:map id="commandLineParams"></util:map>
+  
+  <bean id="placeHolderProperties" class="com.ly.config.PropFileCMDLinePropertyPlaceHolderConfigurer" >
+    <property name="commandLineParams" ref="commandLineParams" />
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-    <property name="order" value="0"/>
-    <property name="ignoreUnresolvablePlaceholders" value="true"/>
     <!-- Do not search environment properties -->
     <property name="searchSystemEnvironment" value="true"/>
-    <property name="locations">
-      <list>
-        <value>classpath:dev.properties</value>
-      </list>
-    </property>
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+    <property name="order" value="100" />
   </bean>
   
-  <bean id="captureUtil" class="com.ly.capture.CaptureUtil">
-    <property name="username" value="${CAPTURE_USERNAME}"/>
-    <property name="password" value="${CAPTURE_PASSWORD}"/>
-    <property name="appName" value="${organizationName}"/>
+  <bean id="webDriverProperties" class="com.ly.config.WebDriverProperties">
+    <property name="chromeDriverPath" value="${chromeDriverPath}"/>
+    <property name="firefoxDriverPath" value="${firefoxDriverPath}"/>
+    <property name="ieDriverPath" value="${ieDriverPath}"/>
+    <property name="maxDelaySecondsForNext" value="${maxDelaySecondsForNext}"/>
+    <property name="warningVoiceFile" value="${warningVoiceFile}"/>
+    <property name="filesPath" value="${filesPath}"/>
   </bean>
-  
-  </beans>
+
+</beans>

@@ -26,6 +26,12 @@
     </dependency>
     
     <dependency>
+      <groupId>com.ly</groupId>
+      <artifactId>PD-Utils</artifactId>
+      <version>${app.version}</version>
+    </dependency>
+    
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>${httpclient.version}</version>
@@ -112,7 +118,16 @@
       <version>${poi.version}</version>
     </dependency>
 
-
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xerces</artifactId>
+      <version>${xerces.version}</version>
+    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.google.inject</groupId>-->
+      <!--<artifactId>guice</artifactId>-->
+      <!--<version>4.0</version>-->
+    <!--</dependency>-->
 
   </dependencies>
 
@@ -148,7 +163,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.ly.MainEntrance</mainClass>
+              <mainClass>com.ly.web.CommentManager</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

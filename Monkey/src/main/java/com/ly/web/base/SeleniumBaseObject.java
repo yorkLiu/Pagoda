@@ -1,25 +1,21 @@
 package com.ly.web.base;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Random;
-
+import com.ly.config.WebDriverProperties;
+import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.testng.annotations.Listeners;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.saucelabs.common.SauceOnDemandSessionIdProvider;
-
-import com.saucelabs.testng.SauceOnDemandTestListener;
+import java.io.File;
+import java.util.Map;
+import java.util.Random;
 
 
 /**
@@ -78,6 +74,12 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
    */
   private ThreadLocal<WebDriver> webDriver = new ThreadLocal<WebDriver>();
 
+  @Autowired
+  private WebDriverProperties webDriverProperties;
+
+  /*the value is webDriverProperties.warningVoiceFile*/
+  public String voiceFilePath = null;
+
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
   /**
@@ -87,108 +89,23 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
-  /**
-   * getter method for driver.
-   *
-   * @return  WebDriver
-   */
-  public WebDriver getDriver() {
-    return driver;
+  public void checkDriver(Map<String, Integer> vCodeCountMap){
+    this.checkDriver(vCodeCountMap, webDriverProperties.getMaxDelaySecondsForNext());
   }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * The Sauce Job id for the current thread.
-   *
-   * @return  the Sauce Job id for the current thread
-   */
-  @Override public String getSessionId() {
-    return sessionId.get();
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * The {@link WebDriver} for the current thread.
-   *
-   * @return  the {@link WebDriver} for the current thread
-   */
-  public WebDriver getWebDriver() {
-    if (logger.isDebugEnabled()) {
-      logger.debug("WebDriver" + webDriver.get());
-    }
-
-    return webDriver.get();
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for driver.
-   *
-   * @param  driver  WebDriver
-   */
-  public void setDriver(WebDriver driver) {
-    this.driver = driver;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * delay.
-   *
-   * @param  seconds  int
-   */
-  protected void delay(int seconds) {
-    try {
-      if (logger.isDebugEnabled()) {
-        logger.debug(">>>Starting delay " + seconds + " second(s).>>>");
-      }
-
-      Thread.sleep(seconds * 1000);
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("<<<<End delay " + seconds + " second(s).<<<<");
-      }
-    } catch (Exception e) {
-      logger.error(e.getMessage(), e);
-    }
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * DOCUMENT ME!
-   */
-  protected void initWebDriver(String driverName) {
-    if ((driverName == null) || StringUtils.isEmpty(driverName)) {
-      driverName = DRIVER_CHROME;
-    }
-
-    setupDriver(driverName);
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Maximum " + currentDriver);
-    }
-
-    driver.manage().window().maximize();
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-  
   /**
    * random to delay seconds for next account check the current browser is inputted valid code more than
-   * MAX_INPUT_V_CODE_COUNT times 
-   * if chrome and firefox all inputted valid code more than MAX_INPUT_V_CODE_COUNT times
+   * MAX_INPUT_V_CODE_COUNT times if chrome and firefox all inputted valid code more than MAX_INPUT_V_CODE_COUNT times
    * then pause 10 minutes for next account and re-set drive to 'chrome'
-   * @param vCodeCountMap  map
-   * @param maxDelaySecondsForNext max delay seconds for next comment record.
+   *
+   * @param  vCodeCountMap           map
+   * @param  maxDelaySecondsForNext  max delay seconds for next comment record.
    */
   public void checkDriver(Map<String, Integer> vCodeCountMap, int maxDelaySecondsForNext) {
     // all web driver input valid code gretter than @MAX_INPUT_V_CODE_COUNT
-    if (vCodeCountMap.get(DRIVER_CHROME) != null && (vCodeCountMap.get(DRIVER_CHROME) >= MAX_INPUT_V_CODE_COUNT)
-      && vCodeCountMap.get(DRIVER_FIREFOX) != null && (vCodeCountMap.get(DRIVER_FIREFOX) >= MAX_INPUT_V_CODE_COUNT)) {
+    if ((vCodeCountMap.get(DRIVER_CHROME) != null) && (vCodeCountMap.get(DRIVER_CHROME) >= MAX_INPUT_V_CODE_COUNT)
+          && (vCodeCountMap.get(DRIVER_FIREFOX) != null)
+          && (vCodeCountMap.get(DRIVER_FIREFOX) >= MAX_INPUT_V_CODE_COUNT)) {
       if (logger.isDebugEnabled()) {
         logger.debug("'Chrome' and 'FireFox' are all need input valid code, I think need pause comment.");
       }
@@ -240,6 +157,61 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     } // end if-else
   }   // end method checkDriver
 
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for driver.
+   *
+   * @return  WebDriver
+   */
+  public WebDriver getDriver() {
+    return driver;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * The Sauce Job id for the current thread.
+   *
+   * @return  the Sauce Job id for the current thread
+   */
+  @Override public String getSessionId() {
+    return sessionId.get();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * The {@link WebDriver} for the current thread.
+   *
+   * @return  the {@link WebDriver} for the current thread
+   */
+  public WebDriver getWebDriver() {
+    if (logger.isDebugEnabled()) {
+      logger.debug("WebDriver" + webDriver.get());
+    }
+
+    return webDriver.get();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for driver.
+   *
+   * @param  driver  WebDriver
+   */
+  public void setDriver(WebDriver driver) {
+    this.driver = driver;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setupDriver.
+   *
+   * @param  driverType  String
+   */
   public void setupDriver(String driverType) {
     if (DRIVER_CHROME.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_CHROME;
@@ -248,8 +220,9 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
         logger.debug("Init Chrome Web Driver.....");
       }
 
-//      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
-      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/webDriver/chromedriver");
+// System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
+//      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/webDriver/chromedriver");
+      System.setProperty("webdriver.chrome.driver", webDriverProperties.getChromeDriverPath());
       driver = new ChromeDriver();
 
     } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
@@ -265,7 +238,10 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
         logger.debug("Init Firefox Web Driver.....");
       }
 
-      driver = new FirefoxDriver(new FirefoxBinary(new File("/Applications/Firefox.app/Contents/MacOS/firefox")),
+//      driver = new FirefoxDriver(new FirefoxBinary(new File("/Applications/Firefox.app/Contents/MacOS/firefox")),
+//          profile); 
+      
+      driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
           profile);
     } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_IE;
@@ -274,9 +250,79 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
         logger.debug("Init Internet Explorer Web Driver.....");
       }
 
+      System.setProperty("webdriver.ie.driver", webDriverProperties.getIeDriverPath());
       driver = new InternetExplorerDriver();
     } // end if-else
-  } // end method setupDriver
+  }   // end method setupDriver
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for web driver properties.
+   *
+   * @param  webDriverProperties  WebDriverProperties
+   */
+  public void setWebDriverProperties(WebDriverProperties webDriverProperties) {
+    this.webDriverProperties = webDriverProperties;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * delay.
+   *
+   * @param  seconds  int
+   */
+  protected void delay(int seconds) {
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug(">>>Starting delay " + seconds + " second(s).>>>");
+      }
+
+      Thread.sleep(seconds * 1000);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<End delay " + seconds + " second(s).<<<<");
+      }
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param  driverName  String
+   */
+  protected void initWebDriver(String driverName) {
+    if ((driverName == null) || StringUtils.isEmpty(driverName)) {
+      driverName = DRIVER_CHROME;
+    }
+
+    setupDriver(driverName);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Maximum " + currentDriver);
+    }
+
+    driver.manage().deleteAllCookies();
+    driver.manage().window().maximize();
+  }
+  
+  protected void initProperties(){
+    this.voiceFilePath = webDriverProperties.getWarningVoiceFile();
+  }
+
+  /**
+   * setter method for voice file path.
+   *
+   * @param  voiceFilePath  String
+   */
+  public void setVoiceFilePath(String voiceFilePath) {
+    this.voiceFilePath = voiceFilePath;
+  }
 
 
 } // end class SeleniumBaseObject
