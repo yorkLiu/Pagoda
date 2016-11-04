@@ -13,6 +13,8 @@ public class AddressInfoCommand {
 
   private String country;
 
+  private String fullAddress;
+
   private String fullName;
 
   /** only for by ocean. */
@@ -23,7 +25,6 @@ public class AddressInfoCommand {
   private String telephoneNum;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
-
 
   /**
    * getter method for city.
@@ -43,6 +44,17 @@ public class AddressInfoCommand {
    */
   public String getCountry() {
     return country;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for full address.
+   *
+   * @return  String
+   */
+  public String getFullAddress() {
+    return fullAddress;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -114,6 +126,17 @@ public class AddressInfoCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for full address.
+   *
+   * @param  fullAddress  String
+   */
+  public void setFullAddress(String fullAddress) {
+    this.fullAddress = fullAddress;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for full name.
    *
    * @param  fullName  String
@@ -166,6 +189,7 @@ public class AddressInfoCommand {
     sb.append(", fullName='").append(fullName).append('\'');
     sb.append(", province='").append(province).append('\'');
     sb.append(", country='").append(country).append('\'');
+    sb.append(", fullAddress='").append(fullAddress).append('\'');
     sb.append(", telephoneNum='").append(telephoneNum).append('\'');
     sb.append(", identityCardNum='").append(identityCardNum).append('\'');
     sb.append('}');

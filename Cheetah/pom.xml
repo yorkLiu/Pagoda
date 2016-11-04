@@ -135,6 +135,12 @@
       <artifactId>poi-ooxml-schemas</artifactId>
       <version>${poi.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xerces</artifactId>
+      <version>${xerces.version}</version>
+    </dependency>
   </dependencies>
 
 

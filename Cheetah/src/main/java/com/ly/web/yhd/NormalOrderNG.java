@@ -6,9 +6,13 @@ import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.constant.Constant;
 import com.ly.web.lyd.Login;
+import com.ly.web.writer.OrderWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -19,20 +23,34 @@ import org.testng.annotations.Test;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  10/09/2016 15:32
  */
-public class OrderNG  extends SeleniumBaseObject {
+public class NormalOrderNG extends SeleniumBaseObject {
 
   protected final Log logger = LogFactory.getLog(getClass());
   //~ Instance fields --------------------------------------------------------------------------------------------------
+  
+  private OrderWriter orderWriter;
 
   private OrderCommand orderCommand = null;
-  
+
+  private static final String applicationContext = "applicationContext-resources.xml";
+
+
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
+  @BeforeTest
+  public void init(){
+    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
+    context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
+      AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+  }
+  
 
   /**
    * setup.
    */
   @BeforeTest public void setup() {
+    initProperties();
     initWebDriver(DRIVER_CHROME);
   } // end method setup
   
@@ -106,7 +124,10 @@ public class OrderNG  extends SeleniumBaseObject {
     }
   }
 
- 
+  public void setOrderWriter(OrderWriter orderWriter) {
+    this.orderWriter = orderWriter;
+  }
+
   private boolean login() {
     boolean loginSuccess = Boolean.TRUE;
 
@@ -116,7 +137,7 @@ public class OrderNG  extends SeleniumBaseObject {
         logger.debug("Open Login Page:" + Constant.YHD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER);
       }
 
-      Login login = new Login(driver, Constant.YHD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER);
+      Login login = new Login(driver, Constant.YHD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER, voiceFilePath);
 
       loginSuccess = login.login(orderCommand.getUsername(), orderCommand.getPassword(), true);
 
@@ -178,8 +199,12 @@ public class OrderNG  extends SeleniumBaseObject {
     }
 
     PaymentOrder paymentOrder = new PaymentOrder(driver);
+    paymentOrder.setOrderWriter(orderWriter);
 
     return paymentOrder.writeOrderInfo(orderCommand);
   }
 
+  public void setVoiceFilePath(String voiceFilePath) {
+    this.voiceFilePath = voiceFilePath;
+  }
 }

@@ -2,19 +2,23 @@ package com.ly.web.yhd;
 
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
-
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import com.ly.utils.URLUtils;
 
 import com.ly.web.base.YHDAbstractObject;
+import com.ly.web.command.OrderCategory;
 import com.ly.web.command.OrderCommand;
+import com.ly.web.command.OrderResultInfo;
 import com.ly.web.constant.Constant;
+import com.ly.web.writer.OrderWriter;
 
 
 /**
@@ -30,8 +34,11 @@ public class PaymentOrder extends YHDAbstractObject {
 
   private static final String PAYMENT_AMOUNT_FIELD_ID = "payableAmount";
 
-  //~ Constructors -----------------------------------------------------------------------------------------------------
+  //~ Instance fields --------------------------------------------------------------------------------------------------
 
+  private OrderWriter orderWriter;
+
+  //~ Constructors -----------------------------------------------------------------------------------------------------
 
   /**
    * Creates a new PaymentOrder object.
@@ -46,24 +53,57 @@ public class PaymentOrder extends YHDAbstractObject {
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for order writer.
+   *
+   * @return  OrderWriter
+   */
+  public OrderWriter getOrderWriter() {
+    return orderWriter;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for order writer.
+   *
+   * @param  orderWriter  OrderWriter
+   */
+  public void setOrderWriter(OrderWriter orderWriter) {
+    this.orderWriter = orderWriter;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * writeOrderInfo.
    *
-   * @param  orderInfo  OrderCommand
+   * @param   orderInfo  OrderCommand
+   *
+   * @return  writeOrderInfo.
    */
   public boolean writeOrderInfo(OrderCommand orderInfo) {
     if (!webDriver.getCurrentUrl().contains(Constant.YHD_PAYMENT_ORDER_PAGE_URL_PREFIX)) {
       logger.warn("The payment page not loaded");
     }
 
-    if (loadedPaymentPage()) {
-      String paymentUrl = webDriver.getCurrentUrl();
-      String orderNo    = getOrderNoFromUrl(paymentUrl);
+    try {
+      if (loadedPaymentPage()) {
+        String paymentUrl = webDriver.getCurrentUrl();
+        String orderNo    = getOrderNoFromUrl(paymentUrl);
+        String price      = getPrice();
 
-      logger.info(paymentUrl + "\t\t\t|" +orderNo);
+        OrderResultInfo orderResultInfo = new OrderResultInfo(orderInfo);
+        orderResultInfo.setPaymentUrl(paymentUrl);
+        orderResultInfo.setOrderNo(orderNo);
+        orderResultInfo.setPrice(price);
+
+        orderWriter.writeOrderInfo(OrderCategory.YHD, orderResultInfo, Boolean.TRUE);
+      }
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
     }
-    
-    return Boolean.TRUE;
 
+    return Boolean.TRUE;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -85,6 +125,27 @@ public class PaymentOrder extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
+  private String getPrice() {
+    String price = null;
+
+    try {
+      WebElement paymentAmountEle = ExpectedConditions.presenceOfElementLocated(By.id(PAYMENT_AMOUNT_FIELD_ID)).apply(
+          webDriver);
+      price = paymentAmountEle.getAttribute("value");
+    } catch (NoSuchElementException e) {
+      logger.error(e.getMessage(), e);
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("The order price is: " + price);
+    }
+
+    return price;
+
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
   private Boolean loadedPaymentPage() {
     Boolean loaded = Boolean.FALSE;
 
@@ -100,6 +161,4 @@ public class PaymentOrder extends YHDAbstractObject {
 
     return loaded;
   }
-
-
 } // end class PaymentOrder
