@@ -24,9 +24,42 @@ public class DateUtil {
       "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss",
       "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy'T'HH:mm:ss", "yyyy-MM-dd",
       "MM/dd/yyyy");
+  
+  public static final String DATETIME_FORMATTER = "yyyy-MM-dd HH:mm:ss";
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
+  /**
+   * formatDateOnly.
+   *
+   * @param   date  Date
+   *
+   * @return  String
+   */
+  public static String formatDateOnly(Date date) {
+    return formatDate(date, "yyyy-MM-dd");
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * String.
+   *
+   * @param   date           default is today
+   * @param   dateFormatter  default is yyyy-MM-dd
+   *
+   * @return  String.
+   */
+  public static String formatDate(Date date, String dateFormatter) {
+    dateFormatter = ((dateFormatter != null) && StringUtils.hasText(dateFormatter)) ? dateFormatter : "yyyy-MM-dd";
+    date          = (date != null) ? date : new Date();
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatter);
+
+    return dateFormat.format(date);
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * toDate.
