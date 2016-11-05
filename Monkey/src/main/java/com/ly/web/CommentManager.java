@@ -1,6 +1,8 @@
 package com.ly.web;
 
+import com.ly.config.JDConfig;
 import com.ly.config.WebDriverProperties;
+import com.ly.config.YHDConfig;
 import com.ly.utils.TimeUtils;
 import com.ly.web.dp.JDDataProvider;
 import com.ly.web.dp.YHDDataProvider;
@@ -52,26 +54,14 @@ public class CommentManager {
 
     properties.setProperty("job", jobName);
 
-    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
-
-    context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
-      AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
-
-    
-    WebDriverProperties webDriverProperties = (WebDriverProperties)context.getBean("webDriverProperties");
-    
     long startTime = System.currentTimeMillis();
     if(jobName.equalsIgnoreCase(JOB_JD)){
-      // set the data provider file path
-      JDDataProvider.path = webDriverProperties.getFilesPath();
       TestNG testng = new TestNG();
       Class[] classes = new Class[]{JD.class};
       testng.setTestClasses(classes);
       testng.run();
       
     } else if(jobName.equalsIgnoreCase(JOB_YHD)){
-      // set the data provider file path
-      YHDDataProvider.path = webDriverProperties.getFilesPath();
       TestNG testng = new TestNG();
       Class[] classes = new Class[]{YHD.class};
 

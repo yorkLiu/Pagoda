@@ -2,14 +2,18 @@ package com.ly.web.lyd;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import com.ly.config.WebDriverProperties;
+import com.ly.config.YHDConfig;
+import com.ly.file.FileWriter;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -20,6 +24,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -65,18 +70,30 @@ public class YHD extends SeleniumBaseObject {
 
   private List<CommentsInfo> commentsInfoList = new LinkedList<>();
 
+  private static final String[] YHD_Config = new String[]{"YHDResources.xml"};
+  
+  @Autowired
+  private YHDConfig yhdConfig;
+  
+  @Autowired
+  private FileWriter fileWriter;
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
   @BeforeTest
   public void init(){
-    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
+    ApplicationContext parentContext = new ClassPathXmlApplicationContext(applicationContext);
+    ApplicationContext context = new ClassPathXmlApplicationContext(YHD_Config, parentContext);
     context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
       AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+
+    this.webDriverProperties = yhdConfig;
+    initProperties();
   }
 
   /**
    * comment.
    */
-  @Test(priority = 2)
+  @Test(priority = 3)
   public void comment() {
     int total = commentsInfoList.size();
     int index = 0;
@@ -118,6 +135,11 @@ public class YHD extends SeleniumBaseObject {
 
         // 4. logout for current user
         logout();
+
+        // write this orderNo to file.
+        if(fileWriter != null){
+          fileWriter.writeToFile(Constant.YHD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+        }
 
         // 5. check driver
         // random to delay seconds for next account
@@ -162,16 +184,54 @@ public class YHD extends SeleniumBaseObject {
     }
   }
 
+  /**
+   *
+   * checkOrderNo.
+   * Check the @commentsInfoList's orderNos is exists have commented.
+   */
+  @Test(priority = 2)
+  public void checkOrderNo() { 
+    
+    logger.info(">>>>>Start check the order number......");
+    if(commentsInfoList != null && commentsInfoList.size() > 0){
+      List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.YHD_COMMENT_FILE_NAME_PREFIX);
+
+      List<CommentsInfo> actualList = new LinkedList<>();
+      if (commentedOrders != null && commentedOrders.size() > 0) {
+        commentsInfoList.stream().forEach(info -> {
+          if(!commentedOrders.contains(info.getOrderId())){
+            logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
+            actualList.add(info);
+          }
+        });
+        if(actualList.size() > 0){
+          logger.info("The excel file order count: " + commentsInfoList.size());
+          logger.info("After check today commented order, actually should comment count is: " + actualList.size());
+          commentsInfoList.clear();;
+          commentsInfoList.addAll(actualList);
+          logger.info("Now commentsInfoList count: " + commentsInfoList.size());
+        }
+      }
+    }
+    logger.info(">>>>>End check the order number......");
+  }
+  
+
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * setup.
    */
   @BeforeTest public void setup() {
-    initProperties();
     initWebDriver(DRIVER_CHROME);
 
   } // end method setup
+
+  @Override
+  protected void initProperties() {
+    super.initProperties();
+    YHDDataProvider.path = yhdConfig.getFilesPath();
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -193,7 +253,6 @@ public class YHD extends SeleniumBaseObject {
   /**
    * comments.
    */
-// @Test(priority = 3)
   private void comments() {
     try {
       if (logger.isDebugEnabled()) {
@@ -217,7 +276,6 @@ public class YHD extends SeleniumBaseObject {
   /**
    * 1. Open my order page 2. confirm this orderId receipt
    */
-// @Test(priority = 2)
   private void confirmReceipt() {
     try {
       if (logger.isDebugEnabled()) {
@@ -244,7 +302,6 @@ public class YHD extends SeleniumBaseObject {
    *
    * @return  login.
    */
-// @Test(priority = 1)
   private Boolean login(boolean isFirst) {
     boolean loginSuccess = Boolean.TRUE;
 
@@ -280,7 +337,6 @@ public class YHD extends SeleniumBaseObject {
   /**
    * logout.
    */
-// @Test(priority = 4)
   private void logout() {
     if (logger.isDebugEnabled()) {
       logger.debug("Ready logout for user#" + commentsInfo.getUsername());
@@ -295,4 +351,11 @@ public class YHD extends SeleniumBaseObject {
     }
   }
 
+  public void setYhdConfig(YHDConfig yhdConfig) {
+    this.yhdConfig = yhdConfig;
+  }
+
+  public void setFileWriter(FileWriter fileWriter) {
+    this.fileWriter = fileWriter;
+  }
 } // end class YHD

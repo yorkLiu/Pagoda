@@ -3,6 +3,7 @@ package com.ly.config;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.InitializingBean;
+
 import org.springframework.util.StringUtils;
 
 
@@ -12,23 +13,23 @@ import org.springframework.util.StringUtils;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  11/02/2016 16:57
  */
-public class WebDriverProperties implements InitializingBean {
+public abstract class WebDriverProperties implements InitializingBean {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  /** TODO: DOCUMENT ME! */
-  Logger logger = Logger.getLogger(getClass());
+  /** DOCUMENT ME! */
+  protected Logger logger = Logger.getLogger(getClass());
 
   private String chromeDriverPath;
+
+  private String filesPath;
   private String firefoxDriverPath;
   private String ieDriverPath;
 
   /** only using when comment. */
   private Integer maxDelaySecondsForNext;
 
-  /**when the login page show need input valid code, play voice file to warning*/
+  /** when the login page show need input valid code, play voice file to warning. */
   private String warningVoiceFile;
-  
-  private String filesPath;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -51,6 +52,17 @@ public class WebDriverProperties implements InitializingBean {
    */
   public String getChromeDriverPath() {
     return chromeDriverPath;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for files path.
+   *
+   * @return  String
+   */
+  public String getFilesPath() {
+    return filesPath;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -109,8 +121,21 @@ public class WebDriverProperties implements InitializingBean {
    * @param  chromeDriverPath  String
    */
   public void setChromeDriverPath(String chromeDriverPath) {
-    if(chromeDriverPath != null && StringUtils.hasText(chromeDriverPath)){
+    if ((chromeDriverPath != null) && StringUtils.hasText(chromeDriverPath)) {
       this.chromeDriverPath = StringUtils.cleanPath(chromeDriverPath);
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for files path.
+   *
+   * @param  filesPath  String
+   */
+  public void setFilesPath(String filesPath) {
+    if ((filesPath != null) && StringUtils.hasText(filesPath)) {
+      this.filesPath = StringUtils.cleanPath(filesPath);
     }
   }
 
@@ -122,7 +147,7 @@ public class WebDriverProperties implements InitializingBean {
    * @param  firefoxDriverPath  String
    */
   public void setFirefoxDriverPath(String firefoxDriverPath) {
-    if(firefoxDriverPath != null && StringUtils.hasText(firefoxDriverPath)){
+    if ((firefoxDriverPath != null) && StringUtils.hasText(firefoxDriverPath)) {
       this.firefoxDriverPath = StringUtils.cleanPath(firefoxDriverPath);
     }
   }
@@ -135,7 +160,7 @@ public class WebDriverProperties implements InitializingBean {
    * @param  ieDriverPath  String
    */
   public void setIeDriverPath(String ieDriverPath) {
-    if(ieDriverPath != null && StringUtils.hasText(ieDriverPath)){
+    if ((ieDriverPath != null) && StringUtils.hasText(ieDriverPath)) {
       this.ieDriverPath = StringUtils.cleanPath(ieDriverPath);
     }
   }
@@ -160,15 +185,5 @@ public class WebDriverProperties implements InitializingBean {
    */
   public void setWarningVoiceFile(String warningVoiceFile) {
     this.warningVoiceFile = warningVoiceFile;
-  }
-
-  public String getFilesPath() {
-    return filesPath;
-  }
-
-  public void setFilesPath(String filesPath) {
-    if(filesPath != null && StringUtils.hasText(filesPath)){
-      this.filesPath = StringUtils.cleanPath(filesPath);
-    }
   }
 } // end class WebDriverProperties

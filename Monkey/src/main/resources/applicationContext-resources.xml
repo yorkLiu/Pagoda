@@ -9,22 +9,9 @@
 
   <util:map id="commandLineParams"></util:map>
   
-  <bean id="placeHolderProperties" class="com.ly.config.PropFileCMDLinePropertyPlaceHolderConfigurer" >
-    <property name="commandLineParams" ref="commandLineParams" />
-    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-    <!-- Do not search environment properties -->
-    <property name="searchSystemEnvironment" value="true"/>
-    <property name="ignoreUnresolvablePlaceholders" value="true" />
-    <property name="order" value="100" />
+  <bean id="fileWriter" class="com.ly.file.FileWriter">
+    <property name="workDir" value="${workDir}"/>
+    <property name="delimiter" value="|"/>
   </bean>
   
-  <bean id="webDriverProperties" class="com.ly.config.WebDriverProperties">
-    <property name="chromeDriverPath" value="${chromeDriverPath}"/>
-    <property name="firefoxDriverPath" value="${firefoxDriverPath}"/>
-    <property name="ieDriverPath" value="${ieDriverPath}"/>
-    <property name="maxDelaySecondsForNext" value="${maxDelaySecondsForNext}"/>
-    <property name="warningVoiceFile" value="${warningVoiceFile}"/>
-    <property name="filesPath" value="${filesPath}"/>
-  </bean>
-
 </beans>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <import resource="applicationContext-resources.xml"/>
+  
+  <bean id="placeHolderProperties" class="com.ly.config.PropFileCMDLinePropertyPlaceHolderConfigurer">
+    <property name="commandLineParams" ref="commandLineParams" />
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- Do not search environment properties -->
+    <property name="searchSystemEnvironment" value="true"/>
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+    <property name="order" value="100" />
+    <property name="fileEncoding" value="UTF-8"/>
+  </bean>
+  
+  <bean id="jdConfig" class="com.ly.config.JDConfig">
+    <property name="chromeDriverPath" value="${chromeDriverPath}"/>
+    <property name="firefoxDriverPath" value="${firefoxDriverPath}"/>
+    <property name="ieDriverPath" value="${ieDriverPath}"/>
+    <property name="maxDelaySecondsForNext" value="${maxDelaySecondsForNext}"/>
+    <property name="warningVoiceFile" value="${warningVoiceFile}"/>
+    <property name="filesPath" value="${filesPath}"/>
+    <property name="exclusiveTags" value="${exclusiveTags}"/>
+  </bean>
+
+</beans>

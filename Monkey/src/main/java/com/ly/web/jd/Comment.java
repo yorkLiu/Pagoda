@@ -61,7 +61,7 @@ public class Comment extends AbstractObject {
   private static final String POP_UP_WIN_CLOSE_BUTTON_XPATH =
     "//a[contains(@class, 'comment-good-cancel')][contains(text(), '关闭')]";
 
-  private static final String[] EXCLUDE_TAGs = { "一般", "家用", "家人", "自定义", "还可以", "较差", "偏小", "偏大", "有偏差", "不符" };
+  public static String[] EXCLUDE_TAGs = { "一般", "家用", "家人", "自定义", "还可以", "较差", "偏小", "偏大", "有偏差", "不符" };
 
   private static Integer maxSelectTagCount = 2;
 

@@ -1,5 +1,8 @@
 package com.ly.config;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Properties;
 
@@ -142,7 +145,7 @@ public class PropFileCMDLinePropertyPlaceHolderConfigurer extends PropertyPlaceh
             FileSystemResource  r                   = new FileSystemResource(propFileName);
             commandLinePropFileName = r.getFilename();
             this.priorityProperties = new Properties();
-            propertiesPersister.load(this.priorityProperties, r.getInputStream());
+            propertiesPersister.load(this.priorityProperties, new InputStreamReader(r.getInputStream(), "UTF-8"));
             propertiesPersister = null;
             r                   = null;
           }

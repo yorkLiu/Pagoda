@@ -46,6 +46,12 @@ public class Constant {
   
   
   
+  public static final String YHD_COMMENT_FILE_NAME_PREFIX="YHD-Comment";
+  
+  public static final String YHD_ORDER_FILE_NAME_PREFIX="YHD-Order";
+  
+  
+  
   public static final String JD_LOGIN_PAGE_URL="https://passport.jd.com/uc/login?ReturnUrl=http://order.jd.com/center/list.action";
   public static final String JD_MY_ORDER_URL="http://order.jd.com/center/list.action";
   public static final String JD_MY_ORDER_RECYCLE_URL="http://order.jd.com/center/recycle.action?d=1";
@@ -55,4 +61,9 @@ public class Constant {
   public static final String JD_COMMENT_SUCCESS_URL="http://club.jd.com/myJdcomments/saveCommentSuccess.action";
   
   public static final String NONE_SKU_KEY_PREFIX="NONE-SKU-";
+
+
+
+
+  public static final String JD_COMMENT_FILE_NAME_PREFIX="JD-Comment";
 }

@@ -74,8 +74,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
    */
   private ThreadLocal<WebDriver> webDriver = new ThreadLocal<WebDriver>();
 
-  @Autowired
-  private WebDriverProperties webDriverProperties;
+  protected WebDriverProperties webDriverProperties;
 
   /*the value is webDriverProperties.warningVoiceFile*/
   public String voiceFilePath = null;
@@ -219,9 +218,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
       if (logger.isDebugEnabled()) {
         logger.debug("Init Chrome Web Driver.....");
       }
-
-// System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/chromedriver/chromedriver");
-//      System.setProperty("webdriver.chrome.driver", "/Users/yongliu/Project/webDriver/chromedriver");
+      
       System.setProperty("webdriver.chrome.driver", webDriverProperties.getChromeDriverPath());
       driver = new ChromeDriver();
 
@@ -237,9 +234,6 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
       if (logger.isDebugEnabled()) {
         logger.debug("Init Firefox Web Driver.....");
       }
-
-//      driver = new FirefoxDriver(new FirefoxBinary(new File("/Applications/Firefox.app/Contents/MacOS/firefox")),
-//          profile); 
       
       driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
           profile);
@@ -254,17 +248,6 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
       driver = new InternetExplorerDriver();
     } // end if-else
   }   // end method setupDriver
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * setter method for web driver properties.
-   *
-   * @param  webDriverProperties  WebDriverProperties
-   */
-  public void setWebDriverProperties(WebDriverProperties webDriverProperties) {
-    this.webDriverProperties = webDriverProperties;
-  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

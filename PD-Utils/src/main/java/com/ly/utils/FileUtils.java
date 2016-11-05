@@ -1,8 +1,13 @@
 package com.ly.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -56,24 +61,6 @@ public class FileUtils implements Serializable {
    * writeContentToFile.
    *
    * @param   filePath  String
-   * @param   array     Object[]
-   *
-   * @return  boolean
-   */
-  public static boolean writeContentToFile(String filePath, Object[] array, String delimiter) {
-    delimiter = delimiter != null ? delimiter : DEFAULT_DELIMITER;
-    String  content = StringUtils.arrayToDelimitedString(array, delimiter);
-    Boolean success = writeContentToFile(filePath, content);
-
-    return success;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * writeContentToFile.
-   *
-   * @param   filePath  String
    * @param   content   String
    *
    * @return  boolean
@@ -100,7 +87,7 @@ public class FileUtils implements Serializable {
         if (logger.isDebugEnabled()) {
           logger.debug("The file: " + filePath + " was not exists, create it.");
         }
-        
+
         file.createNewFile();
       }
 
@@ -127,4 +114,56 @@ public class FileUtils implements Serializable {
 
     return success;
   } // end method writeContentToFile
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * writeContentToFile.
+   *
+   * @param   filePath   String
+   * @param   array      Object[]
+   * @param   delimiter  String
+   *
+   * @return  boolean
+   */
+  public static boolean writeContentToFile(String filePath, Object[] array, String delimiter) {
+    delimiter = (delimiter != null) ? delimiter : DEFAULT_DELIMITER;
+
+    String  content = StringUtils.arrayToDelimitedString(array, delimiter);
+    Boolean success = writeContentToFile(filePath, content);
+
+    return success;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * readFile.
+   *
+   * @param   filePath  String
+   *
+   * @return  String
+   *
+   * @throws  IOException  exception
+   */
+  public static String readFile(String filePath) throws IOException {
+    BufferedReader reader   = null;
+    StringBuffer   fileData = new StringBuffer();
+    reader = new BufferedReader(new FileReader(filePath));
+
+    char[] buf     = new char[4096];
+    int    numRead = 0;
+
+    while ((numRead = reader.read(buf)) != -1) {
+      String readData = String.valueOf(buf, 0, numRead);
+      fileData.append(readData);
+    }
+
+    reader.close();
+
+
+    return fileData.toString();
+  } // end method readFile
+  
 } // end class FileUtils

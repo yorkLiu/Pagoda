@@ -9,12 +9,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.ly.config.JDConfig;
+import com.ly.file.FileWriter;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.safari.SafariDriver;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -60,14 +63,25 @@ public class JD extends SeleniumBaseObject {
   private List<CommentsInfo> commentsInfoList = new LinkedList<>();
 
   private static final String applicationContext = "applicationContext-resources.xml";
+  private static final String[] JD_Config = new String[]{"JDResources.xml"};
+  
+  @Autowired
+  private JDConfig jdConfig;
+  
+  @Autowired
+  private FileWriter fileWriter;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   @BeforeTest
   public void init(){
-    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
+    ApplicationContext parentContext = new ClassPathXmlApplicationContext(applicationContext);
+    ApplicationContext context = new ClassPathXmlApplicationContext(JD_Config, parentContext);
     context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
       AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+
+    this.webDriverProperties = jdConfig;
+    initProperties();
   }
 
   /**
@@ -90,11 +104,43 @@ public class JD extends SeleniumBaseObject {
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
+  /**
+   *
+   * checkOrderNo.
+   * Check the @commentsInfoList's orderNos is exists have commented.
+   */
+  @Test(priority = 2)
+  public void checkOrderNo() {
+    logger.info(">>>>>Start check the order number......");
+    if(commentsInfoList != null && commentsInfoList.size() > 0){
+      List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.JD_COMMENT_FILE_NAME_PREFIX);
+
+      List<CommentsInfo> actualList = new LinkedList<>();
+      if (commentedOrders != null && commentedOrders.size() > 0) {
+        commentsInfoList.stream().forEach(info -> {
+          if(!commentedOrders.contains(info.getOrderId())){
+            logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
+            actualList.add(info);
+          }
+        });
+        if(actualList.size() > 0){
+          logger.info("The excel file order count: " + commentsInfoList.size());
+          logger.info("After check today commented order, actually should comment count is: " + actualList.size());
+          commentsInfoList.clear();;
+          commentsInfoList.addAll(actualList);
+          logger.info("Now commentsInfoList count: " + commentsInfoList.size());
+        }
+      }
+    }
+    logger.info(">>>>>End check the order number......");
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * readComment.
    */
-  @Test(priority = 2)
+  @Test(priority = 3)
   public void readComment() {
     int total = commentsInfoList.size();
     int index = 0;
@@ -147,9 +193,14 @@ public class JD extends SeleniumBaseObject {
           logger.info("Order#" + commentsInfo.getOrderId()
             + " doNotComment is 'TRUE' then will not comment this order, continue next order.");
         }
-
+        
         // 4. logout current user
         logout();
+
+        // write this orderNo to file.
+        if(fileWriter != null){
+          fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+        }
 
         // 5. check driver
         // random to delay seconds for next account
@@ -179,9 +230,14 @@ public class JD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
-    initProperties();
     initWebDriver(DRIVER_CHROME);
+  }
 
+  @Override
+  protected void initProperties() {
+    super.initProperties();
+    JDDataProvider.path = jdConfig.getFilesPath();
+    Comment.EXCLUDE_TAGs = jdConfig.getExcludeTags();
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -286,4 +342,12 @@ public class JD extends SeleniumBaseObject {
     }
   }
 
+
+  public void setJdConfig(JDConfig jdConfig) {
+    this.jdConfig = jdConfig;
+  }
+
+  public void setFileWriter(FileWriter fileWriter) {
+    this.fileWriter = fileWriter;
+  }
 } // end class JD
