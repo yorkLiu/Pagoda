@@ -193,25 +193,30 @@ public class YHD extends SeleniumBaseObject {
   public void checkOrderNo() { 
     
     logger.info(">>>>>Start check the order number......");
-    if(commentsInfoList != null && commentsInfoList.size() > 0){
-      List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.YHD_COMMENT_FILE_NAME_PREFIX);
+    try {
+      if (commentsInfoList != null && commentsInfoList.size() > 0) {
+        List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.YHD_COMMENT_FILE_NAME_PREFIX);
 
-      List<CommentsInfo> actualList = new LinkedList<>();
-      if (commentedOrders != null && commentedOrders.size() > 0) {
-        commentsInfoList.stream().forEach(info -> {
-          if(!commentedOrders.contains(info.getOrderId())){
-            logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
-            actualList.add(info);
+        List<CommentsInfo> actualList = new LinkedList<>();
+        if (commentedOrders != null && commentedOrders.size() > 0) {
+          commentsInfoList.stream().forEach(info -> {
+            if (!commentedOrders.contains(info.getOrderId())) {
+              logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
+              actualList.add(info);
+            }
+          });
+          if (actualList.size() > 0) {
+            logger.info("The excel file order count: " + commentsInfoList.size());
+            logger.info("After check today commented order, actually should comment count is: " + actualList.size());
+            commentsInfoList.clear();
+            ;
+            commentsInfoList.addAll(actualList);
+            logger.info("Now commentsInfoList count: " + commentsInfoList.size());
           }
-        });
-        if(actualList.size() > 0){
-          logger.info("The excel file order count: " + commentsInfoList.size());
-          logger.info("After check today commented order, actually should comment count is: " + actualList.size());
-          commentsInfoList.clear();;
-          commentsInfoList.addAll(actualList);
-          logger.info("Now commentsInfoList count: " + commentsInfoList.size());
         }
       }
+    }catch (Exception e){
+      logger.error(e.getMessage());
     }
     logger.info(">>>>>End check the order number......");
   }
@@ -223,7 +228,7 @@ public class YHD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
-    initWebDriver(DRIVER_CHROME);
+    initWebDriver(yhdConfig.getDriverType());
 
   } // end method setup
 

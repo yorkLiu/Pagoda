@@ -231,7 +231,7 @@ public class Comment extends AbstractObject {
     }
 
     // delay 10 seconds then submit
-    delay(10);
+    delay(3);
 
     // 5. submit
     submit(orderId);
@@ -711,7 +711,7 @@ public class Comment extends AbstractObject {
 
       WebElement submitBtn = ExpectedConditions.elementToBeClickable(By.xpath(SUBMIT_BTN_XPATH)).apply(
           webDriver);
-      delay(10);
+      delay(3);
       submitBtn.click();
 
       delay(5);

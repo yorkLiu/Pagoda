@@ -292,6 +292,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
 
     driver.manage().deleteAllCookies();
     driver.manage().window().maximize();
+    driver.manage().window().fullscreen();
   }
   
   protected void initProperties(){

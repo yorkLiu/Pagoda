@@ -47,7 +47,7 @@ public abstract class YHDAbstractObject extends AbstractObject {
 
     } catch (NoSuchElementException e) {
       if (logger.isDebugEnabled()) {
-        logger.debug("Not pop-up welcome to shopping in YHD window");
+        logger.debug("No pop-up welcome to shopping in YHD window");
       }
     } catch (Exception e) {
       logger.error(e.getMessage(), e);

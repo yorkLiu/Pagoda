@@ -2,6 +2,7 @@ package com.ly.web.jd;
 
 import java.io.File;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,21 +113,22 @@ public class JD extends SeleniumBaseObject {
   @Test(priority = 2)
   public void checkOrderNo() {
     logger.info(">>>>>Start check the order number......");
-    if(commentsInfoList != null && commentsInfoList.size() > 0){
+    if (commentsInfoList != null && commentsInfoList.size() > 0) {
       List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.JD_COMMENT_FILE_NAME_PREFIX);
 
       List<CommentsInfo> actualList = new LinkedList<>();
       if (commentedOrders != null && commentedOrders.size() > 0) {
         commentsInfoList.stream().forEach(info -> {
-          if(!commentedOrders.contains(info.getOrderId())){
+          if (!commentedOrders.contains(info.getOrderId())) {
             logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
             actualList.add(info);
           }
         });
-        if(actualList.size() > 0){
+        if (actualList.size() > 0) {
           logger.info("The excel file order count: " + commentsInfoList.size());
           logger.info("After check today commented order, actually should comment count is: " + actualList.size());
-          commentsInfoList.clear();;
+          commentsInfoList.clear();
+          ;
           commentsInfoList.addAll(actualList);
           logger.info("Now commentsInfoList count: " + commentsInfoList.size());
         }
@@ -230,7 +232,7 @@ public class JD extends SeleniumBaseObject {
    * setup.
    */
   @BeforeTest public void setup() {
-    initWebDriver(DRIVER_CHROME);
+    initWebDriver(jdConfig.getDriverType());
   }
 
   @Override
