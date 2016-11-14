@@ -20,6 +20,10 @@ public class URLUtils {
 
   private static final Logger logger = Logger.getLogger(URLUtils.class);
 
+  public static final String P_YHD_URL_PREFIX          = "http://item.yhd.com/item/";
+  public static final String P_JD_URL_PREFIX           = "http://item.jd.com/";
+  public static final String P_JD_URL_HTTPS_PREFIX     = "https://item.jd.com/";
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
@@ -57,4 +61,69 @@ public class URLUtils {
 
     return paramMap;
   } // end method getParamsFromUrl
+  
+  /**
+   * getter method for sku from url.
+   *
+   * @param   skuOrUrl  String
+   *
+   * @return  String
+   */
+  public static String getSkuFromUrl(String skuOrUrl) {
+      String sku = null;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Ready analysis SKU form: " + skuOrUrl);
+      }
+
+      if ((skuOrUrl != null) && StringUtils.hasText(skuOrUrl)) {
+        boolean isUrl = Boolean.FALSE;
+        String prefix = null;
+        if(skuOrUrl.contains(P_YHD_URL_PREFIX)){
+          isUrl = Boolean.TRUE;
+          prefix = P_YHD_URL_PREFIX;
+        } else if(skuOrUrl.contains(P_JD_URL_PREFIX)){
+          isUrl = Boolean.TRUE;
+          prefix = P_JD_URL_PREFIX;
+        } else if(skuOrUrl.contains(P_JD_URL_HTTPS_PREFIX)){
+          isUrl = Boolean.TRUE;
+          prefix = P_JD_URL_HTTPS_PREFIX;
+        }
+
+        if(isUrl && prefix != null){
+          if (logger.isDebugEnabled()) {
+            logger.debug(skuOrUrl + " is a url, will get sku NO. from this url.");
+          }
+
+          String urlWithoutParams = skuOrUrl.split("\\?")[0];
+
+          if (logger.isDebugEnabled()) {
+            logger.debug("Analysis the url without parameters is: " + urlWithoutParams);
+          }
+
+          sku = urlWithoutParams.replace(prefix, "").replace(".html", "").trim();
+
+          if (logger.isDebugEnabled()) {
+            logger.debug("Got the SKU: " + sku + " from the url: " + skuOrUrl);
+          }
+
+        } else {
+          if (logger.isDebugEnabled()) {
+            logger.debug(skuOrUrl + " is not a url, it is a actual sku.");
+          }
+
+          sku = skuOrUrl;
+
+          if (logger.isDebugEnabled()) {
+            logger.debug("So the sku is: " + sku);
+          }
+        } // end if-else
+      }   // end if
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Return sku[" + sku + "]");
+      }
+
+      return sku;
+    }
 } // end class URLUtils

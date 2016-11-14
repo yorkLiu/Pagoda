@@ -19,6 +19,14 @@ public abstract class WebDriverProperties implements InitializingBean {
   /** DOCUMENT ME! */
   protected Logger logger = Logger.getLogger(getClass());
 
+  public static final String DRIVER_CHROME = "chrome";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_FIREFOX = "firefox";
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DRIVER_IE = "ie";
+
   private String chromeDriverPath;
 
   private String filesPath;
@@ -185,5 +193,16 @@ public abstract class WebDriverProperties implements InitializingBean {
    */
   public void setWarningVoiceFile(String warningVoiceFile) {
     this.warningVoiceFile = warningVoiceFile;
+  }
+  
+  public String getDriverType(){
+    if(getChromeDriverPath() != null && StringUtils.hasText(getChromeDriverPath())){
+      return DRIVER_CHROME;
+    } else if(getFirefoxDriverPath() != null && StringUtils.hasText(getFirefoxDriverPath())){
+      return DRIVER_FIREFOX;
+    } else if(getIeDriverPath() != null && StringUtils.hasText(getIeDriverPath())){
+      return DRIVER_IE;
+    }
+    return null;
   }
 } // end class WebDriverProperties

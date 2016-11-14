@@ -6,7 +6,7 @@ package com.ly.config;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  11/04/2016 10:29
  */
-public class YHDConfig extends WebDriverProperties {
+public class YHDConfig extends BaseOrderConfig {
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**

@@ -1,25 +1,16 @@
 package com.ly.file;
 
-import java.io.BufferedReader;
-import java.io.Console;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
+import com.ly.utils.DateUtil;
+import com.ly.utils.FileUtils;
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.InitializingBean;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.ly.utils.DateUtil;
-import com.ly.utils.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -44,6 +35,8 @@ public class FileWriter implements InitializingBean {
 
   /** TODO: DOCUMENT ME! */
   protected String workDir;
+
+  protected static final String DEFAULT_LINE_SEPARATOR = System.getProperty("line.separator");
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -86,7 +79,7 @@ public class FileWriter implements InitializingBean {
         orderNoList = CollectionUtils.arrayToList(orderNos);
       }
     } catch (Exception e) {
-      logger.error(e.getMessage(), e);
+      logger.error(e.getMessage());
     }
 
     return orderNoList;
