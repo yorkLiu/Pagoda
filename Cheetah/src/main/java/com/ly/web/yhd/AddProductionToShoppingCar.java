@@ -1,6 +1,8 @@
 package com.ly.web.yhd;
 
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -37,7 +39,10 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
   private final String ATTENTION_STORE_XPATH                          =
     "//div[@id='sellershopid']/a[contains(text(), '收藏店铺')]";
 
+  
+  private Integer browserTime;
   //~ Constructors -----------------------------------------------------------------------------------------------------
+  
 
   /**
    * Creates a new AddProductionToShoppingCar object.
@@ -97,6 +102,10 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
 
         return added;
       }
+      
+      // browse the production page.
+      browseProduction(sku);
+      
 
       // 1. attention production
       if (allowAttentionProduction) {
@@ -119,6 +128,62 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
 
     return added;
   } // end method addToShoppingCar
+
+  private void browseProduction(String sku) {
+    Integer browseTime = this.getBrowserTime();
+
+    if ((browseTime != null) && (browseTime > 0)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Will browse this sku[" + sku + "] " + this.getBrowserTime() + " seconds.");
+      }
+
+
+      int        firstTime = 1000;
+      final long stayTime  = browseTime * 1000;
+      Timer      timer     = new Timer();
+
+      timer.scheduleAtFixedRate(new TimerTask() {
+          private long    startTime;
+          private boolean cancelFlag = Boolean.FALSE;
+          private int     startPosition   = 1000;
+          private int     count      = 0;
+          private int[]   positionOffsets = new int[]{ 500, 800, 1500, 1700, 3400, 800};
+
+          @Override public void run() {
+            if (startTime <= 0) {
+              startTime = this.scheduledExecutionTime();
+            }
+            cancelFlag = (System.currentTimeMillis() - startTime) >= stayTime;
+
+            if (count < 6) {
+              startPosition += positionOffsets[count];
+              scrollOverflowY(startPosition);
+            } else {
+              cancelFlag = Boolean.TRUE;
+            }
+
+            count++;
+
+            if (cancelFlag) {
+              scrollOverflowY(0);
+              timer.cancel();
+              timer.purge();
+
+              if (logger.isDebugEnabled()) {
+                logger.debug("The timer is cancelled.");
+              }
+            }
+          } // end method run
+        }, firstTime, 5000);
+
+      delay(browseTime + 1);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Browse the production page " + browseTime + " seconds, Done!");
+      }
+
+    } // end if
+  }   // end method browseProduction
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -240,4 +305,11 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
     } // end try-catch
   } // end method attentionStore
 
+  public Integer getBrowserTime() {
+    return browserTime;
+  }
+
+  public void setBrowserTime(Integer browserTime) {
+    this.browserTime = browserTime;
+  }
 } // end class AddProductionToShoppingCar

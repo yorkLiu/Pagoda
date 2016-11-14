@@ -8,12 +8,15 @@ import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.InitializingBean;
 
+import org.springframework.util.StringUtils;
+
+import com.ly.file.FileWriter;
+
 import com.ly.utils.DateUtil;
 import com.ly.utils.FileUtils;
 
 import com.ly.web.command.OrderCategory;
 import com.ly.web.command.OrderResultInfo;
-import org.springframework.util.StringUtils;
 
 
 /**
@@ -22,44 +25,67 @@ import org.springframework.util.StringUtils;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  11/01/2016 16:18
  */
-public class OrderWriter implements InitializingBean {
-  //~ Static fields/initializers ---------------------------------------------------------------------------------------
-
-  private static final long serialVersionUID = 3561817317629600898L;
-
-  private static final String TXT_FILE = ".txt";
-
+public class OrderWriter extends FileWriter {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
-  private String workDir;
-  
-  private String delimiter;
+  private String fileNamePrefix;
 
-  private Logger logger = Logger.getLogger(getClass());
+  private String header;
+
+  private String[] headers;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
-   * @see  org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   * @see  com.ly.file.FileWriter#afterPropertiesSet()
    */
   @Override public void afterPropertiesSet() throws Exception {
-    logger.info("The file dir is: " + workDir);
-    logger.info("The delimiter is: " + delimiter);
+    super.afterPropertiesSet();
+    logger.info("fileNamePrefix is: " + fileNamePrefix);
   }
-  
-  public OrderWriter(){}
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-
-  public void setWorkDir(String workDir) {
-    if(workDir != null && StringUtils.hasText(workDir)){
-      this.workDir = StringUtils.cleanPath(workDir);
-    }
+  /**
+   * getter method for file name prefix.
+   *
+   * @return  String
+   */
+  public String getFileNamePrefix() {
+    return fileNamePrefix;
   }
 
-  public void setDelimiter(String delimiter) {
-    this.delimiter = delimiter;
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for headers.
+   *
+   * @return  String[]
+   */
+  public String[] getHeaders() {
+    return headers;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for file name prefix.
+   *
+   * @param  fileNamePrefix  String
+   */
+  public void setFileNamePrefix(String fileNamePrefix) {
+    this.fileNamePrefix = fileNamePrefix;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for headers.
+   *
+   * @param  headers  String[]
+   */
+  public void setHeaders(String[] headers) {
+    this.headers = headers;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -73,32 +99,26 @@ public class OrderWriter implements InitializingBean {
    */
   public void writeOrderInfo(OrderCategory orderCategory, OrderResultInfo orderResultInfo,
     Boolean appendOrderDateTime) {
-    File   dir = new File(workDir);
-    String now = DateUtil.formatDate(new Date(), DateUtil.DATETIME_FORMATTER);
-
-    if (!dir.exists()) {
-      dir.mkdirs();
-    }
-
-    if (!workDir.endsWith(File.separator)) {
-      workDir = workDir + File.separator;
-    }
-
-    String filePath = workDir + generateFileName(orderCategory.toString());
+    String now      = DateUtil.formatDate(new Date(), DateUtil.DATETIME_FORMATTER);
+    String filePath = getFilePath(((fileNamePrefix != null) && StringUtils.hasText(fileNamePrefix))
+          ? fileNamePrefix : orderCategory.toString());
 
     FileUtils.writeContentToFile(filePath,
       new Object[] {
         // username
         orderResultInfo.getUsername(),
-        
+
         // password
         orderResultInfo.getPassword(),
-        
+
         // payment url
         orderResultInfo.getPaymentUrl(),
 
         // orderNo
         orderResultInfo.getOrderNo(),
+
+        // keyword
+        orderResultInfo.getKeyword(),
 
         // full name
         orderResultInfo.getAddressInfo().getFullName(),
@@ -113,19 +133,24 @@ public class OrderWriter implements InitializingBean {
         orderResultInfo.getPrice(),
 
         // append order date
-        ((appendOrderDateTime != null) && appendOrderDateTime) ? now : ""
-      }, delimiter);
+        ((appendOrderDateTime != null) && appendOrderDateTime) ? now : "",
+
+        // group name (merchant name)
+        orderResultInfo.getGroupName(),
+
+        // new line
+        DEFAULT_LINE_SEPARATOR
+      }, getHeader(), delimiter);
 
   } // end method writeOrderInfo
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private String generateFileName(String prefix) {
-    StringBuilder fileName  = new StringBuilder(prefix).append("-");
-    String        dateStamp = DateUtil.formatDateOnly(new Date());
-    fileName.append(dateStamp).append(TXT_FILE);
+  private String getHeader() {
+    if ((headers != null) && (headers.length > 0) && (headers == null)) {
+      header = StringUtils.arrayToDelimitedString(headers, delimiter);
+    }
 
-    return fileName.toString();
+    return header;
   }
-
 } // end class OrderWriter

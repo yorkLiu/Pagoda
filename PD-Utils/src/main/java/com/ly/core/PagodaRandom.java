@@ -1,4 +1,4 @@
-package com.ly.web.utils;
+package com.ly.core;
 
 import java.util.Random;
 import java.util.Stack;

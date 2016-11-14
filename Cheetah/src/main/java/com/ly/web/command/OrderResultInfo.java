@@ -11,6 +11,10 @@ public class OrderResultInfo {
 
   private AddressInfoCommand addressInfo;
 
+  private String groupName;
+
+  private String keyword;
+
   private String orderNo;
 
   private String password;
@@ -21,16 +25,28 @@ public class OrderResultInfo {
 
   private String username;
 
-  //~ Methods ----------------------------------------------------------------------------------------------------------
-  
-  public OrderResultInfo(){}
-  
-  public OrderResultInfo(OrderCommand orderCommand){
-    this.username = orderCommand.getUsername();
-    this.password = orderCommand.getPassword();
+  //~ Constructors -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Creates a new OrderResultInfo object.
+   */
+  public OrderResultInfo() { }
+
+  /**
+   * Creates a new OrderResultInfo object.
+   *
+   * @param  orderCommand  OrderCommand
+   */
+  public OrderResultInfo(OrderCommand orderCommand) {
+    this.username    = orderCommand.getUsername();
+    this.password    = orderCommand.getPassword();
     this.addressInfo = orderCommand.getAddressInfo();
+    this.groupName   = orderCommand.getGroupName();
+    this.price       = orderCommand.getOrderPrice();
+    this.keyword     = orderCommand.popupKeyword();
   }
 
+  //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
    * getter method for address info.
@@ -39,6 +55,28 @@ public class OrderResultInfo {
    */
   public AddressInfoCommand getAddressInfo() {
     return addressInfo;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for group name.
+   *
+   * @return  String
+   */
+  public String getGroupName() {
+    return groupName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for keyword.
+   *
+   * @return  String
+   */
+  public String getKeyword() {
+    return keyword;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -110,6 +148,28 @@ public class OrderResultInfo {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for group name.
+   *
+   * @param  groupName  String
+   */
+  public void setGroupName(String groupName) {
+    this.groupName = groupName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for keyword.
+   *
+   * @param  keyword  String
+   */
+  public void setKeyword(String keyword) {
+    this.keyword = keyword;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for order no.
    *
    * @param  orderNo  String
@@ -160,5 +220,23 @@ public class OrderResultInfo {
    */
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#toString()
+   */
+  @Override public String toString() {
+    final StringBuffer sb = new StringBuffer("OrderResultInfo{");
+    sb.append("username='").append(username).append('\'');
+    sb.append(", price='").append(price).append('\'');
+    sb.append(", paymentUrl='").append(paymentUrl).append('\'');
+    sb.append(", orderNo='").append(orderNo).append('\'');
+    sb.append(", keyword='").append(keyword).append('\'');
+    sb.append(", groupName='").append(groupName).append('\'');
+    sb.append('}');
+
+    return sb.toString();
   }
 } // end class OrderResultInfo

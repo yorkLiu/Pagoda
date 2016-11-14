@@ -13,8 +13,6 @@ import org.testng.TestNG;
  */
 public class YHDNormalOrderEntrance {
 
-  private String applicationContext = "applicationConfig.xml";
-  
   public static void main(String[] args) {
 
     new YHDNormalOrderEntrance().start(args);
@@ -22,24 +20,8 @@ public class YHDNormalOrderEntrance {
   }
   
   void start(String[] parameters){
-    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
-
-    context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
-      AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
-    
-    OrderWriter orderWriter = context.getBean(OrderWriter.class);
-    WebDriverProperties webDriverProperties = context.getBean(WebDriverProperties.class);
-
-   
-    // start get beans
-    NormalOrderNG normalOrderNG = new NormalOrderNG();
-    normalOrderNG.setOrderWriter(orderWriter);
-    normalOrderNG.setWebDriverProperties(webDriverProperties);
-    normalOrderNG.setVoiceFilePath(webDriverProperties.getWarningVoiceFile());
-    // end get beans
-
     TestNG testng = new TestNG();
-    Class[] classes = new Class[]{normalOrderNG.getClass()};
+    Class[] classes = new Class[]{NormalOrderNG.class};
     testng.setTestClasses(classes);
     testng.run();
   }

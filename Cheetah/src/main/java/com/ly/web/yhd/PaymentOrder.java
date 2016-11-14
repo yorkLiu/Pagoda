@@ -34,6 +34,8 @@ public class PaymentOrder extends YHDAbstractObject {
 
   private static final String PAYMENT_AMOUNT_FIELD_ID = "payableAmount";
 
+  private static final String PAYMENT_INFO_XPATH = "//div[contains(@class, 'pay_list')]//span[contains(@class, 'txt')]";
+
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   private OrderWriter orderWriter;
@@ -90,12 +92,14 @@ public class PaymentOrder extends YHDAbstractObject {
       if (loadedPaymentPage()) {
         String paymentUrl = webDriver.getCurrentUrl();
         String orderNo    = getOrderNoFromUrl(paymentUrl);
-        String price      = getPrice();
 
         OrderResultInfo orderResultInfo = new OrderResultInfo(orderInfo);
         orderResultInfo.setPaymentUrl(paymentUrl);
         orderResultInfo.setOrderNo(orderNo);
-        orderResultInfo.setPrice(price);
+
+        if (logger.isDebugEnabled()) {
+          logger.debug(orderResultInfo);
+        }
 
         orderWriter.writeOrderInfo(OrderCategory.YHD, orderResultInfo, Boolean.TRUE);
       }
@@ -104,7 +108,7 @@ public class PaymentOrder extends YHDAbstractObject {
     }
 
     return Boolean.TRUE;
-  }
+  } // end method writeOrderInfo
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -147,10 +151,8 @@ public class PaymentOrder extends YHDAbstractObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   private Boolean loadedPaymentPage() {
-    Boolean loaded = Boolean.FALSE;
-
     try {
-      loaded = waitForById(PAYMENT_AMOUNT_FIELD_ID, 10);
+      return waitForByXPath(PAYMENT_INFO_XPATH, 10);
     } catch (TimeoutException e) {
       refreshPage();
 
@@ -158,7 +160,5 @@ public class PaymentOrder extends YHDAbstractObject {
 
       return loadedPaymentPage();
     }
-
-    return loaded;
   }
 } // end class PaymentOrder

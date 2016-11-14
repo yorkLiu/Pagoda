@@ -261,8 +261,11 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
               logger.debug("Correct sku[" + sku + "] number from: " + numberVal + " to: " + count + " successfully.");
             }
 
-            delay(3);
-
+            (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
+              @Override public Boolean apply(WebDriver d) {
+                return !d.findElement(By.xpath(SHOPPING_CAR_SUBMIT_BTN_XPATH)).getAttribute("class").contains("cart3_btn_dis");
+              }
+            });
           }
         } catch (NoSuchElementException e) {
           continue;
@@ -286,12 +289,16 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
         logger.debug("Ready to click '去结算' button");
       }
 
-      WebElement submitBtnEle = ExpectedConditions.presenceOfElementLocated(By.xpath(SHOPPING_CAR_SUBMIT_BTN_XPATH))
+      delay(3);
+      
+      WebElement submitBtnEle = ExpectedConditions.elementToBeClickable(By.xpath(SHOPPING_CAR_SUBMIT_BTN_XPATH))
         .apply(webDriver);
-      scrollToElementPosition(submitBtnEle);
-      delay(2);
-
-      submitBtnEle.click();
+      if(submitBtnEle != null){
+        scrollToElementPosition(submitBtnEle);
+        delay(3);
+        
+        submitBtnEle.click();
+      }
 
       success = (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
         @Override public Boolean apply(WebDriver d) {

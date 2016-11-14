@@ -1,10 +1,12 @@
 package com.ly.web.yhd;
 
+import com.ly.config.YHDOrderConfig;
 import com.ly.web.base.SeleniumBaseObject;
 import com.ly.web.command.AddressInfoCommand;
 import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.constant.Constant;
+import com.ly.web.dp.YHDOrderDataProvider;
 import com.ly.web.lyd.Login;
 import com.ly.web.writer.OrderWriter;
 import org.apache.commons.logging.Log;
@@ -13,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -31,104 +37,138 @@ public class NormalOrderNG extends SeleniumBaseObject {
   private OrderWriter orderWriter;
 
   private OrderCommand orderCommand = null;
+  private List<OrderCommand> orderCommandList = new LinkedList<>();
 
-  private static final String applicationContext = "applicationContext-resources.xml";
+  private static final String applicationContext = "applicationConfig.xml";
+  private static final String[] YHD_Configs = new String[]{"YHD-ApplicationConfig.xml"};
 
-
+  @Autowired
+  private YHDOrderConfig yhdOrderConfig;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   @BeforeTest
   public void init(){
-    ApplicationContext context = new ClassPathXmlApplicationContext(applicationContext);
+    ApplicationContext parent = new ClassPathXmlApplicationContext(applicationContext);
+    ApplicationContext context = new ClassPathXmlApplicationContext(YHD_Configs, parent);
     context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
       AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+    
+    this.webDriverProperties = yhdOrderConfig;
+    initProperties();
   }
   
-
   /**
    * setup.
    */
   @BeforeTest public void setup() {
-    initProperties();
-    initWebDriver(DRIVER_CHROME);
+    initWebDriver(yhdOrderConfig.getDriverType());
   } // end method setup
+
+  @Override
+  protected void initProperties() {
+    super.initProperties();
+
+    YHDOrderDataProvider.normalOrderPath = yhdOrderConfig.getFilesPath();
+  }
+
+
+  @Test(
+    priority          = 1,
+    dataProvider      = "dp-yhd-normal-order",
+    dataProviderClass = YHDOrderDataProvider.class
+  )
+  public void initData(OrderCommand orderInfo) {
+    Assert.notNull(orderInfo);
+    orderCommandList.add(orderInfo);
+  }
   
   
-  @Test(priority = 1)
+  @Test(priority = 2)
   private void testOrder(){
-    orderCommand = new OrderCommand();
-    orderCommand.setUsername("13046883033");
-    orderCommand.setPassword("yyy555");
+//    orderCommand = new OrderCommand();
+//    orderCommand.setUsername("13046883033");
+//    orderCommand.setPassword("yyy555");
+//
+//    AddressInfoCommand addressInfo = new AddressInfoCommand();
+//    addressInfo.setFullName("贺东");
+////    addressInfo.setProvince("河南");
+////    addressInfo.setCity("郑州");
+////    addressInfo.setCountry("金水区");
+////    addressInfo.setFullAddress("河南省郑州市新郑市未来路未来大厦");
+//    
+//    addressInfo.setProvince("四川");
+//    addressInfo.setCity("成都市");
+//    addressInfo.setCountry("金牛区");
+//    
+//    addressInfo.setFullAddress("四川省成都市金牛区 万福广场A1 2305");
+//    
+//    addressInfo.setTelephoneNum("13877435976");
+//
+//    ItemInfoCommand itemInfoCommand = new ItemInfoCommand();
+//    itemInfoCommand.setSku("48479615");
+//    itemInfoCommand.setKeyword("西拉美乐干红葡萄酒");
+//
+//    orderCommand.setAddressInfo(addressInfo);
+//    orderCommand.addItem(itemInfoCommand);
 
-    AddressInfoCommand addressInfo = new AddressInfoCommand();
-    addressInfo.setFullName("贺雨馨");
-    addressInfo.setProvince("河南");
-    addressInfo.setCity("郑州");
-    addressInfo.setCountry("金水区");
-    addressInfo.setTelephoneNum("13877435976");
-
-    ItemInfoCommand itemInfoCommand = new ItemInfoCommand();
-    itemInfoCommand.setSku("67559639");
-    itemInfoCommand.setKeyword("红酒");
-
-    orderCommand.setAddressInfo(addressInfo);
-    orderCommand.addItem(itemInfoCommand);
-    
-//    orderCommand.setKeyword("睡衣女秋");
-//    orderCommand.setSku("54741283");
-    
-    
-    // 1. login
-    // 2. search by keyword
-    // 3. find the production by sku in search result
-    // 4. browse the production
-    // 5. add it to shopping car
-    boolean loginSuccess = login();
-    if(loginSuccess){
-
-      boolean addedToShoppingCar = Boolean.FALSE; 
-      boolean canCheckoutOrder = Boolean.FALSE;
-      boolean orderSubmitted   = Boolean.FALSE;
-
-      for (ItemInfoCommand itemInfo : orderCommand.getItems()) {
-        boolean founded = search(itemInfo);
-        if(founded){
-          // Add it to shopping car
-          addedToShoppingCar = addToShoppingCar(itemInfo);
-        }
-      }
-
-     
-      if(addedToShoppingCar){
-        logger.info("-----------------------------------------------------");
-        logger.info("      Go to Shopping Car to confirm order            ");
-        logger.info("-----------------------------------------------------");
-        canCheckoutOrder = confirmOrder();
-      }
-      
-      if(canCheckoutOrder){
-        logger.info("-----------------------------------------------------");
-        logger.info("            Go to Check out order                    ");
-        logger.info("-----------------------------------------------------");
-        orderSubmitted = checkoutOrder();
-      }
-      
-      if(orderSubmitted){
-        logger.info("-----------------------------------------------------");
-        logger.info("            Order Submitted, Get Order Info          ");
-        logger.info("-----------------------------------------------------");
-        writeOrderInfo();
-      }
-      
+    if (logger.isDebugEnabled()) {
+      logger.debug("Total order list size:" + orderCommandList.size());
     }
+    for (OrderCommand orderInfo : orderCommandList) {
+      // 1. login
+      // 2. search by keyword
+      // 3. find the production by sku in search result
+      // 4. browse the production
+      // 5. add it to shopping car
+
+      boolean loginSuccess = login(orderInfo);
+
+      if(loginSuccess){
+
+        boolean addedToShoppingCar = Boolean.FALSE;
+        boolean canCheckoutOrder = Boolean.FALSE;
+        boolean orderSubmitted   = Boolean.FALSE;
+
+        for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
+          boolean founded = search(itemInfo);
+          if(founded){
+            // Add it to shopping car
+            addedToShoppingCar = addToShoppingCar(itemInfo);
+          }
+        }
+
+
+        if(addedToShoppingCar){
+          logger.info("-----------------------------------------------------");
+          logger.info("      Go to Shopping Car to confirm order            ");
+          logger.info("-----------------------------------------------------");
+          canCheckoutOrder = confirmOrder(orderInfo);
+        }
+
+        if(canCheckoutOrder){
+          logger.info("-----------------------------------------------------");
+          logger.info("            Go to Check out order                    ");
+          logger.info("-----------------------------------------------------");
+          orderSubmitted = checkoutOrder(orderInfo);
+        }
+
+        if(orderSubmitted){
+          logger.info("-----------------------------------------------------");
+          logger.info("            Order Submitted, Write Order Info          ");
+          logger.info("-----------------------------------------------------");
+          writeOrderInfo(orderInfo);
+        }
+
+      }
+    } 
   }
 
   public void setOrderWriter(OrderWriter orderWriter) {
     this.orderWriter = orderWriter;
   }
 
-  private boolean login() {
+  private boolean login(OrderCommand orderCommand) {
     boolean loginSuccess = Boolean.TRUE;
 
     try {
@@ -159,6 +199,7 @@ public class NormalOrderNG extends SeleniumBaseObject {
     }
 
     SearchEngine searchEngine = new SearchEngine(driver);
+    searchEngine.setCompareProductionCount(yhdOrderConfig.getCompareGoodsCount());
 
     return searchEngine.search(itemInfo);
   }
@@ -169,11 +210,12 @@ public class NormalOrderNG extends SeleniumBaseObject {
     }
 
     AddProductionToShoppingCar shoppingCar = new AddProductionToShoppingCar(driver);
+    shoppingCar.setBrowserTime(yhdOrderConfig.getBrowserTime());
 
     return shoppingCar.addToShoppingCar(itemInfo);
   }
 
-  private boolean confirmOrder() {
+  private boolean confirmOrder(OrderCommand orderCommand) {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>4. Ready confirm order >>>>>>>>>>>");
     }
@@ -183,7 +225,7 @@ public class NormalOrderNG extends SeleniumBaseObject {
     return confirmOrder.confirmOrder(orderCommand.getItems());
   }
 
-  private boolean checkoutOrder() {
+  private boolean checkoutOrder(OrderCommand orderCommand) {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>5. Ready checkout order >>>>>>>>>>>");
     }
@@ -193,7 +235,7 @@ public class NormalOrderNG extends SeleniumBaseObject {
     return checkoutOrder.checkout(orderCommand);
   }
 
-  private boolean writeOrderInfo() {
+  private boolean writeOrderInfo(OrderCommand orderCommand) {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>6. Order was submitted, ready write order info >>>>>>>>>>>");
     }
@@ -204,7 +246,7 @@ public class NormalOrderNG extends SeleniumBaseObject {
     return paymentOrder.writeOrderInfo(orderCommand);
   }
 
-  public void setVoiceFilePath(String voiceFilePath) {
-    this.voiceFilePath = voiceFilePath;
+  public void setYhdOrderConfig(YHDOrderConfig yhdOrderConfig) {
+    this.yhdOrderConfig = yhdOrderConfig;
   }
 }

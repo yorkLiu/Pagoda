@@ -3,6 +3,10 @@ package com.ly.web.command;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
+import com.ly.utils.URLUtils;
+
 
 /**
  * Created by yongliu on 10/31/16.
@@ -26,6 +30,51 @@ public class ItemInfoCommand {
   private String price;
 
   private String sku;
+
+  private String url;
+
+  //~ Constructors -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Creates a new ItemInfoCommand object.
+   */
+  public ItemInfoCommand() { }
+
+  /**
+   * Creates a new ItemInfoCommand object.
+   *
+   * @param  url            String
+   * @param  name           String
+   * @param  price          String
+   * @param  keyword        String
+   * @param  count          Integer
+   * @param  attentionItem  Boolean
+   */
+  public ItemInfoCommand(String url, String name, String price, String keyword, Integer count, Boolean attentionItem) {
+    this.url           = url;
+    this.itemName      = name;
+    this.price         = price;
+    this.keyword       = keyword;
+    this.count         = count;
+    this.attentionItem = attentionItem;
+  }
+
+  /**
+   * Creates a new ItemInfoCommand object.
+   *
+   * @param  url            String
+   * @param  sku            String
+   * @param  name           String
+   * @param  price          String
+   * @param  keyword        String
+   * @param  count          Integer
+   * @param  attentionItem  Boolean
+   */
+  public ItemInfoCommand(String url, String sku, String name, String price, String keyword, Integer count,
+    Boolean attentionItem) {
+    this(url, name, price, keyword, count, attentionItem);
+    this.sku = sku;
+  }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -149,7 +198,22 @@ public class ItemInfoCommand {
    * @return  String
    */
   public String getSku() {
+    if ((url != null) && StringUtils.hasText(url) && ((sku == null) || !StringUtils.hasText(sku))) {
+      this.sku = URLUtils.getSkuFromUrl(url);
+    }
+
     return sku;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for url.
+   *
+   * @return  String
+   */
+  public String getUrl() {
+    return url;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -247,15 +311,28 @@ public class ItemInfoCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for url.
+   *
+   * @param  url  String
+   */
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * @see  java.lang.Object#toString()
    */
   @Override public String toString() {
     final StringBuffer sb = new StringBuffer("ItemInfoCommand{");
     sb.append("attentionItem=").append(attentionItem);
     sb.append(", sku='").append(sku).append('\'');
+    sb.append(", url='").append(url).append('\'');
     sb.append(", keyword='").append(keyword).append('\'');
     sb.append(", count=").append(count);
-    sb.append(", attentionStore=").append(attentionStore);
+    sb.append(", price=").append(price);
+    sb.append(", attentionItem=").append(attentionItem);
     sb.append('}');
 
     return sb.toString();

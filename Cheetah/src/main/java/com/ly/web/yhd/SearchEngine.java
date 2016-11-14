@@ -2,9 +2,8 @@ package com.ly.web.yhd;
 
 import java.math.BigDecimal;
 
-import java.security.acl.LastOwnerException;
-
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -16,6 +15,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import com.ly.core.PagodaRandom;
 
 import com.ly.web.base.YHDAbstractObject;
 import com.ly.web.command.ItemInfoCommand;
@@ -31,6 +32,10 @@ import com.ly.web.constant.Constant;
  */
 public class SearchEngine extends YHDAbstractObject {
   //~ Instance fields --------------------------------------------------------------------------------------------------
+
+  private Integer clickedProductionCount = 0;
+
+  private Integer compareProductionCount;
 
   private final String CURRENT_PAGE_NUM_ID = "currentPageNum";
 
@@ -72,9 +77,11 @@ public class SearchEngine extends YHDAbstractObject {
   /**
    * findProduction.
    *
-   * @param  sku  String
+   * @param  itemInfo  sku String
    */
-  public void findProduction(String sku) {
+  public void findProduction(ItemInfoCommand itemInfo) {
+    String sku = itemInfo.getSku();
+
     if (logger.isDebugEnabled()) {
       logger.debug("Find the production with sku[" + sku + "]");
     }
@@ -88,6 +95,8 @@ public class SearchEngine extends YHDAbstractObject {
     // delay 5 seconds
     delay(5);
 
+    checkNewUserPopUp();
+
     // find current page and total page
     try {
       Integer currentPageNum = getCurrentPageNum();
@@ -95,6 +104,7 @@ public class SearchEngine extends YHDAbstractObject {
 
       ProductionInfo productionInfo = new ProductionInfo();
       productionInfo.setSku(sku);
+      productionInfo.setProductionUrl(itemInfo.getUrl());
 
       searchProductionOnPage(productionInfo, currentPageNum, totalPageNum);
 
@@ -106,6 +116,16 @@ public class SearchEngine extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
+  /**
+   * getter method for compare production count.
+   *
+   * @return  Integer
+   */
+  public Integer getCompareProductionCount() {
+    return compareProductionCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * search.
@@ -133,7 +153,7 @@ public class SearchEngine extends YHDAbstractObject {
       // wait 5 seconds
       webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
       checkWelcomeShopping();
-
+      checkNewUserPopUp();
 
       // find the search element
       WebElement searchElement = ExpectedConditions.presenceOfElementLocated(By.id(elementKeywordID)).apply(webDriver);
@@ -143,7 +163,7 @@ public class SearchEngine extends YHDAbstractObject {
         searchElement.sendKeys(Keys.ENTER); // press enter
       }
 
-      findProduction(sku);
+      findProduction(itemInfo);
 
     } catch (Exception e) {
       found = Boolean.FALSE;
@@ -152,6 +172,59 @@ public class SearchEngine extends YHDAbstractObject {
 
     return found;
   } // end method search
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for compare production count.
+   *
+   * @param  compareProductionCount  Integer
+   */
+  public void setCompareProductionCount(Integer compareProductionCount) {
+    this.compareProductionCount = compareProductionCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private void compareProductions(List<WebElement> productions) {
+    if ((compareProductionCount != null) && (compareProductionCount > 0)
+          && (clickedProductionCount < compareProductionCount)) {
+      if (productions != null) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Will click " + compareProductionCount + " production pages to compare.");
+        }
+
+        int productionSize = productions.size();
+        int count          = compareProductionCount;
+
+        switchToSearchTab();
+
+        if (productionSize == 1) {
+          count = 1;
+        } else if ((productionSize > 1) && (productionSize < compareProductionCount)) {
+          count = productionSize;
+        }
+
+        PagodaRandom random = new PagodaRandom(productionSize, count);
+
+        for (int i = 0; i < count; i++) {
+          int        index      = random.nextInt();
+          WebElement production = productions.get(index);
+
+          if (production != null) {
+            clickedProductionCount++;
+            scrollToElementPosition(production);
+            delay(2);
+            production.click();
+            delay(2);
+          }
+        }
+
+        delay(2);
+        switchToSearchTab();
+      } // end if
+    }   // end if
+  }     // end method compareProductions
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -350,7 +423,8 @@ public class SearchEngine extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private void searchAndOpenProduction(String searchSku, ProductionInfo productionInfo) throws NoSuchElementException {
+  private void searchAndOpenProduction(List<WebElement> productions, String searchSku, ProductionInfo productionInfo,
+    boolean allowCompareProduction) throws NoSuchElementException {
     String productionSearchXpath = String.format(PRODUCTION_SEARCH_XPATH, searchSku);
 
     if (logger.isDebugEnabled()) {
@@ -363,6 +437,12 @@ public class SearchEngine extends YHDAbstractObject {
     // such as price, merchantId, merchant name, merchant index url
     getProductionInfo(productionInfo);
 
+    if (allowCompareProduction) {
+      //// click other production url to compare.
+      clickedProductionCount = 0;
+      compareProductions(productions);
+    }
+
     scrollToElementPosition(productionEle);
 
     if (logger.isDebugEnabled()) {
@@ -370,7 +450,7 @@ public class SearchEngine extends YHDAbstractObject {
     }
 
     productionEle.click();
-  }
+  } // end method searchAndOpenProduction
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -383,19 +463,33 @@ public class SearchEngine extends YHDAbstractObject {
     if (currentPageNum > totalPageNum) {
       logger.info(">>>>>>> Current page is the last page, not found the sku[" + sku
         + "], I guess may be this sku is new production and no sort in YHD");
-      logger.info(">>>>>>>>>>>> Will buy this production by visit the url: " + getProductionUrl(sku));
 
-      // todo
+      String ulr =
+        ((productionInfo.getProductionUrl() != null) && StringUtils.hasText(productionInfo.getProductionUrl()))
+        ? productionInfo.getProductionUrl() : getProductionUrl(sku);
+
+      logger.info(">>>>>>>>>>>> Will buy this production by visit the url: " + ulr);
+
+      webDriver.get(ulr);
+
       return;
     }
 
     // scroll to bottom
     // purples to load all of the items
-    scrollOverflowY(3600);
+    int positionY = 3600;
 
-    delay(10);
+    for (int i = 0; i < 4; i++) {
+      scrollOverflowY(positionY);
 
-    scrollOverflowY(3900);
+      if (i == 0) {
+        delay(10);
+      } else {
+        delay(3);
+      }
+
+      positionY += 400;
+    }
 
     if (logger.isDebugEnabled()) {
       logger.debug("Find production list by xpath: " + PRODUCTION_LIST_XPATH + " on page: " + pageInfo);
@@ -409,8 +503,13 @@ public class SearchEngine extends YHDAbstractObject {
 
     logger.info("Found the production with sku[" + sku + "] on page: " + pageInfo);
 
+    // click @compareProductionCount productions in first page.
+    compareProductions(productions);
+
+    boolean allowCompareProduction = (currentPageNum > 1);
+
     try {
-      searchAndOpenProduction(sku, productionInfo);
+      searchAndOpenProduction(productions, sku, productionInfo, allowCompareProduction);
 
       return;
     } catch (NoSuchElementException e) {
@@ -439,7 +538,7 @@ public class SearchEngine extends YHDAbstractObject {
         iconEle.click();
 
         delay(3);
-        searchAndOpenProduction(refSKU, productionInfo);
+        searchAndOpenProduction(productions, refSKU, productionInfo, allowCompareProduction);
 
         return;
       } catch (NoSuchElementException ex) {
@@ -454,6 +553,27 @@ public class SearchEngine extends YHDAbstractObject {
 
       return;
     } // end try-catch
-  } // end method searchProductionOnPage
+  }   // end method searchProductionOnPage
 
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private void switchToSearchTab() {
+    Set<String> tabs = webDriver.getWindowHandles();
+
+    for (String tab : tabs) {
+      String currentUrl = webDriver.switchTo().window(tab).getCurrentUrl();
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Current tab url: " + currentUrl);
+      }
+
+      if (currentUrl.contains("search")) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Now current tab is search tab.");
+        }
+
+        break;
+      }
+    }
+  }
 } // end class SearchEngine
