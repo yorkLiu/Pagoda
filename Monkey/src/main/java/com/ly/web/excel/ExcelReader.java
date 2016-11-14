@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.collections.map.HashedMap;
+
 import org.apache.log4j.Logger;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -24,6 +25,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import org.springframework.util.StringUtils;
 
+import com.ly.excel.BaseExcelReader;
+
 import com.ly.web.command.CommentsInfo;
 import com.ly.web.utils.YHDUtils;
 
@@ -36,7 +39,7 @@ import com.microsoft.schemas.office.visio.x2012.main.CellType;
  * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/18/2016 19:59
  */
-public class ExcelReader implements Serializable {
+public class ExcelReader extends BaseExcelReader {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
   private static final long serialVersionUID = 1308826032561720907L;
@@ -47,7 +50,29 @@ public class ExcelReader implements Serializable {
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
- 
+  /**
+   * main.
+   *
+   * @param  args  String[]
+   */
+//  public static void main(String[] args) {
+//// ExcelReader        excelReader      = new ExcelReader();
+//// String             path             = "/Users/yongliu/Downloads/JD.xlsx";
+//// List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
+//// System.out.println(commentsInfoList);
+//
+//    Map<String, String> map = new HashedMap();
+//    map.put("NONE-SKU-1", "aa");
+//    map.put("NONE-SK2U-2", "ab");
+//    map.put("NONE-SK3U-3", "ac");
+//
+//    Boolean a = map.keySet().stream().anyMatch(k -> k.startsWith("NONE-SKU-"));
+//
+//    System.out.println(map.keySet().contains("NONE-SKU-"));
+//
+//    System.out.println(a);
+//
+//  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -80,158 +105,6 @@ public class ExcelReader implements Serializable {
     }
 
     return null;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  private Cell getMergeCell(Sheet sheet, int row, int column) {
-    int sheetMergeCount = sheet.getNumMergedRegions();
-
-    for (int i = 0; i < sheetMergeCount; i++) {
-      CellRangeAddress ca          = sheet.getMergedRegion(i);
-      int              firstColumn = ca.getFirstColumn();
-      int              lastColumn  = ca.getLastColumn();
-      int              firstRow    = ca.getFirstRow();
-      int              lastRow     = ca.getLastRow();
-
-      if ((row >= firstRow) && (row <= lastRow)) {
-        if ((column >= firstColumn) && (column <= lastColumn)) {
-          Row  fRow  = sheet.getRow(firstRow);
-          Cell fCell = fRow.getCell(firstColumn);
-          fCell.setCellType(fCell.CELL_TYPE_STRING);
-
-          return fCell;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * 获取合并单元格的值.
-   *
-   * @param   sheet   $param.type$
-   * @param   row     $param.type$
-   * @param   column  $param.type$
-   *
-   * @return  获取合并单元格的值.
-   */
-  private String getMergedRegionValue(Sheet sheet, int row, int column) {
-    int sheetMergeCount = sheet.getNumMergedRegions();
-
-    for (int i = 0; i < sheetMergeCount; i++) {
-      CellRangeAddress ca          = sheet.getMergedRegion(i);
-      int              firstColumn = ca.getFirstColumn();
-      int              lastColumn  = ca.getLastColumn();
-      int              firstRow    = ca.getFirstRow();
-      int              lastRow     = ca.getLastRow();
-
-      if ((row >= firstRow) && (row <= lastRow)) {
-        if ((column >= firstColumn) && (column <= lastColumn)) {
-          Row  fRow  = sheet.getRow(firstRow);
-          Cell fCell = fRow.getCell(firstColumn);
-
-          fCell.setCellType(fCell.CELL_TYPE_STRING);
-
-          return YHDUtils.getCellValue(fCell);
-        }
-      }
-    }
-
-    return null;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * 判断sheet页中是否含有合并单元格.
-   *
-   * @param   sheet  $param.type$
-   *
-   * @return  判断sheet页中是否含有合并单元格.
-   */
-  private boolean hasMerged(Sheet sheet) {
-    return (sheet.getNumMergedRegions() > 0) ? true : false;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * 判断指定的单元格是否是合并单元格.
-   *
-   * @param   sheet   $param.type$
-   * @param   row     行下标
-   * @param   column  列下标
-   *
-   * @return  判断指定的单元格是否是合并单元格.
-   */
-  private boolean isMergedRegion(Sheet sheet, int row, int column) {
-    int sheetMergeCount = sheet.getNumMergedRegions();
-
-    for (int i = 0; i < sheetMergeCount; i++) {
-      CellRangeAddress range       = sheet.getMergedRegion(i);
-      int              firstColumn = range.getFirstColumn();
-      int              lastColumn  = range.getLastColumn();
-      int              firstRow    = range.getFirstRow();
-      int              lastRow     = range.getLastRow();
-
-      if ((row >= firstRow) && (row <= lastRow)) {
-        if ((column >= firstColumn) && (column <= lastColumn)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * 判断合并了行.
-   *
-   * @param   sheet   $param.type$
-   * @param   row     $param.type$
-   * @param   column  $param.type$
-   *
-   * @return  判断合并了行.
-   */
-  private boolean isMergedRow(Sheet sheet, int row, int column) {
-    int sheetMergeCount = sheet.getNumMergedRegions();
-
-    for (int i = 0; i < sheetMergeCount; i++) {
-      CellRangeAddress range       = sheet.getMergedRegion(i);
-      int              firstColumn = range.getFirstColumn();
-      int              lastColumn  = range.getLastColumn();
-      int              firstRow    = range.getFirstRow();
-      int              lastRow     = range.getLastRow();
-
-      if ((row == firstRow) && (row == lastRow)) {
-        if ((column >= firstColumn) && (column <= lastColumn)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * 合并单元格.
-   *
-   * @param  sheet     $param.type$
-   * @param  firstRow  开始行
-   * @param  lastRow   结束行
-   * @param  firstCol  开始列
-   * @param  lastCol   结束列
-   */
-  private void mergeRegion(Sheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
-    sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -286,13 +159,13 @@ public class ExcelReader implements Serializable {
         }
 
         if ((orderNum != null) && StringUtils.hasText(orderNum)) {
-          if(map.get(orderNum) == null){
+          if (map.get(orderNum) == null) {
             commentsInfo = new CommentsInfo();
             map.put(orderNum, commentsInfo);
           } else {
             commentsInfo = map.get(orderNum);
           }
-          
+
         }
       }
 
@@ -325,35 +198,9 @@ public class ExcelReader implements Serializable {
     for (CommentsInfo commentsInfo : map.values()) {
       commentsInfoList.add(commentsInfo);
     }
-    
+
     // return list
     return commentsInfoList;
   } // end method readExcel
-
-
-  /**
-   * main.
-   *
-   * @param  args  String[]
-   */
-  public static void main(String[] args) {
-//    ExcelReader        excelReader      = new ExcelReader();
-//    String             path             = "/Users/yongliu/Downloads/JD.xlsx";
-//    List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
-//    System.out.println(commentsInfoList);
-    
-    Map<String, String> map = new HashedMap();
-    map.put("NONE-SKU-1", "aa");
-    map.put("NONE-SK2U-2", "ab");
-    map.put("NONE-SK3U-3", "ac");
-    
-    Boolean a = map.keySet().stream().anyMatch(k->k.startsWith("NONE-SKU-"));
-
-    System.out.println(map.keySet().contains("NONE-SKU-"));
-
-    System.out.println(a);
-
-
-  }
 
 } // end class ExcelReader

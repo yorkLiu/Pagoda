@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import com.ly.web.utils.PagodaRandom;
+import com.ly.core.PagodaRandom;
 import org.apache.commons.collections.map.HashedMap;
 
 import org.openqa.selenium.By;

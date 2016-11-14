@@ -54,6 +54,28 @@ public abstract class YHDAbstractObject extends AbstractObject {
     } // end try-catch
 
   } // end method checkWelcomeShopping
+  
+  /**
+   * checkNewUserPopUp.
+   */
+  public void checkNewUserPopUp() {
+    try {
+      WebElement closeNewUserBtn = webDriver.findElement(By.xpath(
+            "//div[@id='newUserPopup']//a[contains(@class, 'close_btn')]"));
+
+      if (closeNewUserBtn != null) {
+        closeNewUserBtn.click();
+      }
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("The new user adv pop-up window was closed.");
+      }
+    } catch (NoSuchElementException e) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("This user is not a new user, no pop-up window.");
+      }
+    }
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
