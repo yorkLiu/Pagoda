@@ -147,7 +147,7 @@ public class OrderWriter extends FileWriter {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   private String getHeader() {
-    if ((headers != null) && (headers.length > 0) && (headers == null)) {
+    if ((headers != null) && (headers.length > 0) && (header == null)) {
       header = StringUtils.arrayToDelimitedString(headers, delimiter);
     }
 
