@@ -144,6 +144,17 @@ public class OrderCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * popupKeyword.
+   *
+   * @return  String
+   */
+  public String popupKeyword() {
+    return (items != null) ? items.iterator().next().getKeyword() : null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for address info.
    *
    * @param  addressInfo  AddressInfoCommand
@@ -216,10 +227,6 @@ public class OrderCommand {
    */
   public void setUsername(String username) {
     this.username = username;
-  }
-  
-  public String popupKeyword(){
-    return items != null? items.iterator().next().getKeyword() : null;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

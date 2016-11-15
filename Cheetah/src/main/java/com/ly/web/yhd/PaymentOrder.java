@@ -7,8 +7,10 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.util.Assert;
 
 import com.ly.utils.URLUtils;
@@ -85,11 +87,21 @@ public class PaymentOrder extends YHDAbstractObject {
    */
   public boolean writeOrderInfo(OrderCommand orderInfo) {
     if (!webDriver.getCurrentUrl().contains(Constant.YHD_PAYMENT_ORDER_PAGE_URL_PREFIX)) {
-      logger.warn("The payment page not loaded");
+      logger.warn("The payment page not loaded, the current tab url is: " + webDriver.getCurrentUrl());
+    } else {
+      logger.debug("The page page was loaded and the url is: " + webDriver.getCurrentUrl());
     }
 
     try {
-      if (loadedPaymentPage()) {
+
+      Boolean paymentPageLoaded = (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
+        @Override public Boolean apply(WebDriver d) {
+          return (d.getCurrentUrl().contains(Constant.YHD_PAYMENT_ORDER_PAGE_URL_PREFIX));
+        }
+      });
+      
+//      if (loadedPaymentPage()) {
+      if (paymentPageLoaded) {
         String paymentUrl = webDriver.getCurrentUrl();
         String orderNo    = getOrderNoFromUrl(paymentUrl);
 

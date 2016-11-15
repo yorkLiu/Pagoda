@@ -110,10 +110,11 @@ public class YHDOrderUtils {
   /**
    * assembleNormalOrderProductionInfo.
    *
-   * @param  orderInfo  OrderCommand
-   * @param  row        Row
+   * @param  orderInfo   OrderCommand
+   * @param  row         Row
+   * @param  isGroupBuy  boolean
    */
-  public static void assembleNormalOrderProductionInfo(OrderCommand orderInfo, Row row) {
+  public static void assembleNormalOrderProductionInfo(OrderCommand orderInfo, Row row, boolean isGroupBuy) {
     String url  = ExcelUtils.getCellValue(row.getCell(YHDNormalOrderColumns.PRODUCTION_URL_COLUMN));
     String name = ExcelUtils.getCellValue(row.getCell(YHDNormalOrderColumns.PRODUCTION_NAME_COLUMN));
 
@@ -139,6 +140,15 @@ public class YHDOrderUtils {
 
     if ((sku != null) && StringUtils.hasText(sku)) {
       ItemInfoCommand itemInfo = new ItemInfoCommand(url, sku, name, price, keyword, count, addToFavorite);
+
+      if (isGroupBuy) {
+        itemInfo.setKeyword(null);
+        itemInfo.setGrouponId(sku);
+
+        // if @isGroupBuy = true, the keyword is the group buy category.
+        itemInfo.setGroupBuyCategory(keyword);
+      }
+
       orderInfo.addItem(itemInfo);
 
       if (logger.isDebugEnabled()) {

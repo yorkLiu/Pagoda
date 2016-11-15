@@ -14,4 +14,6 @@ public class Constants {
 
   /** DOCUMENT ME! */
   public static final String SPACER = " ";
+  
+  public static final String NO_VALUE="N/A";
 }

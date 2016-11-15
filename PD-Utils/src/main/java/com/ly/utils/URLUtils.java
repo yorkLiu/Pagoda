@@ -21,6 +21,7 @@ public class URLUtils {
   private static final Logger logger = Logger.getLogger(URLUtils.class);
 
   public static final String P_YHD_URL_PREFIX          = "http://item.yhd.com/item/";
+  public static final String P_YHT_URL_PREFIX = "http://t.yhd.com/detail/";
   public static final String P_JD_URL_PREFIX           = "http://item.jd.com/";
   public static final String P_JD_URL_HTTPS_PREFIX     = "https://item.jd.com/";
 
@@ -82,6 +83,9 @@ public class URLUtils {
         if(skuOrUrl.contains(P_YHD_URL_PREFIX)){
           isUrl = Boolean.TRUE;
           prefix = P_YHD_URL_PREFIX;
+        } else if(skuOrUrl.contains(P_YHT_URL_PREFIX)){
+          isUrl = Boolean.TRUE;
+          prefix = P_YHT_URL_PREFIX;
         } else if(skuOrUrl.contains(P_JD_URL_PREFIX)){
           isUrl = Boolean.TRUE;
           prefix = P_JD_URL_PREFIX;

@@ -1,5 +1,8 @@
 package com.ly.web.command;
 
+import com.ly.utils.Constants;
+
+
 /**
  * Created by yongliu on 11/1/16.
  *
@@ -76,6 +79,10 @@ public class OrderResultInfo {
    * @return  String
    */
   public String getKeyword() {
+    if (null == keyword) {
+      return Constants.NO_VALUE;
+    }
+
     return keyword;
   }
 

@@ -112,6 +112,8 @@ public class CheckoutOrder extends YHDAbstractObject {
           createNewAddress(addressInfo);
         }
       }
+      
+      delay(5);
 
       // check if there pop-up window
       checkChangeProvincePopupWindow();
@@ -486,13 +488,13 @@ public class CheckoutOrder extends YHDAbstractObject {
       WebElement submitOrderBtnEle = ExpectedConditions.elementToBeClickable(By.xpath(
             CHECKOUT_ORDER_SUBMIT_ORDER_BUTTON_XPATH)).apply(webDriver);
 
-      scrollToElementPosition(submitOrderBtnEle);
-
       if (submitOrderBtnEle != null) {
-        delay(2);
-        
         // get order price and set it to orderInfo.
         orderInfo.setOrderPrice(getOrderPrice());
+
+        delay(2);
+        
+        scrollToElementPosition(submitOrderBtnEle);
         
         delay(2);
         
@@ -505,7 +507,7 @@ public class CheckoutOrder extends YHDAbstractObject {
 
       submitted = (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
             @Override public Boolean apply(WebDriver d) {
-              return (!d.getCurrentUrl().contains("cashier"));
+              return (d.getCurrentUrl().contains("cashier"));
             }
           });
 

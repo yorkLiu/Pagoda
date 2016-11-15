@@ -23,6 +23,15 @@ public class ItemInfoCommand {
 
   private Integer count;
 
+  /**
+   * The category of group buying.
+   *
+   * <pre>
+   i.e: 保健, 食品 ...
+   * </pre>
+   */
+  private String groupBuyCategory;
+
   private String itemName;
 
   private String keyword;
@@ -32,6 +41,11 @@ public class ItemInfoCommand {
   private String sku;
 
   private String url;
+
+  /**
+   * only for group buying
+   */
+  private String grouponId;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -160,6 +174,17 @@ public class ItemInfoCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for group buy category.
+   *
+   * @return  String
+   */
+  public String getGroupBuyCategory() {
+    return groupBuyCategory;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for item name.
    *
    * @return  String
@@ -267,6 +292,17 @@ public class ItemInfoCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for group buy category.
+   *
+   * @param  groupBuyCategory  String
+   */
+  public void setGroupBuyCategory(String groupBuyCategory) {
+    this.groupBuyCategory = groupBuyCategory;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for item name.
    *
    * @param  itemName  String
@@ -336,5 +372,13 @@ public class ItemInfoCommand {
     sb.append('}');
 
     return sb.toString();
+  }
+
+  public String getGrouponId() {
+    return grouponId;
+  }
+
+  public void setGrouponId(String grouponId) {
+    this.grouponId = grouponId;
   }
 } // end class ItemInfoCommand

@@ -44,6 +44,8 @@ public class Constant {
   
   public static final String YHD_PAYMENT_ORDER_PAGE_URL_PREFIX="http://cashier.yhd.com/order/finishOrder.do";
   
+  public static final String YHT_PAGE_URL="http://t.yhd.com";
+  
   
   
   public static final String YHD_COMMENT_FILE_NAME_PREFIX="YHD-Comment";
