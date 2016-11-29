@@ -5,12 +5,15 @@ import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -60,6 +63,9 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
 
   /** DOCUMENT ME! */
   protected final Log logger = LogFactory.getLog(getClass());
+
+  /** If @useProxy is 'true' means will using dynamic IP, for default is 'False' */
+  protected Boolean useProxy = Boolean.FALSE;
 
   /** DOCUMENT ME! */
 // protected SysConfig sysConfig = null;
@@ -212,6 +218,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
    * @param  driverType  String
    */
   public void setupDriver(String driverType) {
+    
     if (DRIVER_CHROME.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_CHROME;
 
@@ -229,7 +236,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
       profile.setAcceptUntrustedCertificates(true);
       profile.setAssumeUntrustedCertificateIssuer(true);
       profile.setEnableNativeEvents(true);
-      profile.setAlwaysLoadNoFocusLib(true);
+      profile.setAlwaysLoadNoFocusLib(false);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Init Firefox Web Driver.....");
@@ -248,6 +255,90 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
       driver = new InternetExplorerDriver();
     } // end if-else
   }   // end method setupDriver
+
+
+  public void setupDriver(String driverType, String ipProxy) {
+    DesiredCapabilities cap = createCapabilities(driverType, ipProxy);
+
+    if (DRIVER_CHROME.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_CHROME;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Chrome Web Driver with IP Proxy["+ipProxy+"]");
+      }
+
+      System.setProperty("webdriver.chrome.driver", webDriverProperties.getChromeDriverPath());
+      driver = new ChromeDriver(cap);
+
+    } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_FIREFOX;
+
+      FirefoxProfile profile = new FirefoxProfile();
+      profile.setAcceptUntrustedCertificates(true);
+      profile.setAssumeUntrustedCertificateIssuer(true);
+      profile.setEnableNativeEvents(true);
+      profile.setAlwaysLoadNoFocusLib(false);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Firefox Web Driver with IP Proxy["+ipProxy+"]");
+      }
+
+      driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
+        profile, cap);
+    } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
+      currentDriver = DRIVER_IE;
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Init Internet Explorer Web Driver with IP Proxy["+ipProxy+"]");
+      }
+
+      System.setProperty("webdriver.ie.driver", webDriverProperties.getIeDriverPath());
+      driver = new InternetExplorerDriver(cap);
+    } // end if-else
+  }   // end method setupDriver
+  
+  /**
+   * createCapabilities.
+   *
+   * @param   driverName  String
+   * @param   ipProxy     String
+   *
+   * @return  DesiredCapabilities
+   */
+  protected DesiredCapabilities createCapabilities(String driverName, String ipProxy) {
+    DesiredCapabilities capabilities = null;
+    if(!useProxy){
+      return null;
+    }
+
+    if (DRIVER_CHROME.equalsIgnoreCase(driverName)) {
+      capabilities = DesiredCapabilities.chrome();
+      capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
+
+    } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverName)) {
+      capabilities = DesiredCapabilities.firefox();
+      capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
+
+    } else if (DRIVER_IE.equalsIgnoreCase(driverName)) {
+      capabilities = DesiredCapabilities.internetExplorer();
+      capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+      capabilities.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION, true);
+      capabilities.setCapability(InternetExplorerDriver.IGNORE_ZOOM_SETTING, true);
+      capabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, "");
+    }
+
+    if ((capabilities != null) && ((ipProxy != null) && org.springframework.util.StringUtils.hasText(ipProxy))) {
+      capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true); // true means allow visit https protocal
+      Proxy proxy = new Proxy();
+      proxy.setProxyType(Proxy.ProxyType.MANUAL);
+      proxy.setHttpProxy(ipProxy).setSslProxy(ipProxy);
+
+      capabilities.setCapability(CapabilityType.PROXY, proxy);
+    }
+
+
+    return capabilities;
+  } // end method createCapabilities
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -293,6 +384,32 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     driver.manage().deleteAllCookies();
     driver.manage().window().maximize();
   }
+
+  /**
+   * initWebDriver.
+   *
+   * @param  driverName  String
+   * @param  ipProxy     String
+   */
+  protected void initWebDriver(String driverName, String ipProxy) {
+    try {
+      if ((driverName == null) || StringUtils.isEmpty(driverName)) {
+        driverName = DRIVER_CHROME;
+      }
+
+      setupDriver(driverName, ipProxy);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Maximum " + currentDriver);
+      }
+
+      driver.manage().deleteAllCookies();
+      driver.manage().window().maximize();
+      driver.manage().deleteAllCookies();
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+    }
+  }
   
   protected void initProperties(){
     this.voiceFilePath = webDriverProperties.getWarningVoiceFile();
@@ -305,6 +422,13 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
    */
   public void setVoiceFilePath(String voiceFilePath) {
     this.voiceFilePath = voiceFilePath;
+  }
+  
+  
+  protected void closeWebDriver(){
+    if(driver != null){
+      driver.quit();
+    }
   }
 
 

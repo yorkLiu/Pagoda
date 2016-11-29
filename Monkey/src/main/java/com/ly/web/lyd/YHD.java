@@ -87,6 +87,7 @@ public class YHD extends SeleniumBaseObject {
       AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
 
     this.webDriverProperties = yhdConfig;
+    
     initProperties();
   }
 
