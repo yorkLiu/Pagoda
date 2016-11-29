@@ -70,12 +70,11 @@ public class BaseOrderCase extends SeleniumBaseObject {
    */
   @Override protected void initProperties() {
     super.initProperties();
-//    YHDOrderDataProvider.normalOrderPath = yhdOrderConfig.getFilesPath();
   }
 
-  @BeforeTest public void setup() {
-    initWebDriver(yhdOrderConfig.getDriverType());
-  } // end method setup
+//  @BeforeTest public void setup() {
+//    initWebDriver(yhdOrderConfig.getDriverType());
+//  } // end method setup
 
 
   /**

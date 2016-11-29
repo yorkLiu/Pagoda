@@ -19,6 +19,7 @@ public class NormalOrderCase extends BaseOrderCase {
 
   @Override protected void initProperties() {
     super.initProperties();
+    this.useProxy = Boolean.TRUE;
     YHDOrderDataProvider.normalOrderPath = yhdOrderConfig.getFilesPath();
   }
 
@@ -68,6 +69,7 @@ public class NormalOrderCase extends BaseOrderCase {
   @Test(priority = 2)
   private void testOrder() {
     
+    String driverType = yhdOrderConfig.getDriverType();
     int total = orderCommandList.size();
     int index = 0;
     if (logger.isDebugEnabled()) {
@@ -82,6 +84,14 @@ public class NormalOrderCase extends BaseOrderCase {
 
         continue;
       }
+
+      ////////////// get the ip proxy by province
+      // TODO find the ip proxy by province
+
+      ///////////// init the web driver [start]
+      initWebDriver(driverType, null);
+      Assert.notNull(driver);
+      ///////////// init the web driver [end]
 
       index++;
 
@@ -134,6 +144,12 @@ public class NormalOrderCase extends BaseOrderCase {
           logger.info(String.format(">>>>>>>>>>>>>The order index %s successfully!", indexInfo));
         }
 
+        //////////////// close the web driver
+        closeWebDriver();
+
+        logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
+        delay(yhdOrderConfig.getMaxDelaySecondsForNext());
+        
       } // end if
     }   // end for
   }     // end method testOrder
