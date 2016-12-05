@@ -11,7 +11,8 @@
 
 ## Selenium set proxy for web driver
 ### [Selenium Proxy for IE and Firefox](http://www.seleniumhq.org/docs/04_webdriver_advanced.jsp)
-For IE
+
+#### For IE
 ```
 String PROXY = "localhost:8080";
 
@@ -25,7 +26,7 @@ cap.setCapability(CapabilityType.PROXY, proxy);
 WebDriver driver = new InternetExplorerDriver(cap);
 ```
 
-For FireFox
+#### For FireFox
 ```
 String PROXY = "localhost:8080";
 
