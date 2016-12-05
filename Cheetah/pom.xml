@@ -54,6 +54,17 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.ly</groupId>
+      <artifactId>PD-Proxy</artifactId>
+      <version>${app.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -146,6 +157,12 @@
       <groupId>xerces</groupId>
       <artifactId>xerces</artifactId>
       <version>${xerces.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
     </dependency>
 
     <!--<dependency>-->

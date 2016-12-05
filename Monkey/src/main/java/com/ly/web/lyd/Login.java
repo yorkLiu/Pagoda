@@ -29,11 +29,7 @@ public class Login extends AbstractObject {
    * else will not play voice.
    * default is TRUE.
    */
-  private Boolean playVoice = Boolean.TRUE;
-  
-  private String voiceFilePath = null;
-  
-  private VoicePlayer voicePlayer = null;
+  private Boolean allowPlayVoice = Boolean.TRUE;
   
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -109,7 +105,6 @@ public class Login extends AbstractObject {
 
       logger.info("vcode div is display:" + vCodeDive.isDisplayed());
 
-
       // click login button
       loginButton.click();
 
@@ -134,16 +129,8 @@ public class Login extends AbstractObject {
           YHD.vCodeCountMap.put(driverType, count);
 
           // start play voice
-          if(playVoice){
-            if(voicePlayer == null){
-              
-              if(voiceFilePath != null && StringUtils.hasText(voiceFilePath)){
-                voicePlayer = new VoicePlayer(voiceFilePath);
-              } else {
-                voicePlayer = new VoicePlayer();
-              }
-            }
-            voicePlayer.playLoop();
+          if(allowPlayVoice){
+           playVoice();
           }
         }
       } else {
@@ -167,7 +154,7 @@ public class Login extends AbstractObject {
           logger.debug("Stop to play the warn voice.");
         }
 
-        voicePlayer.stopLoop();
+        stopVoice();
       }
 
       if (logger.isDebugEnabled()) {
@@ -217,8 +204,4 @@ public class Login extends AbstractObject {
     
     return loginUrlFromClickMyOrder;
   } 
-
-  public void setPlayVoice(Boolean playVoice) {
-    this.playVoice = playVoice;
-  }
 } // end class Login

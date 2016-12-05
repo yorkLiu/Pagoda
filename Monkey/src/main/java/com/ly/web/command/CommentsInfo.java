@@ -234,7 +234,7 @@ public class CommentsInfo implements Serializable {
     final StringBuffer sb = new StringBuffer("CommentsInfo{");
     sb.append("commentsMap=").append(commentsMap);
     sb.append(", orderId='").append(orderId).append('\'');
-    sb.append(", password='").append(password).append('\'');
+//    sb.append(", password='").append(password).append('\'');
     sb.append(", username='").append(username).append('\'');
     sb.append('}');
 

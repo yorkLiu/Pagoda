@@ -3,9 +3,12 @@ package com.ly.web.base;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.util.Assert;
 
 import com.ly.web.constant.Constant;
@@ -181,5 +184,93 @@ public abstract class YHDAbstractObject extends AbstractObject {
     String             script = "window.location.reload();";
     executeJavaScript(script);
   }
+
+  /**
+   * loginYHDWithPopupForm.
+   *
+   * @param   username  String
+   * @param   password  String
+   *
+   * @return  Boolean
+   */
+  protected Boolean loginYHDWithPopupForm(String username, String password) {
+    Boolean success = Boolean.TRUE;
+
+    try {
+      String     loginFormDivId  = "mod_login_pop_wrap";
+      WebElement loginFormDivEle = this.webDriver.findElement(By.id(loginFormDivId));
+
+      if ((loginFormDivEle != null) && loginFormDivEle.isDisplayed()) {
+        this.webDriver.switchTo().frame(this.webDriver.findElement(By.id("loginIframe")));
+
+        WebElement usernameEle = ExpectedConditions.presenceOfElementLocated(By.id("un")).apply(webDriver);
+
+        if (usernameEle != null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Enter username:" + username);
+          }
+
+          usernameEle.clear();
+          usernameEle.sendKeys(username);
+        }
+
+        WebElement passwordEle = ExpectedConditions.presenceOfElementLocated(By.id("pwd")).apply(webDriver);
+
+        if (passwordEle != null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Enter password:XXXXX");
+          }
+
+          passwordEle.clear();
+          passwordEle.sendKeys(password);
+        }
+
+        WebElement loginBtnEle = ExpectedConditions.presenceOfElementLocated(By.id("login_button")).apply(webDriver);
+
+        if (loginBtnEle != null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Click 'Login' button");
+          }
+
+          loginBtnEle.click();
+        }
+
+        delay(2);
+
+        try {
+          // validator code
+          WebElement vCodeDive = this.webDriver.findElement(By.id("vcd_item"));
+          logger.info("vcode div is display:" + vCodeDive.isDisplayed());
+
+          if (vCodeDive.isDisplayed()) {
+            logger.info("主人, 赶紧人工打码......");
+
+            // play the warning voice
+            playVoice();
+          }
+        }catch (NoSuchElementException e){
+          logger.info("Not show the valid code. No need input.");
+        }
+
+        success = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+          @Override public Boolean apply(WebDriver d) {
+            return (d.getCurrentUrl().contains("cart"));
+          }
+        });
+
+        if (success) {
+          // stop play the warning voice
+          stopVoice();
+        }
+      } // end if
+
+    } catch (NoSuchElementException e) {
+      success = Boolean.FALSE;
+      logger.error(e.getMessage());
+      logger.info("The User:" + username + " was logged, no need login.");
+    } // end try-catch
+
+    return success;
+  } // end method loginYHDWithPopupForm
 
 } // end class YHDAbstractObject

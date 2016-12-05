@@ -1,11 +1,26 @@
 package com.ly.web.yhd;
 
+import com.ly.proxy.ProxyProcessor;
+import com.ly.web.command.AddressInfoCommand;
 import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.dp.YHDOrderDataProvider;
+import org.apache.commons.io.IOUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.testng.annotations.Test;
+
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by yongliu on 11/14/16.
@@ -17,6 +32,7 @@ import org.testng.annotations.Test;
 public class YHTOrderCase extends BaseOrderCase {
 
 
+  private ProxyProcessor proxyProcessor;
 
   /**
    * @see  com.ly.web.yhd.BaseOrderCase#initProperties()
@@ -36,8 +52,7 @@ public class YHTOrderCase extends BaseOrderCase {
     Assert.notNull(orderInfo);
     orderCommandList.add(orderInfo);
   }
-
-
+  
   @Test(priority = 2)
   private void yhdTDoOrder() {
     String driverType = yhdOrderConfig.getDriverType();
@@ -48,6 +63,10 @@ public class YHTOrderCase extends BaseOrderCase {
       logger.debug("Total order list size:" + orderCommandList.size());
     }
 
+//    Map<String, List<OrderCommand>> provinceOrderMap = orderCommandList.stream().collect(Collectors.groupingBy(OrderCommand::getProvince));
+//
+//    System.out.println(provinceOrderMap);
+
     for (OrderCommand orderInfo : orderCommandList) {
       if ((orderInfo.getUsername() == null) || !StringUtils.hasText(orderInfo.getUsername())) {
         if (logger.isDebugEnabled()) {
@@ -57,11 +76,13 @@ public class YHTOrderCase extends BaseOrderCase {
         continue;
       }
       
-      ////////////// get the ip proxy by province
-      // TODO find the ip proxy by province
+      ////////////// get the ip proxy by province [start]
+      // find the ip proxy by province
+      String ipProxy = proxyProcessor.getIpProxy(orderInfo.getAddressInfo().getProvince());
+      ////////////// get the ip proxy by province [end]
       
       ///////////// init the web driver [start]
-      initWebDriver(driverType, null);
+      initWebDriver(driverType, ipProxy);
       Assert.notNull(driver);
       ///////////// init the web driver [end]
       
@@ -71,7 +92,7 @@ public class YHTOrderCase extends BaseOrderCase {
 
       logger.info(String.format(">>>>>>>>>>>>>>>>>>Ready order for %s>>>>>>>>>>>>>>>", indexInfo));
 
-      boolean loginSuccess = login(orderInfo);
+      boolean loginSuccess = true;//login(orderInfo);
 
       if (loginSuccess) {
         boolean addedToShoppingCar = Boolean.FALSE;
@@ -79,7 +100,7 @@ public class YHTOrderCase extends BaseOrderCase {
         boolean orderSubmitted = Boolean.FALSE;
 
         for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
-          addedToShoppingCar = addToShoppingCar(itemInfo);
+          addedToShoppingCar = addToShoppingCar(itemInfo, orderInfo.getUsername(), orderInfo.getPassword());
         }
 
         if (addedToShoppingCar) {
@@ -113,9 +134,14 @@ public class YHTOrderCase extends BaseOrderCase {
     }
   } // end method yhdTDoOrder
   
-  private boolean addToShoppingCar(ItemInfoCommand itemInfo){
+  private boolean addToShoppingCar(ItemInfoCommand itemInfo, String username, String password){
     YHTEngine yhtEngine = new YHTEngine(driver);
-    return yhtEngine.addToShoppingCar(itemInfo);
+    yhtEngine.setVoiceFilePath(yhdOrderConfig.getWarningVoiceFile());
+    return yhtEngine.addToShoppingCar(itemInfo, username, password);
   }
-  
+
+
+  public void setProxyProcessor(ProxyProcessor proxyProcessor) {
+    this.proxyProcessor = proxyProcessor;
+  }
 } // end class YHTOrderCase

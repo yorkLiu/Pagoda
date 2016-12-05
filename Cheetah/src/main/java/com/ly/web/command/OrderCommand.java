@@ -228,6 +228,10 @@ public class OrderCommand {
   public void setUsername(String username) {
     this.username = username;
   }
+  
+  public String getProvince(){
+    return addressInfo != null ? addressInfo.getProvince() : null;
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

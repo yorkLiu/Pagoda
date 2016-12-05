@@ -33,6 +33,7 @@
   <modules>
     <module>PD-Utils</module>
     <module>PD-Capture</module>
+    <module>PD-Proxy</module>
     <!--models-->
     <module>Lion</module>
     <!--services-->
@@ -188,6 +189,12 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
       <version>${spring.version}</version>
     </dependency>
 

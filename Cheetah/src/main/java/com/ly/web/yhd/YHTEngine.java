@@ -9,6 +9,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.springframework.util.Assert;
@@ -60,10 +61,12 @@ public class YHTEngine extends YHDAbstractObject {
    * addToShoppingCar.
    *
    * @param   itemInfo  ItemInfoCommand
+   * @param   username  String
+   * @param   password  String
    *
    * @return  boolean
    */
-  public boolean addToShoppingCar(ItemInfoCommand itemInfo) {
+  public boolean addToShoppingCar(ItemInfoCommand itemInfo, String username, String password) {
     boolean success          = Boolean.TRUE;
     String  groupBuyCategory = itemInfo.getGroupBuyCategory();
     String  grouponId        = itemInfo.getGrouponId();
@@ -90,7 +93,7 @@ public class YHTEngine extends YHDAbstractObject {
 
       // 3. add it to shopping car
       if (foundedItem) {
-        success = addItemToShoppingCar(itemInfo);
+        success = addItemToShoppingCar(itemInfo, username, password);
       }
     } catch (Exception e) {
       success = Boolean.FALSE;
@@ -103,7 +106,7 @@ public class YHTEngine extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private Boolean addItemToShoppingCar(ItemInfoCommand itemInfo) {
+  private Boolean addItemToShoppingCar(ItemInfoCommand itemInfo, String username, String password) {
     Boolean success   = Boolean.TRUE;
     String  grouponId = itemInfo.getGrouponId();
 
@@ -141,25 +144,36 @@ public class YHTEngine extends YHDAbstractObject {
 
           // click 'buy' button
           buyButton.click();
-          
-          logger.debug("The 'Add to Shopping Car' button was clicked.");
+
+          if (logger.isDebugEnabled()) {
+            logger.debug("The 'Add to Shopping Car' button was clicked.");
+          }
 
           delay(2);
+
+
+          // check is there should be login first
+          loginYHDWithPopupForm(username, password);
           
-          success = (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
+          // check is there any other error message box popped up.
+
+          success = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
                 @Override public Boolean apply(WebDriver d) {
                   return (d.getCurrentUrl().contains("cart"));
                 }
               });
-        }
-      }
+          
+          stopVoice();
+          
+        } // end if-else
+      }   // end if
 
       return success;
     } catch (TimeoutException e) {
       refreshPage();
       delay(5);
 
-      return addItemToShoppingCar(itemInfo);
+      return addItemToShoppingCar(itemInfo, username, password);
     } catch (NoSuchElementException e) {
       success = Boolean.TRUE.FALSE;
       logger.error(e.getMessage());

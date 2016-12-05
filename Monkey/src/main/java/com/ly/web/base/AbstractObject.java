@@ -18,6 +18,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ly.web.lyd.YHD;
+import com.ly.web.voice.VoicePlayer;
 
 
 /**
@@ -37,6 +38,12 @@ public abstract class AbstractObject {
 
   /** TODO: DOCUMENT ME! */
   protected String url;
+
+  /** TODO: DOCUMENT ME! */
+  protected String voiceFilePath = null;
+
+  /** TODO: DOCUMENT ME! */
+  protected VoicePlayer voicePlayer = null;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -185,16 +192,6 @@ public abstract class AbstractObject {
       webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
   }
-  
-  protected void refreshPage(){
-    String             script = "window.location.reload();";
-    executeJavaScript(script);
-  }
-  
-  protected Object executeJavaScript(String script){
-    JavascriptExecutor jsEngine   = (JavascriptExecutor) webDriver;
-    return jsEngine.executeScript(script);
-  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -217,6 +214,21 @@ public abstract class AbstractObject {
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
     }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * executeJavaScript.
+   *
+   * @param   script  String
+   *
+   * @return  Object
+   */
+  protected Object executeJavaScript(String script) {
+    JavascriptExecutor jsEngine = (JavascriptExecutor) webDriver;
+
+    return jsEngine.executeScript(script);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -272,6 +284,87 @@ public abstract class AbstractObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * playVoice.
+   */
+  protected void playVoice() {
+    if (voicePlayer == null) {
+      if ((voiceFilePath != null) && org.springframework.util.StringUtils.hasText(voiceFilePath)) {
+        voicePlayer = new VoicePlayer(voiceFilePath);
+      } else {
+        voicePlayer = new VoicePlayer();
+      }
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("The voice was played");
+    }
+
+    voicePlayer.playLoop();
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * refreshPage.
+   */
+  protected void refreshPage() {
+    String script = "window.location.reload();";
+    executeJavaScript(script);
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * scrollOverflowY.
+   *
+   * @param  positionY  int
+   */
+  protected void scrollOverflowY(int positionY) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Scroll overflowY to: " + positionY);
+    }
+
+    executeJavaScript("scrollTo(0, " + positionY + ")");
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * scrollToElementPosition.
+   *
+   * @param  element  WebElement
+   */
+  protected void scrollToElementPosition(WebElement element) {
+    if (element != null) {
+      int positionY = element.getLocation().getY();
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Will scroll to overflowY:" + positionY);
+      }
+
+      executeJavaScript("scrollTo(0, " + (positionY - 200) + ")");
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * stopVoice.
+   */
+  protected void stopVoice() {
+    if (null != voicePlayer) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("The voice was stop playing");
+      }
+
+      voicePlayer.stopLoop();
+    }
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * waitForById.
    *
    * @param   elementId  String
@@ -286,15 +379,25 @@ public abstract class AbstractObject {
         });
   }
 
-  protected Boolean waitForById(final String elementId, Integer seconds) {
-    seconds = seconds != null ? seconds : 10;
-    return (new WebDriverWait(this.webDriver, seconds)).until(new ExpectedCondition<Boolean>() {
-      @Override public Boolean apply(WebDriver d) {
-        return d.findElement(By.id(elementId)) != null;
-      }
-    });
-  }
+  //~ ------------------------------------------------------------------------------------------------------------------
 
+  /**
+   * waitForById.
+   *
+   * @param   elementId  String
+   * @param   seconds    Integer
+   *
+   * @return  Boolean
+   */
+  protected Boolean waitForById(final String elementId, Integer seconds) {
+    seconds = (seconds != null) ? seconds : 10;
+
+    return (new WebDriverWait(this.webDriver, seconds)).until(new ExpectedCondition<Boolean>() {
+          @Override public Boolean apply(WebDriver d) {
+            return d.findElement(By.id(elementId)) != null;
+          }
+        });
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -313,34 +416,27 @@ public abstract class AbstractObject {
         });
   }
 
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * waitForByXPath.
+   *
+   * @param   xpath    String
+   * @param   seconds  Integer
+   *
+   * @return  Boolean
+   */
   protected Boolean waitForByXPath(final String xpath, Integer seconds) {
-    seconds = seconds != null ? seconds : 10;
+    seconds = (seconds != null) ? seconds : 10;
+
     return (new WebDriverWait(this.webDriver, seconds)).until(new ExpectedCondition<Boolean>() {
-      @Override public Boolean apply(WebDriver d) {
-        return d.findElement(By.xpath(xpath)) != null;
-      }
-    });
+          @Override public Boolean apply(WebDriver d) {
+            return d.findElement(By.xpath(xpath)) != null;
+          }
+        });
   }
 
-
-  protected void scrollToElementPosition(WebElement element) {
-    if (element != null) {
-      int positionY = element.getLocation().getY();
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("Will scroll to overflowY:" + positionY);
-      }
-
-      executeJavaScript("scrollTo(0, " + (positionY - 200) + ")");
-    }
+  public void setVoiceFilePath(String voiceFilePath) {
+    this.voiceFilePath = voiceFilePath;
   }
-
-  protected void scrollOverflowY(int positionY) {
-    if (logger.isDebugEnabled()) {
-      logger.debug("Scroll overflowY to: " + positionY);
-    }
-
-    executeJavaScript("scrollTo(0, " + positionY + ")");
-  }
-  
 } // end class AbstractObject
