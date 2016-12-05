@@ -12,7 +12,7 @@
 ## Selenium set proxy for web driver
 - http://www.seleniumhq.org/docs/04_webdriver_advanced.jsp
 For IE
-{code}
+```
 String PROXY = "localhost:8080";
 
 org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
@@ -23,10 +23,10 @@ DesiredCapabilities cap = new DesiredCapabilities();
 cap.setCapability(CapabilityType.PROXY, proxy);
 
 WebDriver driver = new InternetExplorerDriver(cap);
-{code}
+```
 
 For FireFox
-{code}
+```
 String PROXY = "localhost:8080";
 
 org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
@@ -36,4 +36,4 @@ proxy.setHttpProxy(PROXY)
 DesiredCapabilities cap = new DesiredCapabilities();
 cap.setCapability(CapabilityType.PROXY, proxy);
 WebDriver driver = new FirefoxDriver(cap);
-{code}
+```
