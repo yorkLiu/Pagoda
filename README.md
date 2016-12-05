@@ -10,7 +10,7 @@
 
 
 ## Selenium set proxy for web driver
-- http://www.seleniumhq.org/docs/04_webdriver_advanced.jsp
+### [Selenium Proxy for IE and Firefox](http://www.seleniumhq.org/docs/04_webdriver_advanced.jsp)
 For IE
 ```
 String PROXY = "localhost:8080";
