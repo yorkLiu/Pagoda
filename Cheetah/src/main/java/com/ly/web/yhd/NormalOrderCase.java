@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  10/09/2016 15:32
  */
-public class NormalOrderCase extends BaseOrderCase {
+public class NormalOrderCase extends YHDBaseOrderCase {
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   @Override protected void initProperties() {

@@ -3,6 +3,7 @@ package com.ly.web.yhd;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ly.proxy.ProxyProcessor;
 import com.ly.web.constant.Constant;
 import com.ly.web.dp.YHDOrderDataProvider;
 import com.ly.web.lyd.Login;
@@ -30,7 +31,7 @@ import com.ly.web.writer.OrderWriter;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  11/14/2016 15:11
  */
-public class BaseOrderCase extends SeleniumBaseObject {
+public class YHDBaseOrderCase extends SeleniumBaseObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
   /**  DOCUMENT ME! */
@@ -51,6 +52,8 @@ public class BaseOrderCase extends SeleniumBaseObject {
   protected OrderWriter orderWriter;
 
   @Autowired protected YHDOrderConfig yhdOrderConfig;
+
+  @Autowired  protected ProxyProcessor proxyProcessor;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -182,4 +185,8 @@ public class BaseOrderCase extends SeleniumBaseObject {
   public void setYhdOrderConfig(YHDOrderConfig yhdOrderConfig) {
     this.yhdOrderConfig = yhdOrderConfig;
   }
-} // end class BaseOrderCase
+
+  public void setProxyProcessor(ProxyProcessor proxyProcessor) {
+    this.proxyProcessor = proxyProcessor;
+  }
+} // end class YHDBaseOrderCase

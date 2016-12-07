@@ -1,26 +1,11 @@
 package com.ly.web.yhd;
 
-import com.ly.proxy.ProxyProcessor;
-import com.ly.web.command.AddressInfoCommand;
 import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.dp.YHDOrderDataProvider;
-import org.apache.commons.io.IOUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 import org.testng.annotations.Test;
-
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by yongliu on 11/14/16.
@@ -29,13 +14,13 @@ import java.util.stream.Collectors;
  * @version  11/14/2016 15:07
  * @Desc      YHD Tuan
  */
-public class YHTOrderCase extends BaseOrderCase {
+public class YHTOrderCase extends YHDBaseOrderCase {
 
 
-  private ProxyProcessor proxyProcessor;
+
 
   /**
-   * @see  com.ly.web.yhd.BaseOrderCase#initProperties()
+   * @see  YHDBaseOrderCase#initProperties()
    */
   @Override protected void initProperties() {
     super.initProperties();
@@ -140,8 +125,4 @@ public class YHTOrderCase extends BaseOrderCase {
     return yhtEngine.addToShoppingCar(itemInfo, username, password);
   }
 
-
-  public void setProxyProcessor(ProxyProcessor proxyProcessor) {
-    this.proxyProcessor = proxyProcessor;
-  }
 } // end class YHTOrderCase
