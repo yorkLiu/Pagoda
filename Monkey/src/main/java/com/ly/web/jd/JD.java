@@ -118,19 +118,25 @@ public class JD extends SeleniumBaseObject {
 
       List<CommentsInfo> actualList = new LinkedList<>();
       if (commentedOrders != null && commentedOrders.size() > 0) {
+
         commentsInfoList.stream().forEach(info -> {
           if (!commentedOrders.contains(info.getOrderId())) {
-            logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
             actualList.add(info);
+          } else {
+            logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
           }
         });
+
+        // clear the commentsInfoList
+        commentsInfoList.clear();
+        
         if (actualList.size() > 0) {
           logger.info("The excel file order count: " + commentsInfoList.size());
           logger.info("After check today commented order, actually should comment count is: " + actualList.size());
-          commentsInfoList.clear();
-          ;
           commentsInfoList.addAll(actualList);
           logger.info("Now commentsInfoList count: " + commentsInfoList.size());
+        } else {
+          logger.info("All orders has commented.");
         }
       }
     }

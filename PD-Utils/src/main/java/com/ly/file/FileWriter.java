@@ -165,6 +165,7 @@ public class FileWriter implements InitializingBean {
     String        dateStamp = DateUtil.formatDateOnly(new Date());
     fileName.append(dateStamp).append(TXT_FILE);
 
+    logger.info("Generated File name: " + fileName);
     return fileName.toString();
   }
 
@@ -190,6 +191,7 @@ public class FileWriter implements InitializingBean {
 
     String filePath = workDir + generateFileName(filePrefix.toString());
 
+    logger.info("File Path:" + filePath);
     return filePath;
   }
 

@@ -1,45 +1,24 @@
 package com.ly.web.lyd;
 
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-
-import com.ly.config.WebDriverProperties;
 import com.ly.config.YHDConfig;
 import com.ly.file.FileWriter;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.safari.SafariOptions;
-
+import com.ly.web.base.SeleniumBaseObject;
+import com.ly.web.command.CommentsInfo;
+import com.ly.web.constant.Constant;
+import com.ly.web.dp.YHDDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import com.ly.web.base.SeleniumBaseObject;
-import com.ly.web.command.CommentsInfo;
-import com.ly.web.constant.Constant;
-import com.ly.web.dp.YHDDataProvider;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 /**
@@ -202,15 +181,15 @@ public class YHD extends SeleniumBaseObject {
         if (commentedOrders != null && commentedOrders.size() > 0) {
           commentsInfoList.stream().forEach(info -> {
             if (!commentedOrders.contains(info.getOrderId())) {
-              logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
               actualList.add(info);
+            } else {
+              logger.info("The orderNo[" + info.getOrderId() + "] was commented, skip this order.");
             }
           });
+          commentsInfoList.clear();
           if (actualList.size() > 0) {
             logger.info("The excel file order count: " + commentsInfoList.size());
             logger.info("After check today commented order, actually should comment count is: " + actualList.size());
-            commentsInfoList.clear();
-            ;
             commentsInfoList.addAll(actualList);
             logger.info("Now commentsInfoList count: " + commentsInfoList.size());
           }
