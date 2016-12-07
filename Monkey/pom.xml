@@ -23,6 +23,12 @@
       <groupId>com.ly</groupId>
       <artifactId>PD-Capture</artifactId>
       <version>${app.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     
     <dependency>
