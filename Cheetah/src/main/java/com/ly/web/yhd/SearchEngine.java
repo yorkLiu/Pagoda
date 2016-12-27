@@ -11,6 +11,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import org.springframework.util.Assert;
@@ -20,6 +21,7 @@ import com.ly.core.PagodaRandom;
 
 import com.ly.web.base.YHDAbstractObject;
 import com.ly.web.command.ItemInfoCommand;
+import com.ly.web.command.OrderCommand;
 import com.ly.web.command.ProductionInfo;
 import com.ly.web.constant.Constant;
 
@@ -42,6 +44,8 @@ public class SearchEngine extends YHDAbstractObject {
   private final String elementKeywordID = "keyword";
 
   private final String NEXT_PAGE_BUTTON_XPATH = "//div[@class='select_page_btn']/a[contains(@class, 'next')]";
+
+  private final String OVER_SEA_CHECKBOX_XPATH = "//a[contains(text(), '1号海购')]";
 
   private final String PRODUCTION_LIST_XPATH   = "//div[@class='mod_search_pro']";
   private final String PRODUCTION_SEARCH_XPATH = "//div[@class='mod_search_pro'][contains(@data-tcd, '%s')]";
@@ -77,15 +81,18 @@ public class SearchEngine extends YHDAbstractObject {
   /**
    * findProduction.
    *
-   * @param  itemInfo  sku String
+   * @param  itemInfo   sku String
+   * @param  isOversea  Boolean
    */
-  public void findProduction(ItemInfoCommand itemInfo) {
+  public void findProduction(ItemInfoCommand itemInfo, Boolean isOversea) {
     String sku = itemInfo.getSku();
 
     if (logger.isDebugEnabled()) {
       logger.debug("Find the production with sku[" + sku + "]");
     }
 
+    logger.info("------url:"+ webDriver.getCurrentUrl());
+    
     if (!webDriver.getCurrentUrl().contains("search")) {
       logger.error("Could not process find production with sku[" + sku + "], because no search results.");
 
@@ -93,9 +100,24 @@ public class SearchEngine extends YHDAbstractObject {
     }
 
     // delay 5 seconds
-    delay(5);
+    delay(3);
 
     checkNewUserPopUp();
+
+    if (isOversea) {
+      WebElement overseaCheckbox = ExpectedConditions.presenceOfElementLocated(By.xpath(OVER_SEA_CHECKBOX_XPATH)).apply(
+          webDriver);
+
+      if (overseaCheckbox != null) {
+        overseaCheckbox.click();
+
+        if (logger.isDebugEnabled()) {
+          logger.debug("checked '1号海购' checkbox.");
+        }
+
+        delay(5);
+      }
+    }
 
     // find current page and total page
     try {
@@ -130,14 +152,16 @@ public class SearchEngine extends YHDAbstractObject {
   /**
    * search.
    *
-   * @param   itemInfo  ItemInfoCommand
+   * @param   itemInfo   ItemInfoCommand
+   * @param   orderInfo  OrderCommand
    *
    * @return  boolean
    */
-  public boolean search(ItemInfoCommand itemInfo) {
-    Boolean found   = Boolean.TRUE;
-    String  keyword = itemInfo.getKeyword();
-    String  sku     = itemInfo.getSku();
+  public boolean search(ItemInfoCommand itemInfo, OrderCommand orderInfo) {
+    Boolean found     = Boolean.TRUE;
+    String  keyword   = itemInfo.getKeyword();
+    String  sku       = itemInfo.getSku();
+    Boolean isOversea = orderInfo.getAllowOversea();
 
     if (logger.isDebugEnabled()) {
       logger.debug("Search production by keyword:" + keyword);
@@ -155,6 +179,7 @@ public class SearchEngine extends YHDAbstractObject {
       checkWelcomeShopping();
       checkNewUserPopUp();
 
+      
       // find the search element
       WebElement searchElement = ExpectedConditions.presenceOfElementLocated(By.id(elementKeywordID)).apply(webDriver);
 
@@ -163,7 +188,8 @@ public class SearchEngine extends YHDAbstractObject {
         searchElement.sendKeys(Keys.ENTER); // press enter
       }
 
-      findProduction(itemInfo);
+      delay(3);
+      findProduction(itemInfo, isOversea);
 
     } catch (Exception e) {
       found = Boolean.FALSE;
@@ -390,6 +416,20 @@ public class SearchEngine extends YHDAbstractObject {
   private boolean gotoNextPage() {
     Boolean flag = Boolean.TRUE;
 
+    Set<String> tabs = webDriver.getWindowHandles();
+
+    for (String tab : tabs) {
+      String currentUrl = webDriver.switchTo().window(tab).getCurrentUrl();
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Current tab url: " + currentUrl);
+      }
+
+      if (currentUrl.contains("search")) {
+        break;
+      }
+    }
+
     if (logger.isDebugEnabled()) {
       logger.debug("Find the next page button by xpath: " + NEXT_PAGE_BUTTON_XPATH);
     }
@@ -405,7 +445,7 @@ public class SearchEngine extends YHDAbstractObject {
         logger.debug(">>>> The next page url is: " + url + href);
       }
 
-      scrollOverflowY(100);
+      scrollToElementPosition(nextPageBtn);
 
       delay(3);
 
@@ -483,7 +523,7 @@ public class SearchEngine extends YHDAbstractObject {
       scrollOverflowY(positionY);
 
       if (i == 0) {
-        delay(10);
+        delay(5);
       } else {
         delay(3);
       }
@@ -537,8 +577,8 @@ public class SearchEngine extends YHDAbstractObject {
         scrollToElementPosition(iconEle);
         iconEle.click();
 
-        delay(3);
-        searchAndOpenProduction(productions, refSKU, productionInfo, allowCompareProduction);
+        delay(5);
+        //searchAndOpenProduction(productions, refSKU, productionInfo, allowCompareProduction);
 
         return;
       } catch (NoSuchElementException ex) {

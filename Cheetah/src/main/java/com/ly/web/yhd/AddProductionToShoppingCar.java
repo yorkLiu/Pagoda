@@ -8,8 +8,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.util.Assert;
 
 import com.ly.web.base.YHDAbstractObject;
@@ -69,7 +71,7 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
    *
    * @return  boolean
    */
-  public boolean addToShoppingCar(ItemInfoCommand itemInfo) {
+  public boolean addToShoppingCar(ItemInfoCommand itemInfo, String username, String password) {
     Boolean added       = Boolean.TRUE;
     Boolean foundSkuTag = Boolean.FALSE;
     String  sku         = itemInfo.getSku();
@@ -79,6 +81,8 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
     Boolean allowAttentionStore      = itemInfo.getAttentionStore();
     ///////////////////////////config end//////////////////
 
+    delay(6);
+    
     try {
       Set<String> tabs = webDriver.getWindowHandles();
 
@@ -109,7 +113,7 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
 
       // 1. attention production
       if (allowAttentionProduction) {
-        attentionProduction(sku);
+        attentionProduction(sku, username, password);
       }
 
       // 2. attention store
@@ -205,12 +209,13 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
       delay(2);
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Ready to fire click addShoping car button.");
+        logger.debug("Ready to fire click addShopping car button.");
       }
 
       addToShoppingCarBtn.click();
 
       delay(3);
+
 
       // check the add to shopping car is successfully.
       Boolean poppedUp = waitForByXPath(ADD_TO_SHOPPING_CAR_POPUP_WIN_SUCCESS_XPATH, 10);
@@ -232,7 +237,7 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private void attentionProduction(String sku) {
+  private void attentionProduction(String sku, String username, String password) {
     if (logger.isDebugEnabled()) {
       logger.debug("......Ready attention the production.....");
     }
@@ -255,6 +260,11 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
 
       attentionProductionBtn.click();
 
+      delay(3);
+      
+      //check login
+      loginYHDWithPopupFormInNormalPage(username, password);
+      
       delay(3);
 
       // close the pop-up wind

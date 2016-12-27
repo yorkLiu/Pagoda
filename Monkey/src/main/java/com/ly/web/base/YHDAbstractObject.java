@@ -1,5 +1,6 @@
 package com.ly.web.base;
 
+import org.apache.xpath.operations.Bool;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
@@ -23,6 +24,11 @@ import org.springframework.util.StringUtils;
  */
 public abstract class YHDAbstractObject extends AbstractObject {
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  private static final int YHT_SKU_PAGE=1;
+  private static final int NORMAL_SKU_PAGE=2;
+  private static final int SHOPPING_CAR_PAGE=3;
+  
 
   /**
    * checkWelcomeShopping.
@@ -184,16 +190,8 @@ public abstract class YHDAbstractObject extends AbstractObject {
     String             script = "window.location.reload();";
     executeJavaScript(script);
   }
-
-  /**
-   * loginYHDWithPopupForm.
-   *
-   * @param   username  String
-   * @param   password  String
-   *
-   * @return  Boolean
-   */
-  protected Boolean loginYHDWithPopupForm(String username, String password) {
+  
+  protected Boolean loginYHDinEmbedLoginPage(String username, String password, int pageId){
     Boolean success = Boolean.TRUE;
 
     try {
@@ -250,13 +248,44 @@ public abstract class YHDAbstractObject extends AbstractObject {
           }
         }catch (NoSuchElementException e){
           logger.info("Not show the valid code. No need input.");
+        } catch (Exception e){
+          logger.error(e.getMessage());
         }
-
-        success = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
-          @Override public Boolean apply(WebDriver d) {
-            return (d.getCurrentUrl().contains("cart"));
+        
+        
+        switch (pageId){
+          case YHT_SKU_PAGE:{
+            success = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+              @Override public Boolean apply(WebDriver d) {
+                return (d.getCurrentUrl().contains("cart"));
+              }
+            });
+            break;
           }
-        });
+          case SHOPPING_CAR_PAGE:{
+            success = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+              @Override public Boolean apply(WebDriver d) {
+                return !(d.getCurrentUrl().contains("cart"));
+              }
+            });
+            break;
+          }
+
+          // default contains NORMAL_SKU_PAGE
+          default:{
+            success = (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+              @Override public Boolean apply(WebDriver d) {
+                Boolean isLoginPageDisplayed = Boolean.TRUE;
+                try{
+                  isLoginPageDisplayed = d.findElement(By.id(loginFormDivId)).isDisplayed();
+                }catch (NoSuchElementException e){
+                  isLoginPageDisplayed = Boolean.FALSE;
+                }
+                return !isLoginPageDisplayed;
+              }
+            });
+          }
+        }
 
         if (success) {
           // stop play the warning voice
@@ -265,12 +294,33 @@ public abstract class YHDAbstractObject extends AbstractObject {
       } // end if
 
     } catch (NoSuchElementException e) {
-      success = Boolean.FALSE;
+      success = Boolean.TRUE;
       logger.error(e.getMessage());
       logger.info("The User:" + username + " was logged, no need login.");
     } // end try-catch
-
+    
+    
     return success;
+  }
+
+  /**
+   * loginYHDWithPopupForm.
+   *
+   * @param   username  String
+   * @param   password  String
+   *
+   * @return  Boolean
+   */
+  protected Boolean loginYHDWithPopupForm(String username, String password) {
+    return loginYHDinEmbedLoginPage(username, password, YHT_SKU_PAGE);
   } // end method loginYHDWithPopupForm
+
+  protected Boolean loginYHDWithPopupFormInShoppingCar(String username, String password) {
+    return loginYHDinEmbedLoginPage(username, password, SHOPPING_CAR_PAGE);
+  } // end method loginYHDWithPopupForm
+
+  protected Boolean loginYHDWithPopupFormInNormalPage(String username, String password) {
+    return loginYHDinEmbedLoginPage(username, password, NORMAL_SKU_PAGE);
+  }
 
 } // end class YHDAbstractObject

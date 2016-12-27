@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.ly</groupId>
+    <artifactId>Pagoda</artifactId>
+    <version>1.0.1</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>Butterfly</artifactId>
+  <version>1.0.1</version>
+  <description>Logs Analyzer</description>
+  <packaging>jar</packaging>
+
+  <repositories>
+    <repository>
+      <id>Akka repository</id>
+      <url>http://repo.akka.io/releases</url>
+    </repository>
+  </repositories>
+  
+  <dependencies>
+
+    <dependency>
+      <groupId>com.ly</groupId>
+      <artifactId>PD-Utils</artifactId>
+      <version>${app.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.11</artifactId>
+      <version>2.0.2</version>
+    </dependency>
+
+    <dependency> <!-- Spark SQL -->
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.11</artifactId>
+      <version>2.0.2</version>
+    </dependency>
+    <dependency> <!-- Spark Streaming -->
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.11</artifactId>
+      <version>2.0.2</version>
+    </dependency>
+    
+
+  </dependencies>
+  
+  
+
+
+</project>

@@ -119,7 +119,7 @@ public class YHDBaseOrderCase extends SeleniumBaseObject {
 
     ConfirmOrderInShoppingCar confirmOrder = new ConfirmOrderInShoppingCar(driver);
 
-    return confirmOrder.confirmOrder(orderCommand.getItems());
+    return confirmOrder.confirmOrder(orderCommand.getItems(), orderCommand.getUsername(), orderCommand.getPassword());
   }
 
   protected boolean checkoutOrder(OrderCommand orderCommand) {

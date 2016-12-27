@@ -45,6 +45,8 @@
     <!--Pagoda Order-->
     <module>Cheetah</module>
     
+    <!--Log Analyzer-->
+    <module>Butterfly</module>
 
   </modules>
   
@@ -291,6 +293,8 @@
     <jasypt.version>1.9.2</jasypt.version>
     <!--<httpcomponents.version>4.5.2</httpcomponents.version>-->
     <!--<httpclient.version>3.1</httpclient.version>-->
+    
+    <selenium.version>2.53.1</selenium.version>
     
     
 

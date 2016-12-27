@@ -40,7 +40,7 @@ public class NormalOrderCase extends YHDBaseOrderCase {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean addToShoppingCar(ItemInfoCommand itemInfo) {
+  private boolean addToShoppingCar(ItemInfoCommand itemInfo, OrderCommand orderInfo) {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>>>3. Ready add to shopping car >>>>>>>>>>>>");
     }
@@ -48,12 +48,12 @@ public class NormalOrderCase extends YHDBaseOrderCase {
     AddProductionToShoppingCar shoppingCar = new AddProductionToShoppingCar(driver);
     shoppingCar.setBrowserTime(yhdOrderConfig.getBrowserTime());
 
-    return shoppingCar.addToShoppingCar(itemInfo);
+    return shoppingCar.addToShoppingCar(itemInfo, orderInfo.getUsername(), orderInfo.getPassword());
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean search(ItemInfoCommand itemInfo) {
+  private boolean search(OrderCommand orderInfo, ItemInfoCommand itemInfo) {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>>>2. Search by keyword: " + itemInfo.getKeyword() + ">>>>>>>>>>>>");
     }
@@ -61,7 +61,7 @@ public class NormalOrderCase extends YHDBaseOrderCase {
     SearchEngine searchEngine = new SearchEngine(driver);
     searchEngine.setCompareProductionCount(yhdOrderConfig.getCompareGoodsCount());
 
-    return searchEngine.search(itemInfo);
+    return searchEngine.search(itemInfo, orderInfo);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -77,80 +77,86 @@ public class NormalOrderCase extends YHDBaseOrderCase {
     }
     
     for (OrderCommand orderInfo : orderCommandList) {
-      if ((orderInfo.getUsername() == null) || !StringUtils.hasText(orderInfo.getUsername())) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("This record username is NULL, skip it.");
-        }
-
-        continue;
-      }
-
-      ////////////// get the ip proxy by province
-      // TODO find the ip proxy by province
-
-      ///////////// init the web driver [start]
-      initWebDriver(driverType, null);
-      Assert.notNull(driver);
-      ///////////// init the web driver [end]
-
-      index++;
-
-      String indexInfo = "[" + index + "/" + total + "]";
-      
-      logger.info(String.format(">>>>>>>>>>>>>>>>>>Ready order for %s>>>>>>>>>>>>>>>", indexInfo));
-      
-      
-      // 1. login
-      // 2. search by keyword
-      // 3. find the production by sku in search result
-      // 4. browse the production
-      // 5. add it to shopping car
-
-      boolean loginSuccess = login(orderInfo);
-
-      if (loginSuccess) {
-        boolean addedToShoppingCar = Boolean.FALSE;
-        boolean canCheckoutOrder   = Boolean.FALSE;
-        boolean orderSubmitted     = Boolean.FALSE;
-
-        for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
-          boolean founded = search(itemInfo);
-
-          if (founded) {
-            // Add it to shopping car
-            addedToShoppingCar = addToShoppingCar(itemInfo);
+      try {
+        if ((orderInfo.getUsername() == null) || !StringUtils.hasText(orderInfo.getUsername())) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("This record username is NULL, skip it.");
           }
+
+          continue;
         }
 
-        if (addedToShoppingCar) {
-          logger.info("-----------------------------------------------------");
-          logger.info("      Go to Shopping Car to confirm order            ");
-          logger.info("-----------------------------------------------------");
-          canCheckoutOrder = confirmOrder(orderInfo);
-        }
+        ////////////// get the ip proxy by province [start]
+        // find the ip proxy by province
+        String ipProxy = proxyProcessor.getIpProxy(orderInfo.getProvince());
+        ////////////// get the ip proxy by province [end]
 
-        if (canCheckoutOrder) {
-          logger.info("-----------------------------------------------------");
-          logger.info("            Go to Check out order                    ");
-          logger.info("-----------------------------------------------------");
-          orderSubmitted = checkoutOrder(orderInfo);
-        }
 
-        if (orderSubmitted) {
-          logger.info("-----------------------------------------------------");
-          logger.info("            Order Submitted, Write Order Info          ");
-          logger.info("-----------------------------------------------------");
-          writeOrderInfo(orderInfo);
-          logger.info(String.format(">>>>>>>>>>>>>The order index %s successfully!", indexInfo));
-        }
+        ///////////// init the web driver [start]
+        initWebDriver(driverType, ipProxy);
+        Assert.notNull(driver);
+        ///////////// init the web driver [end]
 
-        //////////////// close the web driver
-        closeWebDriver();
+        index++;
 
-        logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
-        delay(yhdOrderConfig.getMaxDelaySecondsForNext());
-        
-      } // end if
+        String indexInfo = "[" + index + "/" + total + "]";
+
+        logger.info(String.format(">>>>>>>>>>>>>>>>>>Ready order for %s>>>>>>>>>>>>>>>", indexInfo));
+
+
+        // 1. login
+        // 2. search by keyword
+        // 3. find the production by sku in search result
+        // 4. browse the production
+        // 5. add it to shopping car
+
+        boolean loginSuccess = true;//login(orderInfo);
+
+        if (loginSuccess) {
+          boolean addedToShoppingCar = Boolean.FALSE;
+          boolean canCheckoutOrder = Boolean.FALSE;
+          boolean orderSubmitted = Boolean.FALSE;
+
+          for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
+            boolean founded = search(orderInfo, itemInfo);
+
+            if (founded) {
+              // Add it to shopping car
+              addedToShoppingCar = addToShoppingCar(itemInfo, orderInfo);
+            }
+          }
+
+          if (addedToShoppingCar) {
+            logger.info("-----------------------------------------------------");
+            logger.info("      Go to Shopping Car to confirm order            ");
+            logger.info("-----------------------------------------------------");
+            canCheckoutOrder = confirmOrder(orderInfo);
+          }
+
+          if (canCheckoutOrder) {
+            logger.info("-----------------------------------------------------");
+            logger.info("            Go to Check out order                    ");
+            logger.info("-----------------------------------------------------");
+            orderSubmitted = checkoutOrder(orderInfo);
+          }
+
+          if (orderSubmitted) {
+            logger.info("-----------------------------------------------------");
+            logger.info("            Order Submitted, Write Order Info          ");
+            logger.info("-----------------------------------------------------");
+            writeOrderInfo(orderInfo);
+            logger.info(String.format(">>>>>>>>>>>>>The order index %s successfully!", indexInfo));
+          }
+
+          //////////////// close the web driver
+          //closeWebDriver();
+
+        } // end if
+      }catch (Exception e){
+        e.printStackTrace();
+      }
+      logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
+      delay(yhdOrderConfig.getMaxDelaySecondsForNext());
     }   // end for
   }     // end method testOrder
 } // end class NormalOrderCase

@@ -67,7 +67,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
    *
    * @return  confirmOrder.
    */
-  public boolean confirmOrder(Set<ItemInfoCommand> itemSet) {
+  public boolean confirmOrder(Set<ItemInfoCommand> itemSet, String username, String password) {
     boolean success = Boolean.TRUE;
 
     if (logger.isDebugEnabled()) {
@@ -84,9 +84,9 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
 
     if (shoppingCarItems != null) {
       if (shoppingCarItems.size() == itemSet.size()) {
-        success = submitOrder(shoppingCarItems, itemSet);
+        success = submitOrder(shoppingCarItems, itemSet,username, password);
       } else {
-        success = preSelectAndSubmitItem(shoppingCarItems, itemSet);
+        success = preSelectAndSubmitItem(shoppingCarItems, itemSet, username, password);
       }
     } else {
       logger.warn(
@@ -127,7 +127,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private Boolean preSelectAndSubmitItem(List<WebElement> shoppingCarItems, Set<ItemInfoCommand> itemSet) {
+  private Boolean preSelectAndSubmitItem(List<WebElement> shoppingCarItems, Set<ItemInfoCommand> itemSet, String username, String password) {
     Boolean success = Boolean.TRUE;
 
     try {
@@ -200,7 +200,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
       } // end for
 
       if (selectedItem.size() > 0) {
-        success = submitOrder(selectedItem, itemSet);
+        success = submitOrder(selectedItem, itemSet, username, password);
       } else {
         logger.warn(">>>>>Not check any items in shopping car page>>>>>>");
       }
@@ -215,7 +215,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private Boolean submitOrder(List<WebElement> checkedItems, Set<ItemInfoCommand> itemSet) {
+  private Boolean submitOrder(List<WebElement> checkedItems, Set<ItemInfoCommand> itemSet, String  username, String password) {
     Boolean success = Boolean.TRUE;
 
     try {
@@ -273,7 +273,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
       } // end for
 
       // click 'submit'
-      success = submitBtnClick();
+      success = submitBtnClick(username, password);
 
     } catch (Exception e) {
       success = Boolean.FALSE;
@@ -282,7 +282,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
     return success;
   } // end method submitOrder
   
-  private boolean submitBtnClick(){
+  private boolean submitBtnClick(String username, String password){
     Boolean success = Boolean.FALSE;
     try{
       if (logger.isDebugEnabled()) {
@@ -296,8 +296,23 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
       if(submitBtnEle != null){
         scrollToElementPosition(submitBtnEle);
         delay(3);
-        
+
         submitBtnEle.click();
+        
+        delay(3);
+
+        // check is there should be login first
+        loginYHDWithPopupFormInShoppingCar(username, password);
+
+//        // check is there any other error message box popped up.
+//
+//        (new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
+//          @Override public Boolean apply(WebDriver d) {
+//            return (d.getCurrentUrl().contains("cart"));
+//          }
+//        });
+
+        stopVoice();
       }
 
       success = (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
@@ -306,7 +321,7 @@ public class ConfirmOrderInShoppingCar extends YHDAbstractObject {
         }
       });
     } catch (TimeoutException ex){
-      return submitBtnClick();
+      return submitBtnClick(username, password);
     }catch (Exception e){
       logger.error(e.getMessage(), e);
     }

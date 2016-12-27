@@ -207,7 +207,8 @@ public class CheckoutOrder extends YHDAbstractObject {
     Boolean addressFormShows = Boolean.FALSE;
 
     try {
-      WebElement addressFormEle = webDriver.findElement(By.id(CHECKOUT_ADDRESS_FORM_ID));
+      WebElement addressFormEle =  ExpectedConditions.presenceOfElementLocated(By.id(CHECKOUT_ADDRESS_FORM_ID)).apply(webDriver);
+//      WebElement addressFormEle = webDriver.findElement(By.id(CHECKOUT_ADDRESS_FORM_ID));
 
       if (addressFormEle.isDisplayed()) {
         addressFormShows = Boolean.TRUE;
@@ -225,7 +226,7 @@ public class CheckoutOrder extends YHDAbstractObject {
       // the will let it display thought click 'Use new Address' button.
 
       try {
-        WebElement newAddressBtnEle = webDriver.findElement(By.xpath(CHECKOUT_CREATE_NEW_ADDRESS_BUTTON_XPATH));
+        WebElement newAddressBtnEle =  ExpectedConditions.presenceOfElementLocated(By.xpath(CHECKOUT_CREATE_NEW_ADDRESS_BUTTON_XPATH)).apply(webDriver);
         newAddressBtnEle.click();
         delay(3);
 
@@ -383,7 +384,7 @@ public class CheckoutOrder extends YHDAbstractObject {
 
   private void inputSelectOptionValue(String elementId, String value) {
     String     xpath    = String.format(CHECKOUT_ADDRESS_FROM_DROP_DOWN_XPATH, elementId, value);
-    WebElement optionEl = webDriver.findElement(By.xpath(xpath));
+    WebElement optionEl =  ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)).apply(webDriver);
 
     if (optionEl != null) {
       optionEl.click();
@@ -407,7 +408,7 @@ public class CheckoutOrder extends YHDAbstractObject {
     boolean selected = Boolean.FALSE;
 
     try {
-      List<WebElement> addressEles = webDriver.findElements(By.xpath(CHECKOUT_ORDER_ADDRESS_LIST_XPATH));
+      List<WebElement> addressEles =  ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(CHECKOUT_ORDER_ADDRESS_LIST_XPATH)).apply(webDriver);
 
       if ((addressEles != null) && (addressEles.size() > 0)) {
         for (WebElement addressEle : addressEles) {
@@ -454,6 +455,7 @@ public class CheckoutOrder extends YHDAbstractObject {
 
       WebElement submitBtnEle = ExpectedConditions.presenceOfElementLocated(By.xpath(
             ConfirmOrderInShoppingCar.SHOPPING_CAR_SUBMIT_BTN_XPATH)).apply(webDriver);
+      
       scrollToElementPosition(submitBtnEle);
       delay(2);
 

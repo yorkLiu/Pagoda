@@ -1,15 +1,19 @@
 package com.ly.web.dp;
 
-import com.ly.web.command.CommentsInfo;
-import com.ly.web.excel.ExcelReader;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-import org.testng.annotations.DataProvider;
-
 import java.lang.reflect.Method;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import org.springframework.util.Assert;
+
+import org.testng.annotations.DataProvider;
+
+import com.ly.web.command.CommentsInfo;
+import com.ly.web.excel.ExcelReader;
 
 
 /**
@@ -50,21 +54,27 @@ public class JDDataProvider {
 
     Assert.notNull(path);
 
-    ExcelReader        excelReader      = new ExcelReader();
-    List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
+    try {
+      ExcelReader        excelReader      = new ExcelReader();
+      List<CommentsInfo> commentsInfoList = excelReader.readExcelToObj(path);
 
-    List<Object[]> dataToBeReturned = new LinkedList<>();
+      List<Object[]> dataToBeReturned = new LinkedList<>();
 
-    for (CommentsInfo commentsInfo : commentsInfoList) {
-      dataToBeReturned.add(new Object[] { commentsInfo });
+      for (CommentsInfo commentsInfo : commentsInfoList) {
+        dataToBeReturned.add(new Object[] { commentsInfo });
+      }
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Found " + dataToBeReturned.size() + " results.");
+      }
+
+      return dataToBeReturned.iterator();
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
     }
 
-    if (logger.isDebugEnabled()) {
-      logger.debug("Found " + dataToBeReturned.size() + " results.");
-    }
-
-    return dataToBeReturned.iterator();
-  }
+    return null;
+  } // end method createCommentsDataProvider
 
 
-} // end class YHDDataProvider
+} // end class JDDataProvider

@@ -282,6 +282,13 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
         logger.debug("Init Firefox Web Driver with IP Proxy["+ipProxy+"]");
       }
 
+      // selenium version 3.0.1
+//      System.setProperty("webdriver.gecko.driver", webDriverProperties.getFirefoxDriverPath());
+//      cap.setCapability(FirefoxDriver.MARIONETTE, true);
+//      cap.setBrowserName("firefox");
+//      driver = new FirefoxDriver(cap);
+      
+      // selenium version 2.53.1
       driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
         profile, cap);
     } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
@@ -317,6 +324,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverName)) {
       capabilities = DesiredCapabilities.firefox();
       capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
+      capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 
     } else if (DRIVER_IE.equalsIgnoreCase(driverName)) {
       capabilities = DesiredCapabilities.internetExplorer();

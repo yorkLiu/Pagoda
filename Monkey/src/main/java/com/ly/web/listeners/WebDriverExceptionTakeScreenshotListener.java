@@ -34,19 +34,16 @@ public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventL
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
+   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterChangeValueOf(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
+   */
+  @Override public void afterChangeValueOf(WebElement element, WebDriver driver) { }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
    */
   @Override public void afterClickOn(WebElement webElement, WebDriver webDriver) { }
-
-  @Override
-  public void beforeChangeValueOf(WebElement webElement, WebDriver webDriver, CharSequence[] charSequences) {
-
-  }
-
-  @Override
-  public void afterChangeValueOf(WebElement webElement, WebDriver webDriver, CharSequence[] charSequences) {
-    
-  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -90,7 +87,14 @@ public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventL
    * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterScript(java.lang.String, org.openqa.selenium.WebDriver)
    */
   @Override public void afterScript(String s, WebDriver webDriver) { }
- 
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeChangeValueOf(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
+   */
+  @Override public void beforeChangeValueOf(WebElement element, WebDriver driver) { }
+
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**

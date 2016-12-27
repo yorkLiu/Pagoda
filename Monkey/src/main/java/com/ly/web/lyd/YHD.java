@@ -83,6 +83,7 @@ public class YHD extends SeleniumBaseObject {
     }
 
     for (CommentsInfo commentsInfo : commentsInfoList) {
+      long startTime = System.currentTimeMillis();
       if ((commentsInfo.getUsername() == null) || !StringUtils.hasText(commentsInfo.getUsername())) {
         if (logger.isDebugEnabled()) {
           logger.debug("This record username is NULL, skip it.");
@@ -120,6 +121,12 @@ public class YHD extends SeleniumBaseObject {
         if(fileWriter != null){
           fileWriter.writeToFile(Constant.YHD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
         }
+        
+        // print info
+        long   endTime = System.currentTimeMillis();
+        String infoMsg = String.format("%s -- [%s] -- [%s/%s] -- Spent: %s ms. Commented Successfully.", commentsInfo.getOrderId(),
+            commentsInfo.getUsername(), index, total, (endTime - startTime));
+        logger.info(infoMsg);
 
         // 5. check driver
         // random to delay seconds for next account

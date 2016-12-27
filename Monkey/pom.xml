@@ -73,7 +73,7 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>LATEST</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openqa.selenium.core</groupId>
@@ -84,12 +84,12 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-firefox-driver</artifactId>
-      <version>LATEST</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-chrome-driver</artifactId>
-      <version>LATEST</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -99,7 +99,7 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
-      <version>LATEST</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>com.saucelabs</groupId>

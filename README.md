@@ -6,7 +6,8 @@
 - SafariDriver.safariextz download:  http://en.osdn.jp/projects/sfnet_gnuhub/downloads/SafariDriver.safariextz/
 - selenium version list http://selenium-release.storage.googleapis.com/index.html
 - chinese doc: http://www.cnblogs.com/meiling-ji/p/5283476.html
-
+- [geckodriver download](https://github.com/mozilla/geckodriver/releases)
+- For more geckodriver visit: https://github.com/mozilla/geckodriver
 
 
 ## Selenium set proxy for web driver
