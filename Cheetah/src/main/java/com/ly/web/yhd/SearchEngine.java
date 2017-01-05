@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import org.springframework.util.Assert;
@@ -19,11 +19,15 @@ import org.springframework.util.StringUtils;
 
 import com.ly.core.PagodaRandom;
 
+import com.ly.utils.NumberUtils;
+
 import com.ly.web.base.YHDAbstractObject;
 import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.command.ProductionInfo;
 import com.ly.web.constant.Constant;
+import com.ly.web.exception.PageNotLoadedException;
+import com.ly.web.exception.SearchException;
 
 
 /**
@@ -37,15 +41,30 @@ public class SearchEngine extends YHDAbstractObject {
 
   private Integer clickedProductionCount = 0;
 
+  /** 货比三(@compareProductionCount)家, this @compareProductionCount property value could be set on config file. */
   private Integer compareProductionCount;
 
   private final String CURRENT_PAGE_NUM_ID = "currentPageNum";
 
   private final String elementKeywordID = "keyword";
 
+  private final String MAX_PRICE_ID = "searchPriceRangeMax";
+
+  /**
+   * <pre>
+     The max search page num, after current page num greater than @maxSearchPageNum, will search by price,
+     this @maxSearchPageNum property value could be set on config file.
+   * </pre>
+   */
+  private Integer maxSearchPageNum;
+
+  private final String MIN_PRICE_ID = "searchPriceRangeMin";
+
   private final String NEXT_PAGE_BUTTON_XPATH = "//div[@class='select_page_btn']/a[contains(@class, 'next')]";
 
   private final String OVER_SEA_CHECKBOX_XPATH = "//a[contains(text(), '1号海购')]";
+
+  private Integer[] priceOffsets = null;
 
   private final String PRODUCTION_LIST_XPATH   = "//div[@class='mod_search_pro']";
   private final String PRODUCTION_SEARCH_XPATH = "//div[@class='mod_search_pro'][contains(@data-tcd, '%s')]";
@@ -57,7 +76,10 @@ public class SearchEngine extends YHDAbstractObject {
     "//div[@class='mod_search_pro']//div[contains(@class, 'proCrumb')]//b[@pmid='%s']";
   private final String PRODUCTION_STORE_NAME_XPATH               = PRODUCTION_SEARCH_XPATH
     + "//p[contains(@class,'storeName')]/a";
-  private final String TOTAL_PAGE_NUM_ID                         = "pageCountPage";
+
+  private Boolean searchByPriceFiltered = Boolean.FALSE;
+
+  private final String TOTAL_PAGE_NUM_ID = "pageCountPage";
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -91,8 +113,6 @@ public class SearchEngine extends YHDAbstractObject {
       logger.debug("Find the production with sku[" + sku + "]");
     }
 
-    logger.info("------url:"+ webDriver.getCurrentUrl());
-    
     if (!webDriver.getCurrentUrl().contains("search")) {
       logger.error("Could not process find production with sku[" + sku + "], because no search results.");
 
@@ -127,6 +147,7 @@ public class SearchEngine extends YHDAbstractObject {
       ProductionInfo productionInfo = new ProductionInfo();
       productionInfo.setSku(sku);
       productionInfo.setProductionUrl(itemInfo.getUrl());
+      productionInfo.setPrice(itemInfo.getPriceDecimal());
 
       searchProductionOnPage(productionInfo, currentPageNum, totalPageNum);
 
@@ -156,8 +177,12 @@ public class SearchEngine extends YHDAbstractObject {
    * @param   orderInfo  OrderCommand
    *
    * @return  boolean
+   *
+   * @throws  PageNotLoadedException  exception
+   * @throws  SearchException         exception
    */
-  public boolean search(ItemInfoCommand itemInfo, OrderCommand orderInfo) {
+  public boolean search(ItemInfoCommand itemInfo, OrderCommand orderInfo) throws PageNotLoadedException,
+    SearchException {
     Boolean found     = Boolean.TRUE;
     String  keyword   = itemInfo.getKeyword();
     String  sku       = itemInfo.getSku();
@@ -174,12 +199,14 @@ public class SearchEngine extends YHDAbstractObject {
         navigateTo(Constant.YHD_INDEX_PAGE_URL);
       }
 
+      // check the page is loaded.
+      waitForById(elementKeywordID, null);
+
       // wait 5 seconds
       webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
       checkWelcomeShopping();
       checkNewUserPopUp();
 
-      
       // find the search element
       WebElement searchElement = ExpectedConditions.presenceOfElementLocated(By.id(elementKeywordID)).apply(webDriver);
 
@@ -188,13 +215,17 @@ public class SearchEngine extends YHDAbstractObject {
         searchElement.sendKeys(Keys.ENTER); // press enter
       }
 
-      delay(3);
       findProduction(itemInfo, isOversea);
 
+    } catch (TimeoutException ex) {
+      found = Boolean.FALSE;
+      logger.error("Page load timeout " + ex.getMessage());
+      throw new PageNotLoadedException("Page load timeout" + ex.getMessage(), ex);
     } catch (Exception e) {
       found = Boolean.FALSE;
       logger.error(e.getMessage(), e);
-    }
+      throw new SearchException("Search Exception " + e.getMessage(), e);
+    } // end try-catch
 
     return found;
   } // end method search
@@ -208,6 +239,28 @@ public class SearchEngine extends YHDAbstractObject {
    */
   public void setCompareProductionCount(Integer compareProductionCount) {
     this.compareProductionCount = compareProductionCount;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for max search page num.
+   *
+   * @param  maxSearchPageNum  Integer
+   */
+  public void setMaxSearchPageNum(Integer maxSearchPageNum) {
+    this.maxSearchPageNum = maxSearchPageNum;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for price offsets.
+   *
+   * @param  priceOffsets  Integer[]
+   */
+  public void setPriceOffsets(Integer[] priceOffsets) {
+    this.priceOffsets = priceOffsets;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -416,6 +469,8 @@ public class SearchEngine extends YHDAbstractObject {
   private boolean gotoNextPage() {
     Boolean flag = Boolean.TRUE;
 
+    delay(5);
+
     Set<String> tabs = webDriver.getWindowHandles();
 
     for (String tab : tabs) {
@@ -491,6 +546,67 @@ public class SearchEngine extends YHDAbstractObject {
 
     productionEle.click();
   } // end method searchAndOpenProduction
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private Boolean searchProductionByPrice(BigDecimal price) {
+    Boolean result   = Boolean.TRUE;
+    Integer minPrice = null;
+    Integer maxPrice = null;
+
+    if (priceOffsets != null) {
+      Integer[] prices = NumberUtils.getSearchPrices(price, priceOffsets[0], priceOffsets[1]);
+
+      if (prices != null) {
+        minPrice = prices[0];
+        maxPrice = prices[1];
+      }
+    }
+
+    logger.info("Will search production by price[" + minPrice + ", " + maxPrice + "]");
+
+    if ((minPrice == null) || (maxPrice == null)) {
+      return Boolean.FALSE;
+    }
+
+    logger.info("Ready search production by price: " + minPrice + ", " + maxPrice);
+
+    try {
+      WebElement minPriceEle = ExpectedConditions.presenceOfElementLocated(By.id(MIN_PRICE_ID)).apply(webDriver);
+
+      if (minPriceEle != null) {
+        scrollToElementPosition(minPriceEle);
+        minPriceEle.clear();
+        minPriceEle.sendKeys(minPrice.toString());
+      }
+
+      WebElement maxPriceEle = ExpectedConditions.presenceOfElementLocated(By.id(MAX_PRICE_ID)).apply(webDriver);
+
+      if (maxPriceEle != null) {
+        scrollToElementPosition(maxPriceEle);
+        maxPriceEle.clear();
+        maxPriceEle.sendKeys(maxPrice.toString());
+      }
+
+
+      // execute JS to click '确定' button
+      executeJavaScript(
+        "$('ul.boxCon').attr('style', 'display:block'); var btn = $('ul.boxCon>li.first>a.btn2'); if(btn){btn[0].click();}");
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Search by Price the 'OK' button was clicked.");
+      }
+
+      delay(3);
+
+    } catch (Exception e) {
+      result = Boolean.FALSE;
+      logger.error(e.getMessage(), e);
+    } // end try-catch
+
+
+    return result;
+  } // end method searchProductionByPrice
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -575,21 +691,45 @@ public class SearchEngine extends YHDAbstractObject {
         }
 
         scrollToElementPosition(iconEle);
-        iconEle.click();
 
-        delay(5);
-        //searchAndOpenProduction(productions, refSKU, productionInfo, allowCompareProduction);
+        // execute javascript to click the thumbnail, because some times the thumbnail icon was hide
+        String thumbnailIconId = iconEle.getAttribute("id");
+        String script          = String.format("$('#%s').click()", thumbnailIconId);
+        executeJavaScript(script);
+
+        searchAndOpenProduction(productions, refSKU, productionInfo, Boolean.FALSE);
 
         return;
       } catch (NoSuchElementException ex) {
         logger.warn("No thumbnail icons found.");
       } // end try-catch
 
-      logger.info("SKU[" + sku + "] not found on current page: " + pageInfo + ", will finding it on next page");
 
-      if (gotoNextPage()) {
-        searchProductionOnPage(productionInfo, ++currentPageNum, totalPageNum);
+      ///////////////////////Search production by price filter  [start]
+      if (!searchByPriceFiltered && ((maxSearchPageNum > 0) && (currentPageNum >= maxSearchPageNum))) {
+        logger.info("The production was not found in " + maxSearchPageNum + ", current page number: " + currentPageNum
+          + " will find production by price filter.");
+
+        Boolean searched = searchProductionByPrice(productionInfo.getPrice());
+        searchByPriceFiltered = Boolean.TRUE;
+
+        if (searched) {
+          delay(5);
+          currentPageNum = getCurrentPageNum();
+          totalPageNum   = getTotalPageNum();
+
+          searchProductionOnPage(productionInfo, currentPageNum, totalPageNum);
+        }
       }
+      ///////////////////////Search production by price filter  [end]
+      else {
+        logger.info("SKU[" + sku + "] not found on current page: " + pageInfo + ", will finding it on next page");
+
+        if (gotoNextPage()) {
+          searchProductionOnPage(productionInfo, ++currentPageNum, totalPageNum);
+        }
+      }
+
 
       return;
     } // end try-catch

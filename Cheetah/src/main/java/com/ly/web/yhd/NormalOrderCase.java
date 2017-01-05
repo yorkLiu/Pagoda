@@ -3,9 +3,14 @@ package com.ly.web.yhd;
 import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.dp.YHDOrderDataProvider;
+import com.ly.web.exception.PageNotLoadedException;
+import com.ly.web.exception.SearchException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.testng.annotations.Test;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -19,7 +24,7 @@ public class NormalOrderCase extends YHDBaseOrderCase {
 
   @Override protected void initProperties() {
     super.initProperties();
-    this.useProxy = Boolean.TRUE;
+    this.useProxy = yhdOrderConfig.getUseIpProxy();
     YHDOrderDataProvider.normalOrderPath = yhdOrderConfig.getFilesPath();
   }
 
@@ -53,13 +58,15 @@ public class NormalOrderCase extends YHDBaseOrderCase {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean search(OrderCommand orderInfo, ItemInfoCommand itemInfo) {
+  private boolean search(OrderCommand orderInfo, ItemInfoCommand itemInfo) throws PageNotLoadedException, SearchException {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>>>2. Search by keyword: " + itemInfo.getKeyword() + ">>>>>>>>>>>>");
     }
 
     SearchEngine searchEngine = new SearchEngine(driver);
     searchEngine.setCompareProductionCount(yhdOrderConfig.getCompareGoodsCount());
+    searchEngine.setMaxSearchPageNum(yhdOrderConfig.getMaxSearchPageNum());
+    searchEngine.setPriceOffsets(yhdOrderConfig.getPriceOffsets());
 
     return searchEngine.search(itemInfo, orderInfo);
   }
@@ -67,11 +74,12 @@ public class NormalOrderCase extends YHDBaseOrderCase {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   @Test(priority = 2)
-  private void testOrder() {
-    
+  private void yhdOrder() {
     String driverType = yhdOrderConfig.getDriverType();
     int total = orderCommandList.size();
     int index = 0;
+    List<OrderCommand> failedOrders = new LinkedList<>();
+    
     if (logger.isDebugEnabled()) {
       logger.debug("Total order list size:" + orderCommandList.size());
     }
@@ -88,13 +96,16 @@ public class NormalOrderCase extends YHDBaseOrderCase {
 
         ////////////// get the ip proxy by province [start]
         // find the ip proxy by province
-        String ipProxy = proxyProcessor.getIpProxy(orderInfo.getProvince());
+        String ipProxy = null;
+        if(useProxy){
+          ipProxy = proxyProcessor.getIpProxy(orderInfo.getProvince());
+        }
         ////////////// get the ip proxy by province [end]
 
 
         ///////////// init the web driver [start]
         initWebDriver(driverType, ipProxy);
-        Assert.notNull(driver);
+        Assert.notNull(driver, "Driver could not be null.");
         ///////////// init the web driver [end]
 
         index++;
@@ -149,14 +160,26 @@ public class NormalOrderCase extends YHDBaseOrderCase {
           }
 
           //////////////// close the web driver
-          //closeWebDriver();
+          closeWebDriver();
 
+          logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
+          delay(yhdOrderConfig.getMaxDelaySecondsForNext());
+          
         } // end if
       }catch (Exception e){
-        e.printStackTrace();
+        logger.error(e.getMessage(), e);
+        logger.info("Added Order Info to failed list: " + orderInfo);
+        failedOrders.add(orderInfo);
       }
-      logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
-      delay(yhdOrderConfig.getMaxDelaySecondsForNext());
+      
     }   // end for
+
+    if(!failedOrders.isEmpty()){
+      logger.info("Ready process failed orders["+failedOrders.size()+"].....");
+      orderCommandList.clear();
+      orderCommandList.addAll(failedOrders);
+      failedOrders.clear();
+      yhdOrder();
+    }
   }     // end method testOrder
 } // end class NormalOrderCase

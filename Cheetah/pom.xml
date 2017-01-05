@@ -183,6 +183,14 @@
       <version>${commons-io.version}</version>
     </dependency>
 
+    <!--http://www.oschina.net/p/jbrowserdriver-->
+    <!--https://github.com/MachinePublishers/jBrowserDriver#readme-->
+    <dependency>
+      <groupId>com.machinepublishers</groupId>
+      <artifactId>jbrowserdriver</artifactId>
+      <version>0.16.3</version>
+    </dependency>
+
     <!--<dependency>-->
       <!--<groupId>com.ice.jni</groupId>-->
       <!--<artifactId>registry</artifactId>-->

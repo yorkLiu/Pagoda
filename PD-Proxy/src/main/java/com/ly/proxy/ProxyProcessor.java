@@ -1,5 +1,6 @@
 package com.ly.proxy;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.HttpURLConnection;
@@ -15,6 +16,14 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -25,6 +34,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import org.springframework.web.client.RestTemplate;
+
+import com.ly.proxy.utils.ProxyUtils;
 
 
 /**
@@ -37,6 +48,12 @@ public class ProxyProcessor implements InitializingBean {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
   private static final int RESPONSE_OK_STATUS = 200;
+
+  private static CloseableHttpClient client;
+
+  static {
+    client = HttpClientBuilder.create().build();
+  }
 
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
@@ -63,7 +80,8 @@ public class ProxyProcessor implements InitializingBean {
       proxyProcessor.setIpProxyRetryServiceUrl("asd");
       proxyProcessor.setVerifyUrl("http://www.yhd.com");
       proxyProcessor.setVerifyPassedText("1号店");
-      proxyProcessor.verifyIpProxy("202.96.63.172:80");
+// proxyProcessor.verifyIpProxy("202.96.63.172:80");
+      ProxyUtils.verifyIpProxy("202.96.63.172:80", proxyProcessor.verifyUrl, proxyProcessor.verifyPassedText);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -110,7 +128,9 @@ public class ProxyProcessor implements InitializingBean {
   public String getIpProxy(String province) {
     try {
       logger.info("Ready to found IP Proxy for province: " + province);
+
       String serviceUrl = null;
+
       if ((null != province) && StringUtils.hasText(province)) {
         String areaParam = "&area=" + new String(province.getBytes("UTF-8"), "UTF-8");
         serviceUrl = this.ipProxyServiceUrl + areaParam;
@@ -126,7 +146,8 @@ public class ProxyProcessor implements InitializingBean {
         logger.info("The IP[" + ip + "] address is: " + address);
       }
 
-      Boolean flag = verifyIpProxy(ip);
+// Boolean flag = ProxyUtils.verifyIpProxy(ip, this.verifyUrl, this.verifyPassedText);
+      Boolean flag = ProxyUtils.verifyIpProxyByHttpClient(ip, this.verifyUrl, this.verifyPassedText);
 
       if (flag) {
         logger.info("The IP Proxy[" + ip + "] was valid");
@@ -139,6 +160,7 @@ public class ProxyProcessor implements InitializingBean {
       }
     } catch (Exception e) {
       logger.error(e.getMessage());
+
       try {
         Thread.sleep(5000);
         logger.info("Sleep 5 seconds.");
@@ -205,23 +227,25 @@ public class ProxyProcessor implements InitializingBean {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private String getIpFromProxyServer(String ipProxyServerUrl) {
-    String                 ipProxy      = null;
-    RestTemplate           restTemplate = new RestTemplate();
-
+  private String getIpFromProxyServer(String ipProxyServerUrl) throws IOException {
+    String  ipProxy = null;
+    Boolean founded = Boolean.FALSE;
     logger.info("Visit IP Proxy Service URL: " + ipProxyServerUrl);
-    
-    ResponseEntity<String> result       = restTemplate.getForEntity(ipProxyServerUrl, String.class);
+    Assert.notNull(client, "HttpClient could not be null.");
 
-    String responseBody = result.getBody();
-    logger.info("IP Proxy Server url:" + ipProxyServerUrl);
-    logger.info("Status code:" + result.getStatusCodeValue());
-    logger.info("Body text:" + responseBody);
+    HttpGet               httpGet      = new HttpGet(ipProxyServerUrl);
+    CloseableHttpResponse response     = client.execute(httpGet);
+    String                responseBody = EntityUtils.toString(response.getEntity());
 
-    if ((result.getStatusCodeValue() == RESPONSE_OK_STATUS) && !responseBody.contains("ERROR")) {
-      ipProxy = result.getBody();
+    if ((response.getStatusLine().getStatusCode() == RESPONSE_OK_STATUS) && !responseBody.contains("ERROR")) {
+      ipProxy = responseBody;
       logger.info("Get the ip Proxy:" + ipProxy);
+      founded = Boolean.TRUE;
+    }
 
+    httpGet.releaseConnection();
+
+    if (founded) {
       return ipProxy;
     } else {
       // not found the ip for @ipProxyServerUrl
@@ -230,57 +254,25 @@ public class ProxyProcessor implements InitializingBean {
 
       return getIpFromProxyServer(this.ipProxyRetryServiceUrl);
     }
-  }
 
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  private Boolean verifyIpProxy(String ipProxy) throws Exception {
-    Boolean result = Boolean.TRUE;
-
-    if ((this.verifyUrl != null) && StringUtils.hasText(this.verifyUrl)) {
-      logger.info("Verify the IP Proxy[" + ipProxy + "].... for visit: " + verifyUrl);
-
-      String[] ipAndPort = ipProxy.split(":");
-      String   ip        = ipAndPort[0];
-      Integer  port      = new Integer(ipAndPort[1]);
-
-
-      URL               url           = new URL(this.verifyUrl);
-      InetSocketAddress socketAddress = new InetSocketAddress(ip, port);
-      Proxy             proxy         = new Proxy(Proxy.Type.HTTP, socketAddress); // http 代理
-      long              startTime     = System.currentTimeMillis();
-      URLConnection     conn          = url.openConnection(proxy);
-      long              endTime       = System.currentTimeMillis();
-      InputStream       in            = null;
-      HttpURLConnection httpConn      = (HttpURLConnection) conn;
-
-      httpConn.setConnectTimeout(30000);
-      httpConn.setReadTimeout(30000);
-
-      logger.info("Visit verify url response code:" + httpConn.getResponseCode());
-
-      if ((httpConn.getResponseCode() == HttpURLConnection.HTTP_ACCEPTED)
-            || (httpConn.getResponseCode() == HttpURLConnection.HTTP_CREATED)
-            || (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK)) {
-        in = httpConn.getInputStream();
-
-      } else {
-        in = httpConn.getErrorStream();
-      }
-
-      String responseHtml = IOUtils.toString(in, Charset.forName("UTF-8"));
-
-      if (responseHtml.indexOf(verifyPassedText) > 0) {
-        long readStreamTime = System.currentTimeMillis();
-        logger.info("The IP[" + ipProxy + "] can be used, and the speed is: " + (endTime - startTime)
-          + "ms. plus read stream spent: " + (readStreamTime - startTime) + "ms.");
-
-        result = Boolean.TRUE;
-      } else {
-        result = Boolean.FALSE;
-      }
-    } // end if
-
-    return result;
-  } // end method verifyIpProxy
+// RestTemplate           restTemplate = new RestTemplate();
+// ResponseEntity<String> result       = restTemplate.getForEntity(ipProxyServerUrl, String.class);
+// String responseBody = result.getBody();
+// logger.info("IP Proxy Server url:" + ipProxyServerUrl);
+// logger.info("Status code:" + result.getStatusCodeValue());
+// logger.info("Body text:" + responseBody);
+//
+// if ((result.getStatusCodeValue() == RESPONSE_OK_STATUS) && !responseBody.contains("ERROR")) {
+// ipProxy = result.getBody();
+// logger.info("Get the ip Proxy:" + ipProxy);
+//
+// return ipProxy;
+// } else {
+// // not found the ip for @ipProxyServerUrl
+// // retry find the ip by @this.ipProxyRetryServiceUrl
+// logger.info("Retry find ip....");
+//
+// return getIpFromProxyServer(this.ipProxyRetryServiceUrl);
+// }
+  } // end method getIpFromProxyServer
 } // end class ProxyProcessor

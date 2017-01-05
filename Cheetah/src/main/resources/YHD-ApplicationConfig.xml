@@ -26,8 +26,10 @@
     <property name="orderFileNamePrefix" value="${orderFileNamePrefix}"/>
     <property name="compareGoodsCount" value="${compareGoodsCount}"/>
     <property name="browserTime" value="${browserTime}"/>
+    <property name="maxSearchPageNum" value="${maxSearchPageNum}"/>
     <property name="searchByPriceOffset" value="${searchByPriceOffset}"/>
     <property name="maxDelaySecondsForNext" value="${maxDelaySecondsForNext}"/>
+    <property name="useIpProxy" value="${useIpProxy}"/>
     <property name="warningVoiceFile" value="${warningVoiceFile}"/>
     <property name="filesPath" value="${filesPath}"/>
   </bean>
@@ -38,6 +40,13 @@
     <property name="verifyUrl" value="http://www.yhd.com"/>
     <property name="verifyPassedText" value="1号店"/>
     <property name="allowGetIpAddress" value="true"/>
+  </bean>
+  
+  <bean id="freeProxyProcessor" class="com.ly.proxy.FreeProxyProcessor">
+    <property name="fetchPageSize" value="10"/>
+    <property name="protocol" value="HTTP"/>
+    <property name="verifyUrl" value="http://www.yhd.com"/>
+    <property name="verifyPassedText" value="1号店"/>
   </bean>
 
 </beans>

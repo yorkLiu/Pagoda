@@ -1,5 +1,6 @@
 package com.ly.web.base;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +16,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ly.web.lyd.YHD;
@@ -124,6 +127,17 @@ public abstract class AbstractObject {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for voice file path.
+   *
+   * @param  voiceFilePath  String
+   */
+  public void setVoiceFilePath(String voiceFilePath) {
+    this.voiceFilePath = voiceFilePath;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * DOCUMENT ME!
    *
    * @param  webDriver  DOCUMENT ME!
@@ -206,7 +220,8 @@ public abstract class AbstractObject {
         logger.debug(">>>Starting delay " + seconds + " second(s).>>>");
       }
 
-      Thread.sleep(seconds * 1000);
+// Thread.sleep(seconds * 1000);
+      TimeUnit.SECONDS.sleep(seconds);
 
       if (logger.isDebugEnabled()) {
         logger.debug("<<<<End delay " + seconds + " second(s).<<<<");
@@ -329,7 +344,6 @@ public abstract class AbstractObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-
   /**
    * scrollToElementPosition.
    *
@@ -434,9 +448,5 @@ public abstract class AbstractObject {
             return d.findElement(By.xpath(xpath)) != null;
           }
         });
-  }
-
-  public void setVoiceFilePath(String voiceFilePath) {
-    this.voiceFilePath = voiceFilePath;
   }
 } // end class AbstractObject

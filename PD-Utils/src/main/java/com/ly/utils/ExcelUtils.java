@@ -23,7 +23,7 @@ public class ExcelUtils {
    */
   public static Boolean getBooleanValue(String cellValue) {
     if ((cellValue != null) && !StringUtils.isEmpty(cellValue)
-          && ("Y".equalsIgnoreCase(cellValue) || "YES".equalsIgnoreCase(cellValue) || "true".equals(cellValue)
+          && ("Y".equalsIgnoreCase(cellValue) || "YES".equalsIgnoreCase(cellValue) || "true".equalsIgnoreCase(cellValue)
             || "是".equals(cellValue))) {
       return Boolean.TRUE;
     }

@@ -1,5 +1,7 @@
 package com.ly.web.command;
 
+import java.math.BigDecimal;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +34,9 @@ public class ItemInfoCommand {
    */
   private String groupBuyCategory;
 
+  /** only for group buying. */
+  private String grouponId;
+
   private String itemName;
 
   private String keyword;
@@ -41,11 +46,6 @@ public class ItemInfoCommand {
   private String sku;
 
   private String url;
-
-  /**
-   * only for group buying
-   */
-  private String grouponId;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -185,6 +185,17 @@ public class ItemInfoCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for groupon id.
+   *
+   * @return  String
+   */
+  public String getGrouponId() {
+    return grouponId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for item name.
    *
    * @return  String
@@ -213,6 +224,22 @@ public class ItemInfoCommand {
    */
   public String getPrice() {
     return price;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for price decimal.
+   *
+   * @return  BigDecimal
+   */
+  public BigDecimal getPriceDecimal() {
+    if ((price != null) && StringUtils.hasText(price)) {
+      return new BigDecimal(price.trim());
+
+    }
+
+    return null;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -303,6 +330,17 @@ public class ItemInfoCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for groupon id.
+   *
+   * @param  grouponId  String
+   */
+  public void setGrouponId(String grouponId) {
+    this.grouponId = grouponId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for item name.
    *
    * @param  itemName  String
@@ -372,13 +410,5 @@ public class ItemInfoCommand {
     sb.append('}');
 
     return sb.toString();
-  }
-
-  public String getGrouponId() {
-    return grouponId;
-  }
-
-  public void setGrouponId(String grouponId) {
-    this.grouponId = grouponId;
   }
 } // end class ItemInfoCommand

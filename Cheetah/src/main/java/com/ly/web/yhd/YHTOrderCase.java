@@ -7,6 +7,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.testng.annotations.Test;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by yongliu on 11/14/16.
  *
@@ -16,15 +19,12 @@ import org.testng.annotations.Test;
  */
 public class YHTOrderCase extends YHDBaseOrderCase {
 
-
-
-
   /**
    * @see  YHDBaseOrderCase#initProperties()
    */
   @Override protected void initProperties() {
     super.initProperties();
-    this.useProxy=Boolean.TRUE;
+    this.useProxy= yhdOrderConfig.getUseIpProxy();
     YHDOrderDataProvider.yhtOrderPath = yhdOrderConfig.getFilesPath();
   }
 
@@ -43,6 +43,7 @@ public class YHTOrderCase extends YHDBaseOrderCase {
     String driverType = yhdOrderConfig.getDriverType();
     int total = orderCommandList.size();
     int index = 0;
+    List<OrderCommand> failedOrders = new LinkedList<>(); 
 
     if (logger.isDebugEnabled()) {
       logger.debug("Total order list size:" + orderCommandList.size());
@@ -53,69 +54,89 @@ public class YHTOrderCase extends YHDBaseOrderCase {
 //    System.out.println(provinceOrderMap);
 
     for (OrderCommand orderInfo : orderCommandList) {
-      if ((orderInfo.getUsername() == null) || !StringUtils.hasText(orderInfo.getUsername())) {
-        if (logger.isDebugEnabled()) {
-          logger.debug("This record username is NULL, skip it.");
+      try {
+        if ((orderInfo.getUsername() == null) || !StringUtils.hasText(orderInfo.getUsername())) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("This record username is NULL, skip it.");
+          }
+
+          continue;
         }
 
-        continue;
-      }
-      
-      ////////////// get the ip proxy by province [start]
-      // find the ip proxy by province
-      String ipProxy = proxyProcessor.getIpProxy(orderInfo.getAddressInfo().getProvince());
-      ////////////// get the ip proxy by province [end]
-      
-      ///////////// init the web driver [start]
-      initWebDriver(driverType, ipProxy);
-      Assert.notNull(driver);
-      ///////////// init the web driver [end]
-      
-      index++;
-
-      String indexInfo = "[" + index + "/" + total + "]";
-
-      logger.info(String.format(">>>>>>>>>>>>>>>>>>Ready order for %s>>>>>>>>>>>>>>>", indexInfo));
-
-      boolean loginSuccess = true;//login(orderInfo);
-
-      if (loginSuccess) {
-        boolean addedToShoppingCar = Boolean.FALSE;
-        boolean canCheckoutOrder = Boolean.FALSE;
-        boolean orderSubmitted = Boolean.FALSE;
-
-        for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
-          addedToShoppingCar = addToShoppingCar(itemInfo, orderInfo.getUsername(), orderInfo.getPassword());
+        ////////////// get the ip proxy by province [start]
+        // find the ip proxy by province
+        String ipProxy = null;
+        if(useProxy){
+          ipProxy = proxyProcessor.getIpProxy(orderInfo.getProvince());
         }
-
-        if (addedToShoppingCar) {
-          logger.info("-----------------------------------------------------");
-          logger.info("      Go to Shopping Car to confirm order            ");
-          logger.info("-----------------------------------------------------");
-          canCheckoutOrder = confirmOrder(orderInfo);
-        }
-
-        if (canCheckoutOrder) {
-          logger.info("-----------------------------------------------------");
-          logger.info("            Go to Check out order                    ");
-          logger.info("-----------------------------------------------------");
-          orderSubmitted = checkoutOrder(orderInfo);
-        }
-
-        if (orderSubmitted) {
-          logger.info("-----------------------------------------------------");
-          logger.info("            Order Submitted, Write Order Info          ");
-          logger.info("-----------------------------------------------------");
-          writeOrderInfo(orderInfo);
-          logger.info(String.format(">>>>>>>>>>>>>The order index %s successfully!", indexInfo));
-        }
-
-        //////////////// close the web driver
-        closeWebDriver();
         
-        logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
-        delay(yhdOrderConfig.getMaxDelaySecondsForNext());
+        ////////////// get the ip proxy by province [end]
+
+        ///////////// init the web driver [start]
+        initWebDriver(driverType, ipProxy);
+        Assert.notNull(driver, "Driver could not be null.");
+        ///////////// init the web driver [end]
+
+        index++;
+
+        String indexInfo = "[" + index + "/" + total + "]";
+
+        logger.info(String.format(">>>>>>>>>>>>>>>>>>Ready order for %s>>>>>>>>>>>>>>>", indexInfo));
+
+        boolean loginSuccess = true;//login(orderInfo);
+
+        if (loginSuccess) {
+          boolean addedToShoppingCar = Boolean.FALSE;
+          boolean canCheckoutOrder = Boolean.FALSE;
+          boolean orderSubmitted = Boolean.FALSE;
+
+          for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
+            addedToShoppingCar = addToShoppingCar(itemInfo, orderInfo.getUsername(), orderInfo.getPassword());
+          }
+
+          if (addedToShoppingCar) {
+            logger.info("-----------------------------------------------------");
+            logger.info("      Go to Shopping Car to confirm order            ");
+            logger.info("-----------------------------------------------------");
+            canCheckoutOrder = confirmOrder(orderInfo);
+          }
+
+          if (canCheckoutOrder) {
+            logger.info("-----------------------------------------------------");
+            logger.info("            Go to Check out order                    ");
+            logger.info("-----------------------------------------------------");
+            orderSubmitted = checkoutOrder(orderInfo);
+          }
+
+          if (orderSubmitted) {
+            logger.info("-----------------------------------------------------");
+            logger.info("            Order Submitted, Write Order Info          ");
+            logger.info("-----------------------------------------------------");
+            writeOrderInfo(orderInfo);
+            logger.info(String.format(">>>>>>>>>>>>>The order index %s successfully!", indexInfo));
+          }
+
+          //////////////// close the web driver
+          closeWebDriver();
+
+          logger.info("Will delay " + yhdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
+          delay(yhdOrderConfig.getMaxDelaySecondsForNext());
+
+        }
+      }catch (Exception e){
+        logger.error(e.getMessage(), e);
+        logger.info("Added Order Info to failed list: " + orderInfo);
+        failedOrders.add(orderInfo);
       }
+    }
+    
+    
+    if(!failedOrders.isEmpty()){
+      logger.info("Ready process failed order.....");
+      orderCommandList.clear();
+      orderCommandList.addAll(failedOrders);
+      failedOrders.clear();
+      yhdTDoOrder();
     }
   } // end method yhdTDoOrder
   

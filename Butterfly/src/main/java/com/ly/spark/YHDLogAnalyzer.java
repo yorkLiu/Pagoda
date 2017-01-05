@@ -23,7 +23,7 @@ public class YHDLogAnalyzer {
     sc.cancelAllJobs();
     
     if(args.length == 0){
-      args = new String[]{"/Users/yongliu/Downloads/tmp/logs/JD-Comment-2016-12-09-135021.log"};
+      args = new String[]{"/Users/yongliu/Downloads/tmp/logs/JD-Comment-2016-12-27-135444.log"};
     }
 
     // Load the text file into Spark.
@@ -55,9 +55,7 @@ public class YHDLogAnalyzer {
     System.out.println(TimeUtils.toTime(totaltime));
     System.out.println(spentTimes.min(Comparator.naturalOrder()));
     System.out.println(spentTimes.max(Comparator.naturalOrder()));
-    
-    
-    spentTimes.take()
+
     sc.stop();
     
   }

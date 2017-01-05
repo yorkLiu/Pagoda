@@ -1,9 +1,11 @@
 package com.ly.config;
 
-import com.ly.utils.Constants;
+import java.math.BigDecimal;
+
+import com.ly.utils.ExcelUtils;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
+import com.ly.utils.Constants;
 
 
 /**
@@ -23,6 +25,14 @@ public class BaseOrderConfig extends WebDriverProperties {
   protected Integer compareGoodsCount = 3;
 
   /**
+   * The max search page num, after current page num greater than @maxSearchPageNum, will search by price,.
+   *
+   * @maxSearchPageNum  property value could be set on config file. If @maxSearchPageNum value equal or less than 0,
+   *                    means would not fine production by price.
+   */
+  protected Integer maxSearchPageNum;
+
+  /**
    * The generated order file name prefix i.e: orderFileNamePrefix=YHD-example the the order file name is:
    * YHD-example-todayDate(2016-10-10)
    */
@@ -30,6 +40,13 @@ public class BaseOrderConfig extends WebDriverProperties {
 
   /** The search price offset: start, end */
   protected String searchByPriceOffset;
+
+  /**
+   * The flag of turn on or off to get IP Proxy. If @useIpProxy=TRUE, then will get ip proxy from proxy server. else
+   * will not. By default is 'FALSE'
+   * <code>Value: TRUE, Y, FALSE, N</code>
+   */
+  protected String useIpProxy;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -41,7 +58,9 @@ public class BaseOrderConfig extends WebDriverProperties {
     logger.info("orderFileNamePrefix: " + orderFileNamePrefix);
     logger.info("compareGoodsCount: " + compareGoodsCount);
     logger.info("browserTime: " + browserTime + " second(s)");
+    logger.info("maxSearchPageNum: " + maxSearchPageNum);
     logger.info("searchByPriceOffset: " + searchByPriceOffset);
+    logger.info("useIpProxy: " + getUseIpProxy());
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -77,6 +96,17 @@ public class BaseOrderConfig extends WebDriverProperties {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for max search page num.
+   *
+   * @return  Integer
+   */
+  public Integer getMaxSearchPageNum() {
+    return maxSearchPageNum;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for order file name prefix.
    *
    * @return  String
@@ -88,12 +118,105 @@ public class BaseOrderConfig extends WebDriverProperties {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for price offsets.
+   *
+   * @return  Integer[]
+   */
+  public Integer[] getPriceOffsets() {
+    Integer[] priceOffsets = new Integer[] { 0, 0 };
+
+    if ((searchByPriceOffset != null) && StringUtils.hasText(searchByPriceOffset)) {
+      try {
+        String[] offsets = StringUtils.delimitedListToStringArray(StringUtils.deleteAny(searchByPriceOffset,
+              Constants.SPACER),
+            ",");
+
+        switch (offsets.length) {
+          case 1: {
+            int startOffset = parseIntSafe(offsets[0].trim());
+            priceOffsets[0] = startOffset;
+            priceOffsets[1] = null;
+
+            break;
+          }
+
+          default: {
+            int startOffset = parseIntSafe(offsets[0].trim());
+            int endOffset   = parseIntSafe(offsets[1].trim());
+            priceOffsets[0] = startOffset;
+            priceOffsets[1] = endOffset;
+          }
+        }
+      } catch (Exception e) {
+        logger.error(e.getMessage());
+      }
+    } // end if
+
+    return priceOffsets;
+  } // end method getPriceOffsets
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for search by price offset.
    *
    * @return  String
    */
   public String getSearchByPriceOffset() {
     return searchByPriceOffset;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for search end price.
+   *
+   * @param   price  BigDecimal
+   *
+   * @return  Integer
+   */
+  public Integer getSearchEndPrice(BigDecimal price) {
+    if (price != null) {
+      Integer[] offsets = getPriceOffsets();
+
+      return price.add(new BigDecimal(offsets[1])).intValue();
+    }
+
+    return null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for search start price.
+   *
+   * @param   price  BigDecimal
+   *
+   * @return  Integer
+   */
+  public Integer getSearchStartPrice(BigDecimal price) {
+    if (price != null) {
+      Integer[] offsets = getPriceOffsets();
+
+      return price.add(new BigDecimal(offsets[0])).intValue();
+    }
+
+    return null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for use ip proxy.
+   *
+   * @return  Boolean
+   */
+  public Boolean getUseIpProxy() {
+    if (null == useIpProxy) {
+      return Boolean.FALSE;
+    }
+
+    return ExcelUtils.getBooleanValue(useIpProxy);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -121,6 +244,17 @@ public class BaseOrderConfig extends WebDriverProperties {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for max search page num.
+   *
+   * @param  maxSearchPageNum  Integer
+   */
+  public void setMaxSearchPageNum(Integer maxSearchPageNum) {
+    this.maxSearchPageNum = maxSearchPageNum;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for order file name prefix.
    *
    * @param  orderFileNamePrefix  String
@@ -139,78 +273,31 @@ public class BaseOrderConfig extends WebDriverProperties {
   public void setSearchByPriceOffset(String searchByPriceOffset) {
     this.searchByPriceOffset = searchByPriceOffset;
   }
-  
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
   /**
-   * getter method for price offsets.
+   * setter method for use ip proxy.
    *
-   * @return  Integer[]
+   * @param  useIpProxy  Boolean
    */
-  public Integer[] getPriceOffsets() {
-    Integer[] priceOffsets = new Integer[] { 0, 0 };
-
-    if ((searchByPriceOffset != null) && StringUtils.hasText(searchByPriceOffset)) {
-      if (searchByPriceOffset.contains(",")) {
-        try {
-          String[] offsets = StringUtils.delimitedListToStringArray(StringUtils.deleteAny(searchByPriceOffset, Constants.SPACER),
-              ",");
-
-          switch (offsets.length) {
-            case 1: {
-              int startOffset = Integer.parseInt(offsets[0].trim());
-              priceOffsets[0] = startOffset;
-              priceOffsets[1] = startOffset;
-
-              break;
-            }
-
-            default: {
-              int startOffset = Integer.parseInt(offsets[0].trim());
-              int endOffset   = Integer.parseInt(offsets[1].trim());
-              priceOffsets[0] = startOffset;
-              priceOffsets[1] = endOffset;
-            }
-          }
-        } catch (Exception e) {
-          logger.error(e.getMessage());
-        }
-      } // end if
-    } // end if
-
-    return priceOffsets;
-  } // end method getPriceOffsets
-  
-  /**
-   * getter method for search start price.
-   *
-   * @param   price  BigDecimal
-   *
-   * @return  Integer
-   */
-  public Integer getSearchStartPrice(BigDecimal price) {
-    if (price != null) {
-      Integer[] offsets = getPriceOffsets();
-
-      return price.add(new BigDecimal(offsets[0])).intValue();
-    }
-
-    return null;
+  public void setUseIpProxy(String useIpProxy) {
+    this.useIpProxy = useIpProxy;
   }
 
-  /**
-   * getter method for search end price.
-   *
-   * @param   price  BigDecimal
-   *
-   * @return  Integer
-   */
-  public Integer getSearchEndPrice(BigDecimal price) {
-    if (price != null) {
-      Integer[] offsets = getPriceOffsets();
+  //~ ------------------------------------------------------------------------------------------------------------------
 
-      return price.add(new BigDecimal(offsets[1])).intValue();
+  private int parseIntSafe(String intVal) {
+    int result = 0;
+
+    try {
+      if ((intVal != null) && StringUtils.hasText(intVal)) {
+        result = Integer.parseInt(intVal.trim());
+      }
+    } catch (NumberFormatException e) {
+      logger.error(e.getMessage());
     }
 
-    return null;
+    return result;
   }
-
 } // end class BaseOrderConfig
