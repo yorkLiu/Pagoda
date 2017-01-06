@@ -8,6 +8,7 @@
 - chinese doc: http://www.cnblogs.com/meiling-ji/p/5283476.html
 - [geckodriver download](https://github.com/mozilla/geckodriver/releases)
 - For more geckodriver visit: https://github.com/mozilla/geckodriver
+- [Download Firefox install file old and newest version](https://ftp.mozilla.org/pub/firefox/releases/)
 
 
 ## Selenium set proxy for web driver
