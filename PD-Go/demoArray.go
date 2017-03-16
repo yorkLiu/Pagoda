@@ -9,6 +9,7 @@ func main() {
 	fmt.Println("array[1:4]", array[1:4])
 	fmt.Println("array[:3]", array[:3])
 	fmt.Println("array[4:]", array[4:])
+	fmt.Println("array[1:3:5]", array[1:3:3])
 	
 	array1 := make([]int, 0, 5)
 	printSlice(array1)
