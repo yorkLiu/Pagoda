@@ -301,7 +301,7 @@ if __name__ == '__main__':
         sys.exit(2)
 
     try:
-        opts, args = getopt.getopt(parameters,"hca:d:f:t:",["config", "append", "dir=","file=","tickets="])
+        opts, args = getopt.getopt(parameters,"hcad:f:t:",["config", "append", "dir=","file=","tickets="])
     except getopt.GetoptError, e:
         print 'DailyJira.py -d <workPath> -c '
         print 'DailyJira.py -f <filename> '
