@@ -31,13 +31,18 @@ if __name__ == '__main__':
     password = ""
     oz_jira = connect_jira(oz_jira_server, username, password)
    
-    issue = oz_jira.issue('CMC-2744')
+    issue = oz_jira.issue('CMC-2854')
     status = issue.fields.status.name
     trans = oz_jira.transitions(issue)
     print [(t['id'], t['name']) for t in trans]
 
     for t in trans:
         print t['id'], t['name']
+
+
+    print issue.fields.issuetype.name
+    issue.update(fields={"duedate": str(date.today())})
+    # issue.update(fields={"duedate": '5/四月/17'})
     # 
     # print status
     # dateFormat='%Y-%m-%d'

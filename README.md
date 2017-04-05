@@ -9,7 +9,7 @@
 - [geckodriver download](https://github.com/mozilla/geckodriver/releases)
 - For more geckodriver visit: https://github.com/mozilla/geckodriver
 - [Download Firefox install file old and newest version](https://ftp.mozilla.org/pub/firefox/releases/)
-
+- [Download ChromeDriver click here](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 
 ## Selenium set proxy for web driver
 ### [Selenium Proxy for IE and Firefox](http://www.seleniumhq.org/docs/04_webdriver_advanced.jsp)
