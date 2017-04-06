@@ -225,10 +225,6 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir):
         'environment': oz_jira_env_text.format(cmcTicketNo=cmcTicketNo, branch=', '.join(branch_names))
     }
 
-    # update the duedate to 'today'
-    if 'Bug' == issue_type:
-        issue_dic['duedate'] = str(today)
-
     new_issue = oz_jira.create_issue(fields=issue_dic)
 
     # update ticket's status (bug: Open Dev, story: Require Estimation
@@ -236,7 +232,7 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir):
     if 'Bug' == issue_type_name:
 
         # update the duedate to 'today'
-        # new_issue.update(fields={"duedate": str(today)})
+        new_issue.update(fields={"duedate": str(today)})
 
         if 'design' == new_issue_status:
             oz_jira.transition_issue(new_issue, status_map['ApproveDesign'])
