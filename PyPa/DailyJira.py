@@ -5,6 +5,7 @@ import sys, getopt, getpass
 from jira import JIRA
 import logging
 from datetime import date, timedelta
+import hashlib
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -42,6 +43,7 @@ cmc_jira_server = 'https://jira.cmcassist.com'
 oz_jira_search_query = 'project = "CMC JIRA Tickets" AND summary ~ %s AND NOT issuetype=Sub-task'
 oz_jira_yesterday_not_resolved_query='project = "CMC JIRA Tickets" AND labels=%s AND status not in(Resolved, Closed) AND NOT issuetype=Sub-task'
 oz_jira_env_text = 'https://jira.cmcassist.com/browse/{cmcTicketNo}\n branch: {branch}'
+oz_jira_cmc_jira_link = 'https://jira.cmcassist.com/browse/{cmcTicketNo}'
 
 '''
 Ticket Status Map
@@ -55,8 +57,11 @@ status_map = {
 
 messages={
     'updated': 'Updated',
-    'updateFailed': 'Update Failed'
+    'updateFailed': 'Update Failed',
+    'synchronized': 'Cmc was updated the ticket %s, we have synchronized'
 }
+
+ticket_updated_comment = '[~%s] %s'
 
 '''
 Connect to jira server with username and password
@@ -79,7 +84,7 @@ def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
         log.info("%s current status is: [%s]", oz_issue_key, ticket_status)
         if label not in issue.fields.labels:
 
-            if ticket_status in ('关闭'):
+            if ticket_status in ('关闭', 'Closed', 'Resolved'):
                 oz_jira.transition_issue(issue, status_map['ReOpen'])
                 log.info("ReOpened [%s]", oz_issue_key)
 
@@ -103,7 +108,7 @@ def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
  if found, then update the label to today
  else return false
 '''
-def create_update_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, isCreateNewIfNotExists=True):
+def create_update_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, isCreateNewIfNotExists=True, forceUpdate=False):
     log.info("Search Ticket NO. %s", cmcTicketNo)
     issues = oz_jira.search_issues(oz_jira_search_query %cmcTicketNo)
     count = issues.__len__()
@@ -113,10 +118,15 @@ def create_update_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, isC
         # And need append today's label(I.E 20170101...)
         issue = issues[0]
         oz_issue_key = issue.key
+        oz_issue_status_name = issue.fields.status.name
         log.info("Found %s --> %s" ,cmcTicketNo ,oz_issue_key)
 
         log.info("Ready append label %s to %s(%s)", label, oz_issue_key, cmcTicketNo)
         append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key)
+        if forceUpdate and oz_issue_status_name not in('Closed', '关闭', 'Resolved'):
+            # update oz ticket's summary, description, attachments and branches
+           forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir)
+
     else:
         # not found @cmcTicketNo in Oz Jira Server
         # If @isCreateNewIfNotExists == True
@@ -128,6 +138,87 @@ def create_update_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, isC
             log.info("Not found Cmc Jira Ticket: %s and will not create it.", cmcTicketNo)
 
     return count >0
+
+
+def get_md5(value):
+    """
+    Caculate the value's md5
+    """
+    if value and not value.isspace():
+        return hashlib.md5(value).hexdigest()
+    return None
+
+def isEquals(value1, value2):
+    return get_md5(value1) == get_md5(value2)
+
+
+def download_diff_attachments(workDir, cmcTicketNo, cmc_attachments, oz_exists_attachment_file_names):
+    attachs = []
+    workPath = get_work_path(workDir, cmcTicketNo)
+    for attachment in cmc_attachments:
+        attachment_file_name = attachment.filename
+        if attachment_file_name not in oz_exists_attachment_file_names:
+            log.info("Downloading attachment %s", attachment_file_name)
+            filename = os.path.join(workPath, attachment_file_name)
+            fout = open(filename, "wb")
+            fout.write(attachment.get())
+            attachs.append(filename)
+            log.info("Attachment downloaded on: %s", filename)
+
+
+    return attachs
+
+def forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir):
+    oz_issue = oz_jira.issue(oz_issue_key)
+    cmc_issue = cmc_jira.issue(cmcTicketNo)
+    oz_issue_exists_attachments = []
+    log.info('Update Oz ticket %s [%s]', oz_issue_key, cmcTicketNo)
+
+    for attachment in oz_issue.fields.attachment:
+        oz_issue_exists_attachments.append(attachment.filename)
+
+    # download the attachment first
+    diff_attachments = download_diff_attachments(workDir, cmcTicketNo, cmc_issue.fields.attachment, oz_issue_exists_attachments)
+    # cmc_issue_type = cmc_issue.fields.issuetype.name
+    cmc_issue_software_branches = cmc_issue.fields.customfield_13450
+    cmc_issue_software_branch_names = get_cmc_ticket_software_branches(cmc_issue_software_branches)
+    cmc_issue_summary = cmc_issue.fields.summary
+    cmc_issue_description = cmc_issue.fields.description
+
+    oz_issue_software_branches = oz_issue.fields.customfield_10228
+    oz_issue_summary = oz_issue.fields.summary.replace(cmcTicketNo, '').lstrip()
+    oz_issue_description = oz_issue.fields.description
+
+    changed_keys = []
+
+    if not isEquals(cmc_issue_summary, oz_issue_summary):
+        changed_keys.append('Summary')
+        log.info("%s [%s] Cmc summary was changed", oz_issue_key, cmcTicketNo)
+        oz_issue.update(fields={"summary": cmc_issue_summary})
+
+    if not isEquals(cmc_issue_description, oz_issue_description):
+        changed_keys.append('Description')
+        log.info("%s [%s] Cmc description was changed", oz_issue_key, cmcTicketNo)
+        oz_issue.update(fields={"description": cmc_issue_description})
+
+    if not isEquals(str(cmc_issue_software_branch_names), str(oz_issue_software_branches)):
+        changed_keys.append('Software_Branches')
+        log.info("%s [%s] Cmc software branches was changed", oz_issue_key, cmcTicketNo)
+        oz_issue.update(fields={"customfield_10228": cmc_issue_software_branch_names})
+
+
+    # upload attachment for created issue.
+    if diff_attachments and diff_attachments.__len__()>0:
+        changed_keys.append('Attachments')
+        for filename in diff_attachments:
+            oz_jira.add_attachment(issue=oz_issue, attachment=filename)
+
+    # write to log file
+    if changed_keys and changed_keys.__len__() > 0:
+        # add a comment to notice the ticket developer
+        oz_jira.add_comment(oz_issue, ticket_updated_comment % (oz_issue.fields.assignee.name, messages['synchronized'] % (','.join(changed_keys))))
+        # write to file
+        write_main_content_to_file(workDir, cmcTicketNo, oz_issue_key, messages['synchronized'] % (','.join(changed_keys)))
 
 def get_work_path(workDir, cmcTicketNo=None):
     workPath = None
@@ -180,6 +271,19 @@ def write_main_content_to_file(workDir, cmcTicketNo, ozTicketNo, extraText=None)
     write_content_to_file(filename, file_content, 'a')
 
 
+def get_cmc_ticket_software_branches(software_branches):
+    branch_names = []
+    if software_branches and software_branches.__len__() > 0:
+        for software_branch in software_branches:
+            # branch_names.append(software_branch['value'])
+            branch_names.append(software_branch.value)
+    else:
+        branch_names.append("master")
+
+
+    log.info('Software Branches: %s', ', '.join(branch_names))
+    return branch_names
+
 def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir):
     cmc_issue = cmc_jira.issue(cmcTicketNo)
 
@@ -191,7 +295,7 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir):
     summary = "{cmcTicketNo} {summary}".format(cmcTicketNo=cmcTicketNo, summary = cmc_issue.fields.summary)
     environment_text = oz_jira_env_text.format(cmcTicketNo=cmcTicketNo, branch = software_branches)
     issue_type_name = 'Bug'
-    branch_names = []
+    branch_names = get_cmc_ticket_software_branches(software_branches)
     labels = []
     # process labels & issue type
     if 'Story' == issue_type:
@@ -200,20 +304,16 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir):
     else:
         labels = [label]
 
-    print type(software_branches)
-    print software_branches
     # process softer branches
-    if software_branches and software_branches.__len__() > 0:
-        for software_branch in software_branches:
-            print software_branch
-            print type(software_branch)
-            # branch_names.append(software_branch['value'])
-            branch_names.append(software_branch.value)
-    else:
-        branch_names.append("master")
-
-    print environment_text
-    print ', '.join(branch_names)
+    # if software_branches and software_branches.__len__() > 0:
+    #     for software_branch in software_branches:
+    #         # branch_names.append(software_branch['value'])
+    #         branch_names.append(software_branch.value)
+    # else:
+    #     branch_names.append("master")
+    # 
+    # 
+    # log.info('Software Branches: %s', ', '.join(branch_names))
 
     issue_dic = {
         # 'project': {'key': 'CMC JIRA Tickets'},
@@ -222,7 +322,11 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir):
         'description': cmc_issue.fields.description,
         'issuetype': {'name': issue_type_name},
         'labels': labels,
-        'environment': oz_jira_env_text.format(cmcTicketNo=cmcTicketNo, branch=', '.join(branch_names))
+         # customfield_10227 is CMC JIRA Link
+        'customfield_10227': oz_jira_cmc_jira_link.format(cmcTicketNo=cmcTicketNo),
+         # customfield_10228 is Software Branches
+        'customfield_10228': branch_names
+        # 'environment': oz_jira_env_text.format(cmcTicketNo=cmcTicketNo, branch=', '.join(branch_names))
     }
 
     new_issue = oz_jira.create_issue(fields=issue_dic)
@@ -289,6 +393,7 @@ if __name__ == '__main__':
             -f <filename> load content from a file
             -t <ticketsNo> load content from transform tickets (split with ',', '/' or '\')
             -a Append today's label for yesterday not 'Resolved' and 'Closed' tickets (just in oz jira)
+            -U force update the oz ticket with same as cmc ticket (if cmc ticket was updated)
 
             Usage:
                     python DailyJira.py -d ~/Downloads/JIRA -c
@@ -305,7 +410,7 @@ if __name__ == '__main__':
         sys.exit(2)
 
     try:
-        opts, args = getopt.getopt(parameters,"hcad:f:t:",["config", "append", "dir=","file=","tickets="])
+        opts, args = getopt.getopt(parameters,"hcaUd:f:t:",["config", "append", "dir=","file=","tickets="])
     except getopt.GetoptError, e:
         print 'DailyJira.py -d <workPath> -c '
         print 'DailyJira.py -f <filename> '
@@ -318,6 +423,7 @@ if __name__ == '__main__':
     config_file_name=os.path.expanduser("~/.dailyJiraConfig")
     work_dir = None
     append_today_label_for_yesterday_tickets_flag = False
+    force_update_flag = False
     ############  variables [END]  #############
 
     for opt, arg in opts:
@@ -340,6 +446,9 @@ if __name__ == '__main__':
             work_dir = get_work_path(work_dir)
             config_content = '{a}\n{b}\n{c}\n{d}\n{workPath}'.format(a=oz_jira_username, b=oz_jira_pwd, c=cmc_jira_username, d=cmc_jira_pwd, workPath=work_dir)
             write_content_to_file(config_file_name, config_content)
+        
+        if opt in ('-U', '--Update'):
+            force_update_flag = True
 
         if opt in ('-a', '--append'):
             append_today_label_for_yesterday_tickets_flag = True
@@ -404,4 +513,4 @@ if __name__ == '__main__':
 
         for ticket in tickets:
             if ticket and not ticket.isspace():
-                create_update_ticket_on_oz_side(oz_jira, cmc_jira, ticket, work_dir)
+                create_update_ticket_on_oz_side(oz_jira, cmc_jira, ticket, work_dir, True, force_update_flag)
