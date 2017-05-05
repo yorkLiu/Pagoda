@@ -61,16 +61,25 @@ messages={
     'synchronized': 'Cmc was updated the ticket %s, we have synchronized'
 }
 
-ticket_updated_comment = '[~%s] %s'
+ticket_updated_comment = '[~%s] %s \n %s'
+
+proxies = {
+    'http': 'socks5://192.168.100.3:1083',
+    'https': 'socks5://192.168.100.3:1083'
+}
 
 '''
 Connect to jira server with username and password
 '''
-def connect_jira(jira_server, jira_user, jira_password):
+def connect_jira(jira_server, jira_user, jira_password, use_proxy=False):
     log.info("Connecting: %s with author: %s", jira_server,jira_user)
     try:
         jira_option = {'server': jira_server}
-        jira = JIRA(jira_option, basic_auth={jira_user, jira_password})
+        if use_proxy:
+            log.info("Visit %s using Proxy: %s", jira_server, proxies)
+            jira = JIRA(jira_option, basic_auth={jira_user, jira_password}, proxies=proxies)
+        else:
+            jira = JIRA(jira_option, basic_auth={jira_user, jira_password})
         log.info("Connected server: %s successfully!", jira_server)
         return jira
     except Exception, e:
@@ -144,6 +153,7 @@ def get_md5(value):
     """
     Caculate the value's md5
     """
+    value = str(value)
     if value and not value.isspace():
         return hashlib.md5(value).hexdigest()
     return None
@@ -168,6 +178,16 @@ def download_diff_attachments(workDir, cmcTicketNo, cmc_attachments, oz_exists_a
 
     return attachs
 
+def get_array_hash(array):
+    """
+    get the array hash code
+    """
+    result = 0
+    if array:
+        for v in array:
+            result = result + hash(str(v))
+    return result
+
 def forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir):
     oz_issue = oz_jira.issue(oz_issue_key)
     cmc_issue = cmc_jira.issue(cmcTicketNo)
@@ -189,34 +209,45 @@ def forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir):
     oz_issue_summary = oz_issue.fields.summary.replace(cmcTicketNo, '').lstrip()
     oz_issue_description = oz_issue.fields.description
 
+    if not oz_issue_software_branches:
+        oz_issue_software_branches = ['N/A']
+
     changed_keys = []
+    changed_msgs = []
 
     if not isEquals(cmc_issue_summary, oz_issue_summary):
         changed_keys.append('Summary')
+        changed_msgs.append('*Summary* \nOriginal: %s \n*For Now:* %s \n\n' % (oz_issue_summary, cmc_issue_summary))
         log.info("%s [%s] Cmc summary was changed", oz_issue_key, cmcTicketNo)
-        oz_issue.update(fields={"summary": cmc_issue_summary})
+        oz_issue.update(fields={"summary": '%s %s' % (cmcTicketNo, cmc_issue_summary)})
 
     if not isEquals(cmc_issue_description, oz_issue_description):
         changed_keys.append('Description')
+        changed_msgs.append('*Description* changed, please review the *Acceptance Criteria*\n\n')
         log.info("%s [%s] Cmc description was changed", oz_issue_key, cmcTicketNo)
         oz_issue.update(fields={"description": cmc_issue_description})
 
-    if not isEquals(str(cmc_issue_software_branch_names), str(oz_issue_software_branches)):
-        changed_keys.append('Software_Branches')
+    if get_array_hash(cmc_issue_software_branch_names) != get_array_hash(oz_issue_software_branches):
+        changed_keys.append('Software Branches')
+        changed_msgs.append('*Software Branches* \nOriginal: %s\n*For Now:* %s\n\n' % (','.join(oz_issue_software_branches), ','.join(cmc_issue_software_branch_names)))
         log.info("%s [%s] Cmc software branches was changed", oz_issue_key, cmcTicketNo)
         oz_issue.update(fields={"customfield_10228": cmc_issue_software_branch_names})
 
 
     # upload attachment for created issue.
     if diff_attachments and diff_attachments.__len__()>0:
-        changed_keys.append('Attachments')
+        changed_keys.append("Attachments")
+        updated_attachments = ''
         for filename in diff_attachments:
+            updated_attachments = updated_attachments + '[^ %s]\n' % os.path.basename(filename)
             oz_jira.add_attachment(issue=oz_issue, attachment=filename)
+
+        changed_msgs.append('*Attachments Updated* \n%s\n\n' % updated_attachments)
 
     # write to log file
     if changed_keys and changed_keys.__len__() > 0:
         # add a comment to notice the ticket developer
-        oz_jira.add_comment(oz_issue, ticket_updated_comment % (oz_issue.fields.assignee.name, messages['synchronized'] % (','.join(changed_keys))))
+        oz_jira.add_comment(oz_issue, ticket_updated_comment % (oz_issue.fields.assignee.name, messages['synchronized'] % (','.join(changed_keys)), ''.join(changed_msgs)))
         # write to file
         write_main_content_to_file(workDir, cmcTicketNo, oz_issue_key, messages['synchronized'] % (','.join(changed_keys)))
 
@@ -494,7 +525,7 @@ if __name__ == '__main__':
         oz_jira = connect_jira(oz_jira_server, oz_jira_username, oz_jira_pwd)
 
     if cmc_jira_username and cmc_jira_pwd:
-        cmc_jira = connect_jira(cmc_jira_server, cmc_jira_username, cmc_jira_pwd)
+        cmc_jira = connect_jira(cmc_jira_server, cmc_jira_username, cmc_jira_pwd, True)
     ############### INIT JIRA Server [End] ######################
 
     if append_today_label_for_yesterday_tickets_flag == True:
