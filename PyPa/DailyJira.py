@@ -4,8 +4,9 @@ import os
 import sys, getopt, getpass
 from jira import JIRA
 import logging
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import hashlib
+import difflib
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -40,8 +41,8 @@ OZ JIRA Server
 oz_jira_server = 'http://192.168.168.21:8091'
 cmc_jira_server = 'https://jira.cmcassist.com'
 
-oz_jira_search_query = 'project = "CMC JIRA Tickets" AND summary ~ %s AND NOT issuetype=Sub-task'
-oz_jira_yesterday_not_resolved_query='project = "CMC JIRA Tickets" AND labels=%s AND status not in(Resolved, Closed) AND NOT issuetype=Sub-task'
+oz_jira_search_query = 'project = "CMC JIRA Tickets" AND summary ~ %s'
+oz_jira_yesterday_not_resolved_query='project = "CMC JIRA Tickets" AND labels=%s AND status not in(Resolved, Closed)'
 oz_jira_env_text = 'https://jira.cmcassist.com/browse/{cmcTicketNo}\n branch: {branch}'
 oz_jira_cmc_jira_link = 'https://jira.cmcassist.com/browse/{cmcTicketNo}'
 
@@ -68,9 +69,7 @@ proxies = {
     'https': 'socks5://192.168.100.3:1083'
 }
 
-'''
-Connect to jira server with username and password
-'''
+# Connect to jira server with username and password
 def connect_jira(jira_server, jira_user, jira_password, use_proxy=False):
     log.info("Connecting: %s with author: %s", jira_server,jira_user)
     try:
@@ -112,11 +111,10 @@ def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
         write_main_content_to_file(workDir, cmcTicketNo, oz_issue_key, messages['updateFailed'])
         log.error(e)
 
-'''
- Find cmc ticket NO in OZ JIRA server
- if found, then update the label to today
- else return false
-'''
+
+# Find cmc ticket NO in OZ JIRA server
+# if found, then update the label to today
+# else return false
 def create_update_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, isCreateNewIfNotExists=True, forceUpdate=False):
     log.info("Search Ticket NO. %s", cmcTicketNo)
     issues = oz_jira.search_issues(oz_jira_search_query %cmcTicketNo)
@@ -188,7 +186,33 @@ def get_array_hash(array):
             result = result + hash(str(v))
     return result
 
+def get_diff(original_text, newest_text, cmc_ticket_num, oz_ticket_last_update_datetime):
+    """
+        get different text with @original_text and @newest_text
+        :param original_text oz ticket description
+        :param newest_text cmc ticket description
+        :param oz_ticket_last_update_datetime the oz ticket last updated date time
+    """
+    last_update_datetime = datetime.strptime(oz_ticket_last_update_datetime.split('+')[0], '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S')
+    d = difflib.unified_diff(original_text.splitlines(), newest_text.splitlines(),
+                             u'OZ Ticket Updated on {0}'.format(last_update_datetime),
+                             u'{0} Description (modified)'.format('[%s|%s]' % (cmc_ticket_num, oz_jira_cmc_jira_link.format(cmcTicketNo=cmc_ticket_num) )), n=1, lineterm=u'\n')
+    diffs = list(d)
+    if diffs.__len__() > 0:
+        diff = u'\n'.join(diffs)+'\n'
+        return diff
+
+    return None
+
 def forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir):
+    """
+        Update the oz ticket from cmc ticket with comamnd paramenter '-U'
+        :param oz_jira: oz jira server
+        :param cmc_jira: cmc jira server
+        :param oz_issue_key: oz ticket number
+        :param cmcTicketNo: cmc ticket number
+        :param workDir: the attachment stored path
+    """
     oz_issue = oz_jira.issue(oz_issue_key)
     cmc_issue = cmc_jira.issue(cmcTicketNo)
     oz_issue_exists_attachments = []
@@ -208,6 +232,7 @@ def forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir):
     oz_issue_software_branches = oz_issue.fields.customfield_10228
     oz_issue_summary = oz_issue.fields.summary.replace(cmcTicketNo, '').lstrip()
     oz_issue_description = oz_issue.fields.description
+    oz_issue_last_updated_time=oz_issue.fields.updated
 
     if not oz_issue_software_branches:
         oz_issue_software_branches = ['N/A']
@@ -221,9 +246,11 @@ def forceUpdateOzTicket(oz_jira, cmc_jira, oz_issue_key, cmcTicketNo, workDir):
         log.info("%s [%s] Cmc summary was changed", oz_issue_key, cmcTicketNo)
         oz_issue.update(fields={"summary": '%s %s' % (cmcTicketNo, cmc_issue_summary)})
 
-    if not isEquals(cmc_issue_description, oz_issue_description):
+    # if not isEquals(cmc_issue_description, oz_issue_description):
+    desc_diff = get_diff(oz_issue_description, cmc_issue_description, cmcTicketNo, oz_issue_last_updated_time)
+    if desc_diff != None:
         changed_keys.append('Description')
-        changed_msgs.append('*Description* changed, please review the *Acceptance Criteria*\n\n')
+        changed_msgs.append('*Description* changed, please review the *Acceptance Criteria*\n\n %s \n\n' % desc_diff)
         log.info("%s [%s] Cmc description was changed", oz_issue_key, cmcTicketNo)
         oz_issue.update(fields={"description": cmc_issue_description})
 
@@ -545,3 +572,5 @@ if __name__ == '__main__':
         for ticket in tickets:
             if ticket and not ticket.isspace():
                 create_update_ticket_on_oz_side(oz_jira, cmc_jira, ticket, work_dir, True, force_update_flag)
+
+    exit()
