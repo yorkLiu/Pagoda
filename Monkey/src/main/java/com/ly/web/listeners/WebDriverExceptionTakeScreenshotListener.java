@@ -14,7 +14,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.ScreenshotException;
-import org.openqa.selenium.support.events.WebDriverEventListener;
+//import org.openqa.selenium.support.events.WebDriverEventListener;
 
 
 /**
@@ -23,7 +23,8 @@ import org.openqa.selenium.support.events.WebDriverEventListener;
  * @author   <a href="mailto:pagodasupport@sina.com">Yong Liu</a>
  * @version  07/12/2016 11:32
  */
-public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventListener {
+public class WebDriverExceptionTakeScreenshotListener  {
+//public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventListener {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   /** TODO: DOCUMENT ME! */
@@ -32,118 +33,118 @@ public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventL
   private String baseDir = null;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterChangeValueOf(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterChangeValueOf(WebElement element, WebDriver driver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterClickOn(WebElement webElement, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterFindBy(org.openqa.selenium.By,org.openqa.selenium.WebElement,
-   *       org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterFindBy(By by, WebElement webElement, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateBack(org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterNavigateBack(WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateForward(org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterNavigateForward(WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateRefresh(org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterNavigateRefresh(WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateTo(java.lang.String, org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterNavigateTo(String s, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterScript(java.lang.String, org.openqa.selenium.WebDriver)
-   */
-  @Override public void afterScript(String s, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeChangeValueOf(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeChangeValueOf(WebElement element, WebDriver driver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeClickOn(WebElement webElement, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeFindBy(org.openqa.selenium.By,org.openqa.selenium.WebElement,
-   *       org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeFindBy(By by, WebElement webElement, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateBack(org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeNavigateBack(WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateForward(org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeNavigateForward(WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateRefresh(org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeNavigateRefresh(WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateTo(java.lang.String, org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeNavigateTo(String s, WebDriver webDriver) { }
-
-  //~ ------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeScript(java.lang.String, org.openqa.selenium.WebDriver)
-   */
-  @Override public void beforeScript(String s, WebDriver webDriver) { }
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterChangeValueOf(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterChangeValueOf(WebElement element, WebDriver driver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterClickOn(WebElement webElement, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterFindBy(org.openqa.selenium.By,org.openqa.selenium.WebElement,
+//   *       org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterFindBy(By by, WebElement webElement, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateBack(org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterNavigateBack(WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateForward(org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterNavigateForward(WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateRefresh(org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterNavigateRefresh(WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterNavigateTo(java.lang.String, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterNavigateTo(String s, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#afterScript(java.lang.String, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void afterScript(String s, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeChangeValueOf(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeChangeValueOf(WebElement element, WebDriver driver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeClickOn(org.openqa.selenium.WebElement, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeClickOn(WebElement webElement, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeFindBy(org.openqa.selenium.By,org.openqa.selenium.WebElement,
+//   *       org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeFindBy(By by, WebElement webElement, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateBack(org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeNavigateBack(WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateForward(org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeNavigateForward(WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateRefresh(org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeNavigateRefresh(WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeNavigateTo(java.lang.String, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeNavigateTo(String s, WebDriver webDriver) { }
+//
+//  //~ ------------------------------------------------------------------------------------------------------------------
+//
+//  /**
+//   * @see  org.openqa.selenium.support.events.WebDriverEventListener#beforeScript(java.lang.String, org.openqa.selenium.WebDriver)
+//   */
+//  @Override public void beforeScript(String s, WebDriver webDriver) { }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -165,37 +166,37 @@ public class WebDriverExceptionTakeScreenshotListener implements WebDriverEventL
   /**
    * @see  org.openqa.selenium.support.events.WebDriverEventListener#onException(java.lang.Throwable, org.openqa.selenium.WebDriver)
    */
-  @Override public void onException(Throwable throwable, WebDriver webDriver) {
-    if (logger.isDebugEnabled()) {
-      logger.debug(throwable.getMessage());
-    }
-
-    String filename = generateRandomFilename(throwable);
-
-    try {
-      String screenshot = extractScreenShot(throwable);
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("Starting catch the screenshot......");
-      }
-
-      if (screenshot != null) {
-        byte[]           btDataFile = Base64.decodeBase64(screenshot.getBytes());
-        File             of         = new File(filename);
-        FileOutputStream osf        = new FileOutputStream(of);
-        osf.write(btDataFile);
-        osf.flush();
-        osf.close();
-
-        if (logger.isDebugEnabled()) {
-          logger.debug("Catched the screenshot and saved on path: " + filename);
-        }
-      }
-
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-    }
-  } // end method onException
+//  @Override public void onException(Throwable throwable, WebDriver webDriver) {
+//    if (logger.isDebugEnabled()) {
+//      logger.debug(throwable.getMessage());
+//    }
+//
+//    String filename = generateRandomFilename(throwable);
+//
+//    try {
+//      String screenshot = extractScreenShot(throwable);
+//
+//      if (logger.isDebugEnabled()) {
+//        logger.debug("Starting catch the screenshot......");
+//      }
+//
+//      if (screenshot != null) {
+//        byte[]           btDataFile = Base64.decodeBase64(screenshot.getBytes());
+//        File             of         = new File(filename);
+//        FileOutputStream osf        = new FileOutputStream(of);
+//        osf.write(btDataFile);
+//        osf.flush();
+//        osf.close();
+//
+//        if (logger.isDebugEnabled()) {
+//          logger.debug("Catched the screenshot and saved on path: " + filename);
+//        }
+//      }
+//
+//    } catch (IOException e) {
+//      logger.error(e.getMessage(), e);
+//    }
+//  } // end method onException
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

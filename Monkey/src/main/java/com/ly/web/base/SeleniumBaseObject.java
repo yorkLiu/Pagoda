@@ -231,18 +231,29 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_FIREFOX;
 
-      FirefoxProfile profile = new FirefoxProfile();
-      profile.setAcceptUntrustedCertificates(true);
-      profile.setAssumeUntrustedCertificateIssuer(true);
-      profile.setEnableNativeEvents(true);
-      profile.setAlwaysLoadNoFocusLib(false);
-
       if (logger.isDebugEnabled()) {
         logger.debug("Init Firefox Web Driver.....");
       }
       
-      driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
+      if(webDriverProperties.getFirefoxDriverPath().toUpperCase().contains("geckodriver".toUpperCase())){
+        logger.info("Init Firefox with geckodriver....");
+        System.setProperty("webdriver.gecko.driver", webDriverProperties.getFirefoxDriverPath().toUpperCase());
+        driver = new FirefoxDriver();
+
+
+      } else {
+        logger.info("Init Firefox with FirefoxDriver wihch installed....");
+        FirefoxProfile profile = new FirefoxProfile();
+        profile.setAcceptUntrustedCertificates(true);
+        profile.setAssumeUntrustedCertificateIssuer(true);
+        profile.setEnableNativeEvents(true);
+        profile.setAlwaysLoadNoFocusLib(false);
+
+        driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
           profile);
+      }
+
+     
     } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_IE;
 
