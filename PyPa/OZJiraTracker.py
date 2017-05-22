@@ -31,7 +31,7 @@ label = now.strftime(labelDateFormat)
 currentMonth= now.strftime(currentMonthFormat)
 
 ######################## Configuration [Start] ###############################
-output_dir = '~/Downloads/JIRA/Robot/' #os.environ.get('OUTPUT_DIR')
+output_dir = os.environ.get('OUTPUT_DIR')
 
 ### START config Email Sender
 email_username=os.environ.get('EMAIL_USER_NAME')
@@ -42,21 +42,11 @@ email_subject='%s CMC Tickets Tracking' % today
 # config the email address here
 email_to_tech_leads=os.environ.get('EMAIL_TO_TECH_LEADS').split(',')
 email_ccs=os.environ.get('EMAIL_CCS').split(',')
-
-# email_username='yong.liu@ozstrategy.com'
-# email_password='dXUwMDAwMDA='
-# email_from='CMC Tickets Tracking <yong.liu@ozstrategy.com>'
-# email_subject='%s CMC Tickets Tracking' % today
-# 
-# # config the email address here
-# email_to_tech_leads=['yong.liu@ozstrategy.com']
-# email_ccs=[]
-
 ### END config Email Sender
 
 #### JIRA Account Config [Start]######
 oz_jira_username=os.environ.get('OZ_JIRA_USERNAME')
-oz_jira_password =os.environ.get('OZ_JIRA_USERNAME')
+oz_jira_password =os.environ.get('OZ_JIRA_PASSWORD')
 
 cmc_jira_username=os.environ.get('CMC_JIRA_USERNAME')
 cmc_jira_password=os.environ.get('CMC_JIRA_PASSWORD')
@@ -88,7 +78,7 @@ log.addHandler(h)
 
 
 na_text='N/A'
-rejected_ticket_file_name = '%s-Rejected-by-CMC-QA.txt' % currentMonth
+rejected_ticket_file_name = '%s-CMC-Tickets-Audit.txt' % currentMonth
 mail_to_set = set(email_to_tech_leads)
 
 oz_jira_status_map = {
@@ -105,8 +95,12 @@ jira_ticket_status_styles = {
     'qa-complete': '<span style="color:green;">QA Complete</span>',
     'in-progress-dev': '<span style="color:blue;">In Progress Dev</span>',
     'in-progress-qa': '<span style="color:blue;">In Progress QA</span>',
-    'rejected-qa': '<b><span style="color:red;">Rejected QA</span></b>',
-    'reopen': '<b><span style="color:red;">ReOpen</span></b>'
+    'rejected-qa': '<span style="color:red;"><b>Rejected QA</b></span>',
+    'reopen': '<span style="color:red;"><b>ReOpen</b></span><'
+}
+
+statistics_jira_status={
+    'rejected': 'Rejected'
 }
 
 html_templates = {
@@ -117,8 +111,8 @@ html_templates = {
     'qa_report_info_tpl': "<span style='color:purple'>{qaReporter}</span>",
     'extra_info_tpl': "{extraInfo}",
     'not_assign_qa_reporter_tpl': "<div class='quote'><span>{qaManager} there are <b>{count}</b> ticket(s) without QA Reporter: </span> <div>{tickets}</div></div>",
-    'rejected_tickets_statistics_tpl': "<div class='ozinfo quote'><b>{ticketStatus} ({count})</b>: <div>{tickets}</div></div>",
-    'rejected_tickets_file_content_tpl': "Rejected by CMC QA on {date} with label {label}: {tickets}\n",
+    'rejected_tickets_statistics_tpl': "<div class='quote'>{ticketStatus} (<b>{count}</b>): <div>{tickets}</div></div>",
+    'statistics_file_content_tpl': "{ticketStatus}|{date}|{label}: {tickets}\n",
     'email_content_tpl': """\
          <html>
               <head>
@@ -130,14 +124,14 @@ html_templates = {
               		.extra-field-cls > div { border-bottom: 1px dotted #999}
               		.ozinfo{font-size:12px;}
               		.cmcinfo{font-size: 14px;}
-              		.summary{font-size:12px;}
+              		.summary{font-size:12px;color:gray;}
               		/*.not-assign-qa-reporter > div {font-size:12px; padding: 5px 0 0 20px;}*/
               		.quote {
                       background: #f9f9f9;
                       border-left: 3px solid #ccc;
                       margin: 1.5em 10px;
                       padding: .5em 10px;
-                      quotes: '\\201C''\\201D''\\2018''\\2019';
+                      /*quotes: '\\201C''\\201D''\\2018''\\2019';*/
 
                       -webkit-border-top-left-radius: 10px;
                       -webkit-border-top-right-radius: 3px;
@@ -150,12 +144,13 @@ html_templates = {
                     }
                     .quote:before {
                       color: #ccc;
-                      content: open-quote;
+                      content: '\\201C';
                       font-size: 4em;
                       line-height: .1em;
                       margin-right: .25em;
                       vertical-align: -.4em;
                     }
+                    .quote:after{content:'';/*content: '\\201D';*/}
                     .quote p {display: inline; }
               	</style>
               </head>
@@ -183,9 +178,7 @@ html_templates = {
                   <div for='not-assign-qa-reporter'>
                      %s
                   </div>
-              </br>
-              </br>
-              </br>
+              </p>
               <p>
                 <div for='reject-ticket-statisics'>
                     %s
@@ -410,9 +403,11 @@ def check_tickets_main(search_label):
                                                                                                        count=rejected_ticket_by_cmc_qa.__len__(),
                                                                                                        tickets=', '.join(rejected_ticket_by_cmc_qa))
         try:
-            file_content = html_templates['rejected_tickets_file_content_tpl'].format(date=today, 
-                                                                       label=search_label, 
-                                                                       tickets = ', '.join(rejected_ticket_by_cmc_qa_only_ticket_numbers))
+
+            file_content = html_templates['statistics_file_content_tpl'].format(ticketStatus=statistics_jira_status['rejected'],
+                                                                                date=today, 
+                                                                                label=search_label, 
+                                                                                tickets = ', '.join(rejected_ticket_by_cmc_qa_only_ticket_numbers))
             write_to_file(rejected_ticket_file_name, file_content)
         except:
             log.error('Write the rejected content error.')
@@ -433,7 +428,6 @@ def check_tickets_main(search_label):
 
 def write_to_file(filename, content, write_mode='a'):
     filename_with_path = os.path.join(get_work_path(output_dir), filename)
-    print filename_with_path
     with open(filename_with_path, write_mode) as fp:
         fp.write(content)
 
@@ -446,16 +440,16 @@ def send_email(html_content):
 
         log.info("Ready send email.....")
 
-        email_tos = ['yong.liu@ozstrategy.com']#list(mail_to_set)
+        email_tos = list(mail_to_set)
         de_email_pwd = base64.decodestring(email_password)
-        
+
         mail_content = MIMEText(html_content, 'html')
-        
+
         mail_content['Subject'] = email_subject
         mail_content['From'] = email_from
         mail_content['To'] = ','.join(email_tos)
         mail_content['Cc'] = ','.join(email_ccs)
-        
+
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.ehlo()
         server.starttls()
@@ -473,7 +467,7 @@ if __name__ == '__main__':
     search_label = None
     if parameters.__len__() > 0:
          search_label = parameters[0]
-    
+
     check_tickets_main(search_label)
-    
+
     exit()
