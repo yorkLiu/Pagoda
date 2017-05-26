@@ -36,10 +36,13 @@ today = datetime.datetime.now().strftime(dateFormat)
 
 ######################## Configuration [Start] ###############################
 output_dir = os.environ.get('OUTPUT_DIR')
+none_created_ticket_output_dir = os.environ.get('NONE_CREATED_TICKET_OUTPUT_DIR')
 
 ### START config cmc jira username & password
-cmc_jira_username='ozintel'
-cmc_jira_password='0zPa$$123'
+oz_jira_username=os.environ.get('OZ_JIRA_USERNAME')
+oz_jira_password =os.environ.get('OZ_JIRA_PASSWORD')
+cmc_jira_username=os.environ.get('CMC_JIRA_USERNAME')
+cmc_jira_password=os.environ.get('CMC_JIRA_PASSWORD')
 ### END config cmc jira username & password
 
 
@@ -69,8 +72,7 @@ cmc_jira_url_prefix = 'https://jira.cmcassist.com/browse/%s'
 
 ### START OZ JIRA Config
 oz_jira_server = 'http://192.168.168.21:8091'
-oz_jira_username='builder'
-oz_jira_password = "builder$123"
+
 
 oz_jira_search_query = 'project = "CMC JIRA Tickets" AND summary ~ %s'
 oz_jira_url_prefix = 'http://192.168.168.21:8091/browse/%s'
@@ -98,48 +100,7 @@ h = logging.StreamHandler()
 h.setFormatter(fmt)
 log.addHandler(h)
 
-
-
-def getDashboardContent():
-    resultMap={}
-    group_by_extra_map = {}
-    url = dashboardUrl % current_milli_time()
-    log.info("Visit URL %s", url)
-
-    response = requests.get(url,  auth=(cmc_jira_username, cmc_jira_password), proxies=proxies)
-    if response.status_code == requests.codes.ok:
-        log.info("Data was returned.")
-        jsonObj = response.json()
-        issues = jsonObj['issuesData']['issues']
-        for issueObj in issues:
-            key = issueObj['key']
-            summary = issueObj['summary']
-            # type is 'defect', 'story'...
-            type = issueObj['typeName']
-            # status is 'Open (Dev)', 'In Progress (Dev)' ...
-            status = issueObj['statusName']
-            # Sprint & QA Date
-            extra_text = get_extra_fields_info(issueObj['extraFields'],  key, group_by_extra_map)
-
-            if not issueObj['hidden']:
-                log.info("Process CMC Ticket [%s]", key)
-                if not resultMap.has_key(type):
-                    resultMap[type] = {'total': 0}
-                if not resultMap[type].has_key(status):
-                    resultMap[type][status] = []
-
-                if resultMap[type][status] != None:
-                    # increasement the type's total
-                    resultMap[type]['total'] = resultMap[type]['total'] +1
-                    resultMap[type][status].append({
-                        'key': key,
-                        'summary': summary,
-                        'extra_text': extra_text,
-                        'url': cmc_jira_url_prefix % key
-                    })
-
-
-        html_template = """\
+html_template = """\
             <html>
               <head>
                 <meta charset="UTF-8">
@@ -177,6 +138,51 @@ def getDashboardContent():
             </html>
         """
 
+def getDashboardContent():
+    resultMap={}
+    group_by_extra_map = {}
+    url = dashboardUrl % current_milli_time()
+    log.info("Visit URL %s", url)
+    all_board_tickets = set()
+
+    response = requests.get(url,  auth=(cmc_jira_username, cmc_jira_password), proxies=proxies)
+    if response.status_code == requests.codes.ok:
+        log.info("Data was returned.")
+        jsonObj = response.json()
+        issues = jsonObj['issuesData']['issues']
+        for issueObj in issues:
+            assignee = issueObj['assignee']
+            if assignee not in ('ozdev', 'ozintel'):
+                continue
+
+            key = issueObj['key']
+            summary = issueObj['summary']
+            # type is 'defect', 'story'...
+            type = issueObj['typeName']
+            # status is 'Open (Dev)', 'In Progress (Dev)' ...
+            status = issueObj['statusName']
+            # Sprint & QA Date
+            extra_text = get_extra_fields_info(issueObj['extraFields'],  key, group_by_extra_map)
+
+            if not issueObj['hidden']:
+                log.info("Process CMC Ticket [%s]", key)
+                all_board_tickets.add(key)
+
+                if not resultMap.has_key(type):
+                    resultMap[type] = {'total': 0}
+                if not resultMap[type].has_key(status):
+                    resultMap[type][status] = []
+
+                if resultMap[type][status] != None:
+                    # increasement the type's total
+                    resultMap[type]['total'] = resultMap[type]['total'] +1
+                    resultMap[type][status].append({
+                        'key': key,
+                        'summary': summary,
+                        'extra_text': extra_text,
+                        'url': cmc_jira_url_prefix % key
+                    })
+
         resultText = ''
         notCreatedTicketsText = ''
         group_by_extra_map_html_info = ''
@@ -210,11 +216,34 @@ def getDashboardContent():
 
                 resultText  = resultText + '</ul>'
 
+
+            ############################# only store the none create tickets########################################
+            if only_write_all_board_ticket_number:
+                # all_none_created_tickets=[]
+                # for ticketType in notFoundTicketsMap:
+                #     all_none_created_tickets = all_none_created_tickets + notFoundTicketsMap[ticketType]
+                # 
+                # if all_none_created_tickets.__len__() > 0:
+                #     f_name =  os.path.join(get_work_path(none_created_ticket_output_dir), '%s.txt' % today)
+                #     with open(f_name, 'wr') as fp:
+                #         fp.write('/'.join(all_none_created_tickets))
+                #         fp.flush()
+
+                all_tickets = list(all_board_tickets)
+                if all_tickets.__len__() > 0:
+                    f_name =  os.path.join(get_work_path(none_created_ticket_output_dir), '%s.txt' % today)
+                    print f_name
+                    with open(f_name, 'wr') as fp:
+                        fp.write('/'.join(all_tickets))
+                        fp.flush()
+                return
+            ############################# only store the none create tickets########################################
+
             group_by_extra_map = collections.OrderedDict(sorted(group_by_extra_map.items()))
             for extra_text in group_by_extra_map:
                 tpl = '<div><span style="font-weight:bold">%s:</span> <span style="font-style: italic;">%s</span></div>'
                 group_by_extra_map_html_info = group_by_extra_map_html_info + tpl % (extra_text, ', '.join(group_by_extra_map[extra_text]))
-                
+
 
             for ticketType in notFoundTicketsMap:
                 notCreatedTicketsText = notCreatedTicketsText + '<div>Not created ticket for %s: %s</div>' % (ticketType, '/'.join(notFoundTicketsMap[ticketType]))
@@ -328,4 +357,13 @@ def send_email(filename):
         log.error("Send Email Error")
 
 if __name__ == '__main__':
+    parameters = sys.argv[1:]
+    
+    # If "only_write_all_board_ticket_number" is true
+    # Then only find out the none created tickets which on oz jira server and store these tickets to a file
+    only_write_all_board_ticket_number=False
+    if parameters.__len__() > 0:
+        p1 = str(parameters[0]).upper()
+        only_write_all_board_ticket_number = (p1 == 'YES' or p1 == 'TRUE' or p1=='1')
+
     getDashboardContent()
