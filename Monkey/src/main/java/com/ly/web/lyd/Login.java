@@ -164,6 +164,11 @@ public class Login extends AbstractObject {
       loginSuccessfully = Boolean.FALSE;
       logger.error(e.getMessage(), e);
     }
+
+    // check the account locked or not
+    // ToDO change JD_ACCOUNT_LOCKED_URL_PREFIX this url
+    checkAccountIsLocked(userName, Constant.JD_ACCOUNT_LOCKED_URL_PREFIX);
+    
     return loginSuccessfully;
   } // end method login
 

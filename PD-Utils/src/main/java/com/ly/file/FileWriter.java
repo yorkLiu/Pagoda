@@ -143,12 +143,12 @@ public class FileWriter implements InitializingBean {
    * writeToFile.
    *
    * @param  fileNamePrefix  String
-   * @param  orderNo         String
+   * @param  content         String
    */
-  public void writeToFile(String fileNamePrefix, String orderNo) {
+  public void writeToFile(String fileNamePrefix, String content) {
     String filePath = getFilePath(fileNamePrefix);
 
-    FileUtils.writeContentToFile(filePath, new Object[] { orderNo, "" }, delimiter);
+    FileUtils.writeContentToFile(filePath, new Object[] { content, "" }, delimiter);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

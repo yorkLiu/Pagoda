@@ -3,6 +3,8 @@ package com.ly.web.base;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
+import com.ly.web.constant.Constant;
+import com.ly.web.exceptions.AccountLockedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -448,5 +450,17 @@ public abstract class AbstractObject {
             return d.findElement(By.xpath(xpath)) != null;
           }
         });
+  }
+
+  protected void checkAccountIsLocked(String userName, String accountLockUrlPrefix) throws AccountLockedException {
+    // verify after login, is the url redirect to account locked page.
+    // account locked page: https://safe.jd.com/dangerousVerify/index.action?username=bN0UGt113 ...
+    String currentUrl = this.webDriver.getCurrentUrl();
+    logger.debug("After login success, the current url is: " +currentUrl);
+
+    if(org.springframework.util.StringUtils.hasText(currentUrl) && currentUrl.startsWith(accountLockUrlPrefix)){
+      logger.error("The username[" + userName + "] was locked.");
+      throw new AccountLockedException(userName, " The username[" + userName + "] was locked.");
+    }
   }
 } // end class AbstractObject

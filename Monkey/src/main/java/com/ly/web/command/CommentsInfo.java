@@ -104,6 +104,21 @@ public class CommentsInfo implements Serializable {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for do not comment str.
+   *
+   * @return  String
+   */
+  public String getDoNotCommentStr() {
+    if (getDoNotComment()) {
+      return "Y";
+    }
+
+    return "N";
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for order id.
    *
    * @return  String
@@ -121,6 +136,21 @@ public class CommentsInfo implements Serializable {
    */
   public String getPassword() {
     return password;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for sku.
+   *
+   * @return  String
+   */
+  public String getSku() {
+    if (!this.commentsMap.isEmpty()) {
+      return this.commentsMap.keySet().iterator().next();
+    }
+
+    return "NONE";
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -234,7 +264,7 @@ public class CommentsInfo implements Serializable {
     final StringBuffer sb = new StringBuffer("CommentsInfo{");
     sb.append("commentsMap=").append(commentsMap);
     sb.append(", orderId='").append(orderId).append('\'');
-//    sb.append(", password='").append(password).append('\'');
+// sb.append(", password='").append(password).append('\'');
     sb.append(", username='").append(username).append('\'');
     sb.append('}');
 

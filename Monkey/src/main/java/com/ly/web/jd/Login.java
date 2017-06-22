@@ -1,5 +1,7 @@
 package com.ly.web.jd;
 
+import com.ly.web.constant.Constant;
+import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.voice.VoicePlayer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
@@ -200,6 +202,9 @@ public class Login extends AbstractObject {
       logger.error(e.getMessage(), e);
       loginSuccess = Boolean.FALSE;
     } // end try-catch
+
+    // check the account locked or not
+    checkAccountIsLocked(userName, Constant.JD_ACCOUNT_LOCKED_URL_PREFIX);
 
     return loginSuccess;
   } // end method login

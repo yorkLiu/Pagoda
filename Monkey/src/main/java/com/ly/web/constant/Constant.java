@@ -51,6 +51,7 @@ public class Constant {
   public static final String YHD_COMMENT_FILE_NAME_PREFIX="YHD-Comment";
   
   public static final String YHD_ORDER_FILE_NAME_PREFIX="YHD-Order";
+  public static final String YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX="YHD-Account-Locked";
   
   
   
@@ -61,11 +62,12 @@ public class Constant {
   public static final String JD_ORDER_WRITE_COMMENT_URL="http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=%s&ot=%s&payid=%s&shipmentid=%s";
   public static final String JD_LOGOUT_URL="https://passport.jd.com/uc/login?ltype=logout";
   public static final String JD_COMMENT_SUCCESS_URL="http://club.jd.com/myJdcomments/saveCommentSuccess.action";
+  public static final String JD_ACCOUNT_LOCKED_URL_PREFIX="https://safe.jd.com/dangerousVerify";
   
   public static final String NONE_SKU_KEY_PREFIX="NONE-SKU-";
-
-
-
-
+  
   public static final String JD_COMMENT_FILE_NAME_PREFIX="JD-Comment";
+  public static final String JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX="JD-Account-Locked";
+  
+  
 }

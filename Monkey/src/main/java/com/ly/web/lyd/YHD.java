@@ -6,6 +6,8 @@ import com.ly.web.base.SeleniumBaseObject;
 import com.ly.web.command.CommentsInfo;
 import com.ly.web.constant.Constant;
 import com.ly.web.dp.YHDDataProvider;
+import com.ly.web.exceptions.AccountLockedException;
+import com.ly.web.utils.PagodaOrderSortUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -73,7 +75,7 @@ public class YHD extends SeleniumBaseObject {
   /**
    * comment.
    */
-  @Test(priority = 3)
+  @Test(priority = 4)
   public void comment() {
     int total = commentsInfoList.size();
     int index = 0;
@@ -94,8 +96,9 @@ public class YHD extends SeleniumBaseObject {
 
       index++;
 
+      String indexInfo = "[" + index + "/" + total + "]";
       if (logger.isDebugEnabled()) {
-        logger.debug("<<<<<<Ready comment: [" + index + "/" + total + "]>>>>>>>");
+        logger.debug("<<<<<<Ready comment: "+indexInfo+">>>>>>>");
       }
 
       if (logger.isDebugEnabled()) {
@@ -111,8 +114,19 @@ public class YHD extends SeleniumBaseObject {
         // 2. confirm receipt
         confirmReceipt();
 
-        // 3. comment production(s)
-        comments();
+        // if 只收不评 is  ('Y', 'Yes', 'True', '是')
+        // then skip comment step.
+        if (!commentsInfo.getDoNotComment()) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Ready comment " + indexInfo);
+          }
+          
+          // 3. comment production(s)
+          comments();
+        } else {
+          logger.info("Order#" + commentsInfo.getOrderId()
+            + " doNotComment is 'TRUE' then will not comment this order, continue next order.");
+        }
 
         // 4. logout for current user
         logout();
@@ -171,12 +185,26 @@ public class YHD extends SeleniumBaseObject {
     }
   }
 
+  @Test(priority = 2)
+  public void sortCommentInfoList(){
+    List<CommentsInfo> sortedCommentsInfoList = PagodaOrderSortUtils.sort(commentsInfoList);
+    String sepreter = "\t";
+    logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Compare Before >>>>> After >>>>>>>>>>>>>>>>>>>>");
+    System.out.println("No.#" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Not Comment");
+    for (int i = 0; i < sortedCommentsInfoList.size(); i++) {
+      CommentsInfo before = commentsInfoList.get(i);
+      CommentsInfo after = sortedCommentsInfoList.get(i);
+      System.out.println(i + "." + sepreter + before.getOrderId() + sepreter + before.getSku() + " >>>" +sepreter + after.getOrderId() + sepreter + after.getSku() + sepreter + after.getDoNotCommentStr());
+    }
+  }
+  
+  
   /**
    *
    * checkOrderNo.
    * Check the @commentsInfoList's orderNos is exists have commented.
    */
-  @Test(priority = 2)
+  @Test(priority = 3)
   public void checkOrderNo() { 
     
     logger.info(">>>>>Start check the order number......");
@@ -296,6 +324,8 @@ public class YHD extends SeleniumBaseObject {
    */
   private Boolean login(boolean isFirst) {
     boolean loginSuccess = Boolean.TRUE;
+    String username = commentsInfo.getUsername();
+    String pwd = commentsInfo.getPassword();
 
     try {
       if (logger.isDebugEnabled()) {
@@ -306,17 +336,25 @@ public class YHD extends SeleniumBaseObject {
       Login login = new Login(driver, Constant.YHD_LOGIN_PAGE_URL, voiceFilePath);
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Login YHD with username: " + commentsInfo.getUsername() + "and password: XXXXX");
+        logger.debug("Login YHD with username: " + username + "and password: XXXXX");
       }
 
-      loginSuccess = login.login(commentsInfo.getUsername(), commentsInfo.getPassword(), isFirst);
+      loginSuccess = login.login(username, pwd, isFirst);
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Login successfully for user:" + commentsInfo.getUsername());
+        logger.debug("Login successfully for user:" + username);
       }
 
 
-    } catch (Exception e) {
+    } catch (AccountLockedException e){
+      loginSuccess = Boolean.FALSE;
+      // write this orderNo to file.
+      if(fileWriter != null){
+        String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
+        fileWriter.writeToFile(Constant.YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
+      }
+      logger.error(e.getMessage(), e);
+    }catch (Exception e) {
       loginSuccess = Boolean.FALSE;
       logger.error(e.getMessage(), e);
     }

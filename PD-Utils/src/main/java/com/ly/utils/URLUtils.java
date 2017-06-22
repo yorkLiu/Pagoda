@@ -99,7 +99,7 @@ public class URLUtils {
             logger.debug(skuOrUrl + " is a url, will get sku NO. from this url.");
           }
 
-          String urlWithoutParams = skuOrUrl.split("\\?")[0];
+          String urlWithoutParams = skuOrUrl.split("\\?")[0].split("\\#")[0];
 
           if (logger.isDebugEnabled()) {
             logger.debug("Analysis the url without parameters is: " + urlWithoutParams);

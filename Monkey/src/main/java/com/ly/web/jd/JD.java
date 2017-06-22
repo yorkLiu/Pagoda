@@ -1,22 +1,14 @@
 package com.ly.web.jd;
 
-import java.io.File;
-
-import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.ly.config.JDConfig;
 import com.ly.file.FileWriter;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.safari.SafariDriver;
+import com.ly.web.exceptions.AccountLockedException;
+import com.ly.web.utils.PagodaOrderSortUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -104,13 +96,26 @@ public class JD extends SeleniumBaseObject {
     }
   }
 
+  @Test(priority = 2)
+  public void sortCommentInfoList(){
+    List<CommentsInfo> sortedCommentsInfoList = PagodaOrderSortUtils.sort(commentsInfoList);
+    String sepreter = "\t";
+    logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Compare Before >>>>> After >>>>>>>>>>>>>>>>>>>>");
+    System.out.println("No.#" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Not Comment");
+    for (int i = 0; i < sortedCommentsInfoList.size(); i++) {
+      CommentsInfo before = commentsInfoList.get(i); 
+      CommentsInfo after = sortedCommentsInfoList.get(i);
+      System.out.println(i + "." + sepreter + before.getOrderId() + sepreter + before.getSku() + " >>>" +sepreter + after.getOrderId() + sepreter + after.getSku() + sepreter + after.getDoNotCommentStr());
+    }
+  }
+
   //~ ------------------------------------------------------------------------------------------------------------------
   /**
    *
    * checkOrderNo.
    * Check the @commentsInfoList's orderNos is exists have commented.
    */
-  @Test(priority = 2)
+  @Test(priority = 3)
   public void checkOrderNo() {
     logger.info(">>>>>Start check the order number...... -" + commentsInfoList.size()+"-");
     if (commentsInfoList != null && commentsInfoList.size() > 0) {
@@ -149,7 +154,7 @@ public class JD extends SeleniumBaseObject {
   /**
    * readComment.
    */
-  @Test(priority = 3)
+  @Test(priority = 4)
   public void readComment() {
     int total = commentsInfoList.size();
     int index = 0;
@@ -310,7 +315,8 @@ public class JD extends SeleniumBaseObject {
 
   private boolean login(boolean isFirst) {
     boolean loginSuccess = Boolean.TRUE;
-
+    String username  = commentsInfo.getUsername();
+    String pwd = commentsInfo.getPassword();
     try {
       if (logger.isDebugEnabled()) {
         logger.debug("Starting login....");
@@ -320,20 +326,28 @@ public class JD extends SeleniumBaseObject {
       Login login = new Login(driver, Constant.JD_LOGIN_PAGE_URL, voiceFilePath);
 
       if (logger.isDebugEnabled()) {
-        logger.debug("Login JD with username: " + commentsInfo.getUsername() + "and password: XXXXX");
+        logger.debug("Login JD with username: " + username + "and password: XXXXX");
       }
 
-      loginSuccess = login.login(commentsInfo.getUsername(), commentsInfo.getPassword(), isFirst);
+      loginSuccess = login.login(username, pwd, isFirst);
 
       if (loginSuccess) {
         if (logger.isDebugEnabled()) {
-          logger.debug("Login successfully for user:" + commentsInfo.getUsername());
+          logger.debug("Login successfully for user:" + username);
         }
       } else {
         if (logger.isDebugEnabled()) {
-          logger.debug("Login failed for user:" + commentsInfo.getUsername());
+          logger.debug("Login failed for user:" + username);
         }
       }
+    } catch (AccountLockedException e){
+      loginSuccess = Boolean.FALSE;
+      // write this orderNo to file.
+      if(fileWriter != null){
+        String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
+        fileWriter.writeToFile(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
+      }
+      logger.error(e.getMessage(), e);
     } catch (Exception e) {
       loginSuccess = Boolean.FALSE;
       logger.error(e.getMessage(), e);
