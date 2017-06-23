@@ -49,6 +49,10 @@ public class PagodaOrderSortUtils {
 
 
     System.out.println("max/count: " + max + ", " + countOfExclusiveMax);
+    if(countOfExclusiveMax <=0){
+      System.out.println("Only one item, could not sortable.");
+      return randomRobinList;
+    }
 
     if (max == countOfExclusiveMax) {
       // p: p1, p2, p3, p4, p5 (5)

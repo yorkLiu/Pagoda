@@ -1,6 +1,7 @@
 package com.ly.web.constant;
 
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -21,6 +22,8 @@ public class Constant {
 
   /** TODO: DOCUMENT ME! */
   public static final String OK = "OK";
+  
+  public static final String ACCOUNT_FOLDER_NAME="accounts";
 
 
 //  public static final String YHD_LOGIN_PAGE_URL = "https://passport.yhd.com/passport/login_input.do";
@@ -51,7 +54,9 @@ public class Constant {
   public static final String YHD_COMMENT_FILE_NAME_PREFIX="YHD-Comment";
   
   public static final String YHD_ORDER_FILE_NAME_PREFIX="YHD-Order";
-  public static final String YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX="YHD-Account-Locked";
+  
+  public static final String YHD_ACCOUNT_FOLDER_NAME= ACCOUNT_FOLDER_NAME +File.separator + "YHD-Account" + File.separator;
+  public static final String YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX=YHD_ACCOUNT_FOLDER_NAME+"YHD-Account-Locked";
   
   
   
@@ -67,7 +72,9 @@ public class Constant {
   public static final String NONE_SKU_KEY_PREFIX="NONE-SKU-";
   
   public static final String JD_COMMENT_FILE_NAME_PREFIX="JD-Comment";
-  public static final String JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX="JD-Account-Locked";
+  
+  public static final String JD_ACCOUNT_FOLDER_NAME= ACCOUNT_FOLDER_NAME +File.separator + "JD-Account" + File.separator;
+  public static final String JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Account-Locked";
   
   
 }

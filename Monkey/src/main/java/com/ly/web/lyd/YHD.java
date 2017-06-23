@@ -188,13 +188,19 @@ public class YHD extends SeleniumBaseObject {
   @Test(priority = 2)
   public void sortCommentInfoList(){
     List<CommentsInfo> sortedCommentsInfoList = PagodaOrderSortUtils.sort(commentsInfoList);
-    String sepreter = "\t";
-    logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Compare Before >>>>> After >>>>>>>>>>>>>>>>>>>>");
-    System.out.println("No.#" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Not Comment");
-    for (int i = 0; i < sortedCommentsInfoList.size(); i++) {
-      CommentsInfo before = commentsInfoList.get(i);
-      CommentsInfo after = sortedCommentsInfoList.get(i);
-      System.out.println(i + "." + sepreter + before.getOrderId() + sepreter + before.getSku() + " >>>" +sepreter + after.getOrderId() + sepreter + after.getSku() + sepreter + after.getDoNotCommentStr());
+    if(sortedCommentsInfoList != null && !sortedCommentsInfoList.isEmpty()){
+      String sepreter = "\t";
+      logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Compare Before >>>>> After >>>>>>>>>>>>>>>>>>>>");
+      System.out.println("No.#" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Order No.#" + sepreter + "User Name" + sepreter + "Not Comment");
+      for (int i = 0; i < sortedCommentsInfoList.size(); i++) {
+        CommentsInfo before = commentsInfoList.get(i);
+        CommentsInfo after = sortedCommentsInfoList.get(i);
+        System.out.println(i + "." + sepreter + before.getOrderId() + sepreter + before.getSku() + " >>>" +sepreter + after.getOrderId() + sepreter + after.getSku() + sepreter + after.getDoNotCommentStr());
+      }
+      
+      logger.info("Total count before/after:" + commentsInfoList.size() + "/" + sortedCommentsInfoList.size());
+      commentsInfoList.clear();
+      commentsInfoList.addAll(sortedCommentsInfoList);
     }
   }
   
