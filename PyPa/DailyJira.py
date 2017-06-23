@@ -98,8 +98,9 @@ def connect_jira(jira_server, jira_user, jira_password, use_proxy=False):
             jira = JIRA(jira_option, basic_auth={jira_user, jira_password})
         log.info("Connected server: %s successfully!", jira_server)
         return jira
-    except Exception, e:
+    except JIRAError, e:
         log.error("Failed connect JIRA server (%s)", jira_server)
+        log.error(e.message)
         return None
 
 def create_new_version(version_name, cookies):
@@ -137,25 +138,43 @@ def get_current_oz_sprint():
     """
     Get current 'Active' sprint for oz jira
     """
+    # current_sprint={}
+    # options = {'server': oz_jira_server}
+    # gh = GreenHopper(options, basic_auth=(oz_jira_username, oz_jira_pwd))
+    # sprints = gh.sprints(oz_jira_rapid_board_id)
+    # for sprint in sprints:
+    #     if sprint.raw['state'] == u'ACTIVE':
+    #         current_sprint['id'] = sprint.id
+    #         current_sprint['name'] = sprint.name
+    # 
+    # return current_sprint
+
+    return get_active_srpint(oz_jira_rapid_board_id)
+
+def get_active_srpint(board_id):
+    api_url = oz_jira_server + '/rest/greenhopper/latest/sprintquery/%s?includeHistoricSprints=false&includeFutureSprints=true' % str(board_id)
+    response = requests.get(api_url, auth=(oz_jira_username, oz_jira_pwd))
+    json =  response.json()
+    sprints = json['sprints'] if json['sprints'] else None
     current_sprint={}
-    options = {'server': oz_jira_server}
-    gh = GreenHopper(options, basic_auth=(oz_jira_username, oz_jira_pwd))
-    sprints = gh.sprints(oz_jira_rapid_board_id)
-    for sprint in sprints:
-        if sprint.raw['state'] == u'ACTIVE':
-            current_sprint['id'] = sprint.id
-            current_sprint['name'] = sprint.name
-
+    if sprints:
+        for sprint in sprints:
+            if sprint['state']== u'ACTIVE':
+                current_sprint['id'] = sprint['id']
+                current_sprint['name'] = sprint['name']
+                break
+    log.info("Current Active Sprint: '%s'", current_sprint)
     return current_sprint
-
 
 def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
     try:
+        extra_info=''
         cmc_issue = cmc_jira.issue(cmcTicketNo)
         cmc_issue_status = cmc_issue.fields.status.name
         p_cmc_ticket_status = str(cmc_issue_status).replace('(', '').replace(')', '').replace(' ', '-').strip().upper()
         # do_reopen_flag= not ("PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA'))
         do_reopen_flag= "REJECTED" in p_cmc_ticket_status
+        append_today_label_flag= not ("PENDING" in p_cmc_ticket_status or "PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA'))
 
         # append today's label to this issue.
         ticket_status = issue.fields.status.name
@@ -168,15 +187,18 @@ def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
                 oz_jira.transition_issue(issue, status_map['ReOpen'])
                 log.info("ReOpened [%s]", oz_issue_key)
 
-            issue.add_field_value('labels',label)
-            # issue.fields.labels.append(u'%s' %label)
-            # issue.update(fields={"labels": issue.fields.labels})
-            log.info(".........[%s] appended label: %s successfully.........", oz_issue_key, label)
+            if append_today_label_flag:
+                issue.add_field_value('labels',label)
+                # issue.fields.labels.append(u'%s' %label)
+                # issue.update(fields={"labels": issue.fields.labels})
+                log.info(".........[%s] appended label: %s successfully.........", oz_issue_key, label)
+            else:
+                extra_info = " but not append today's label because oz ticket status is [%s] and cmc ticket status is [%s]" % (ticket_status, cmc_issue_status)
         else:
             log.info(".........[%s] already has label: %s.........", oz_issue_key, label)
 
         # write to file
-        write_main_content_to_file(workDir, cmcTicketNo, oz_issue_key, messages['updated'])
+        write_main_content_to_file(workDir, cmcTicketNo, oz_issue_key, messages['updated'] + extra_info)
     except Exception, e:
         log.error(">>>>>>>>Append label: [%s] %s failed<<<<<<<<", oz_issue_key, label)
         # write to file
@@ -353,12 +375,14 @@ def update_oz_ticket_extra_info(oz_issue, cmc_issue):
             if oz_sprint == None or str(oz_sprint).isspace():
                 current_oz_sprint = get_current_oz_sprint()
                 current_sprint_id = current_oz_sprint['id'] if current_oz_sprint.has_key('id') else None
+                print "current_sprint_id:", current_sprint_id
                 if current_sprint_id:
                     # oz_issue.update(fields={"customfield_10021": str(current_sprint_id)})
                     update_issue(oz_issue, fields={"customfield_10021": str(current_sprint_id)})
             # update OZ Sprint [End]
-    except:
+    except JIRAError, e:
         log.info('>>>>Update OZ ticket extra info ERROR>>>>')
+        log.error(e)
 
     return ret_map
 
