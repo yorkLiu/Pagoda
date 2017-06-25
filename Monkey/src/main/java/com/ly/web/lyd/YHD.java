@@ -359,6 +359,12 @@ public class YHD extends SeleniumBaseObject {
         String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
         fileWriter.writeToFile(Constant.YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
       }
+
+      // locked order still need write orderNo to file.
+      if(fileWriter != null){
+        fileWriter.writeToFile(Constant.YHD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+      }
+      
       logger.error(e.getMessage(), e);
     }catch (Exception e) {
       loginSuccess = Boolean.FALSE;

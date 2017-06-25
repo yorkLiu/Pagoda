@@ -198,22 +198,23 @@ public class FileWriter implements InitializingBean {
   }
   
   protected String getFilePathIncludeFileName(String filePrefix){
+    String tmpWorkDir = workDir;
     filePrefix = StringUtils.cleanPath(filePrefix);
     String fileNameOnly = StringUtils.getFilename(filePrefix);
     String foldersIncludeFileName = filePrefix.replace(fileNameOnly, "");
     if(StringUtils.hasLength(foldersIncludeFileName)){
-      workDir = StringUtils.applyRelativePath(workDir, foldersIncludeFileName);
+      tmpWorkDir = StringUtils.applyRelativePath(workDir, foldersIncludeFileName);
     }
 
-    File dir = new File(workDir);
+    File dir = new File(tmpWorkDir);
     if (!dir.exists()) {
       dir.mkdirs();
     }
     
-    if (!workDir.endsWith(File.separator)) {
-      workDir = workDir + File.separator;
+    if (!tmpWorkDir.endsWith(File.separator)) {
+      tmpWorkDir = tmpWorkDir + File.separator;
     }
-    String filePath = workDir + generateFileName(fileNameOnly.toString());
+    String filePath = tmpWorkDir + generateFileName(fileNameOnly.toString());
 
     logger.info("File Path:" + filePath);
     return filePath;

@@ -352,6 +352,11 @@ public class JD extends SeleniumBaseObject {
       if(fileWriter != null){
         String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
         fileWriter.writeToFile(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
+
+        // locked order write this orderNo to file yet.
+        if(fileWriter != null){
+          fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+        }
       }
       logger.error(e.getMessage(), e);
     } catch (Exception e) {
