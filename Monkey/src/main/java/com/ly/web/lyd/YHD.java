@@ -52,6 +52,9 @@ public class YHD extends SeleniumBaseObject {
   private List<CommentsInfo> commentsInfoList = new LinkedList<>();
 
   private static final String[] YHD_Config = new String[]{"YHDResources.xml"};
+
+  private int lockedAccountCount=0;
+  private int failedCommentAccountCount=0;
   
   @Autowired
   private YHDConfig yhdConfig;
@@ -161,6 +164,8 @@ public class YHD extends SeleniumBaseObject {
     }
 
     driver.close();
+
+    printCommentedInfo(total, lockedAccountCount, failedCommentAccountCount);
 
   } // end method comment
 
@@ -293,6 +298,7 @@ public class YHD extends SeleniumBaseObject {
         logger.debug("'Comment' successfully for order#" + commentsInfo.getOrderId());
       }
     } catch (Exception e) {
+      writeFailedOrder();
       logger.error(e.getMessage(), e);
     }
   }
@@ -315,6 +321,7 @@ public class YHD extends SeleniumBaseObject {
         logger.debug("'Confirm Receipt' successfully for order#" + commentsInfo.getOrderId());
       }
     } catch (Exception e) {
+      writeFailedOrder();
       logger.error(e.getMessage(), e);
     }
   }
@@ -354,10 +361,11 @@ public class YHD extends SeleniumBaseObject {
 
     } catch (AccountLockedException e){
       loginSuccess = Boolean.FALSE;
+      lockedAccountCount++;
       // write this orderNo to file.
       if(fileWriter != null){
-        String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
-        fileWriter.writeToFile(Constant.YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
+        String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "|");
+        fileWriter.writeToFileln(Constant.YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
       }
 
       // locked order still need write orderNo to file.
@@ -399,5 +407,14 @@ public class YHD extends SeleniumBaseObject {
 
   public void setFileWriter(FileWriter fileWriter) {
     this.fileWriter = fileWriter;
+  }
+  
+  
+  private void writeFailedOrder(){
+    failedCommentAccountCount++;
+    if(fileWriter != null){
+      String content = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), commentsInfo.getOrderId()}, "|");
+      fileWriter.writeToFileln(Constant.YHD_ACCOUNT_COMMENT_FAILED_FILE_NAME_PREFIX, content);
+    }
   }
 } // end class YHD

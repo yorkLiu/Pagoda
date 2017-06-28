@@ -58,6 +58,9 @@ public class JD extends SeleniumBaseObject {
   private static final String applicationContext = "applicationContext-resources.xml";
   private static final String[] JD_Config = new String[]{"JDResources.xml"};
   
+  private int lockedAccountCount=0;
+  private int failedCommentAccountCount=0;
+  
   @Autowired
   private JDConfig jdConfig;
   
@@ -247,8 +250,10 @@ public class JD extends SeleniumBaseObject {
     if (logger.isDebugEnabled()) {
       logger.debug("Comment successfully, close the web driver.");
     }
-
+    
     driver.close();
+
+    printCommentedInfo(total, lockedAccountCount, failedCommentAccountCount);
   } // end method readComment
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -294,6 +299,7 @@ public class JD extends SeleniumBaseObject {
         logger.debug("'Comment' successfully for order#" + commentsInfo.getOrderId());
       }
     } catch (Exception e) {
+      writeFailedOrder();
       logger.error(e.getMessage(), e);
     }
   }
@@ -313,6 +319,7 @@ public class JD extends SeleniumBaseObject {
         logger.debug("'Confirm Receipt' successfully for order#" + commentsInfo.getOrderId());
       }
     } catch (Exception e) {
+      writeFailedOrder();
       logger.error(e.getMessage(), e);
     }
   }
@@ -347,11 +354,12 @@ public class JD extends SeleniumBaseObject {
         }
       }
     } catch (AccountLockedException e){
+      lockedAccountCount++;
       loginSuccess = Boolean.FALSE;
       // write this orderNo to file.
       if(fileWriter != null){
         String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
-        fileWriter.writeToFile(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
+        fileWriter.writeToFileln(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
 
         // locked order write this orderNo to file yet.
         if(fileWriter != null){
@@ -390,5 +398,13 @@ public class JD extends SeleniumBaseObject {
 
   public void setFileWriter(FileWriter fileWriter) {
     this.fileWriter = fileWriter;
+  }
+
+  private void writeFailedOrder(){
+    failedCommentAccountCount++;
+    if(fileWriter != null){
+      String content = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), commentsInfo.getOrderId()}, "|");
+      fileWriter.writeToFileln(Constant.JD_ACCOUNT_COMMENT_FAILED_FILE_NAME_PREFIX, content);
+    }
   }
 } // end class JD
