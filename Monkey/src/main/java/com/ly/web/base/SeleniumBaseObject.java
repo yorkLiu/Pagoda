@@ -16,6 +16,7 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
@@ -283,25 +284,37 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_FIREFOX;
 
-      FirefoxProfile profile = new FirefoxProfile();
-      profile.setAcceptUntrustedCertificates(true);
-      profile.setAssumeUntrustedCertificateIssuer(true);
-      profile.setEnableNativeEvents(true);
-      profile.setAlwaysLoadNoFocusLib(false);
+      if(webDriverProperties.getFirefoxDriverPath().toUpperCase().contains("geckodriver".toUpperCase())){
+        logger.info("Init Firefox with geckodriver....");
+        System.setProperty("webdriver.gecko.driver", webDriverProperties.getFirefoxDriverPath().toUpperCase());
+        FirefoxProfile profile  = new FirefoxProfile();
+        if(useProxy && ipProxy != null){
+          String[] proxys = ipProxy.split(":");
+          String ip = proxys[0];
+          Integer port = new Integer(proxys[1]);
 
-      if (logger.isDebugEnabled()) {
-        logger.debug("Init Firefox Web Driver with IP Proxy["+ipProxy+"]");
+          profile.setPreference("network.proxy.http", ip);
+          profile.setPreference("network.proxy.http_port", port);
+          profile.setPreference("network.proxy.ssl", ip);
+          profile.setPreference("network.proxy.ssl_port", port);
+          profile.setPreference("network.proxy.no_proxies_on", "");
+          profile.setPreference("network.proxy.type", 1);
+          profile.setAcceptUntrustedCertificates(true);
+        }
+        
+        driver = new FirefoxDriver(profile);
+
+      } else {
+        logger.info("Init Firefox with FirefoxDriver wihch installed....");
+        FirefoxProfile profile = new FirefoxProfile();
+        profile.setAcceptUntrustedCertificates(true);
+        profile.setAssumeUntrustedCertificateIssuer(true);
+        profile.setEnableNativeEvents(true);
+        profile.setAlwaysLoadNoFocusLib(false);
+
+        driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
+          profile);
       }
-
-      // selenium version 3.0.1
-//      System.setProperty("webdriver.gecko.driver", webDriverProperties.getFirefoxDriverPath());
-//      cap.setCapability(FirefoxDriver.MARIONETTE, true);
-//      cap.setBrowserName("firefox");
-//      driver = new FirefoxDriver(cap);
-      
-      // selenium version 2.53.1
-      driver = new FirefoxDriver(new FirefoxBinary(new File(webDriverProperties.getFirefoxDriverPath())),
-        profile, cap);
     } else if (DRIVER_IE.equalsIgnoreCase(driverType)) {
       currentDriver = DRIVER_IE;
 
@@ -331,6 +344,10 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     if (DRIVER_CHROME.equalsIgnoreCase(driverName)) {
       capabilities = DesiredCapabilities.chrome();
       capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
+
+      if(org.springframework.util.StringUtils.hasText(ipProxy)){
+        capabilities.setCapability("chrome.switches", new ArrayList<String>().add("--proxy-server="+ipProxy));
+      }
 
     } else if (DRIVER_FIREFOX.equalsIgnoreCase(driverName)) {
       capabilities = DesiredCapabilities.firefox();
@@ -425,7 +442,7 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
       driver.manage().window().maximize();
       driver.manage().deleteAllCookies();
     } catch (Exception e) {
-      logger.error(e.getMessage());
+      logger.error(e.getMessage(), e);
     }
   }
   

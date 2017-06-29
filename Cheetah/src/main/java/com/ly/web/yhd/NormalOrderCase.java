@@ -98,7 +98,8 @@ public class NormalOrderCase extends YHDBaseOrderCase {
         // find the ip proxy by province
         String ipProxy = null;
         if(useProxy){
-          ipProxy = proxyProcessor.getIpProxy(orderInfo.getProvince());
+//          ipProxy = proxyProcessor.getIpProxy(orderInfo.getProvince());
+          ipProxy = pagodaProxyProcessor.getIpProxy(orderInfo.getProvince());
         }
         ////////////// get the ip proxy by province [end]
 

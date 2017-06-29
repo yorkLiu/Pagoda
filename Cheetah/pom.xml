@@ -191,6 +191,13 @@
       <version>0.16.3</version>
     </dependency>
 
+    <dependency>
+      <groupId>net.lightbody.bmp</groupId>
+      <artifactId>browsermob-core</artifactId>
+      <version>2.1.4</version>
+      <!--<scope>test</scope>-->
+    </dependency>
+
     <!--<dependency>-->
       <!--<groupId>com.ice.jni</groupId>-->
       <!--<artifactId>registry</artifactId>-->

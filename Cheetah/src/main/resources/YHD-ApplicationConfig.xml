@@ -41,6 +41,15 @@
     <property name="verifyPassedText" value="1号店"/>
     <property name="allowGetIpAddress" value="true"/>
   </bean>
+
+  <bean id="pagodaProxyProcessor" class="com.ly.proxy.PagodaProxyProcessor">
+    <property name="ipProxyServiceUrl" value="${ipProxyServiceUrl}"/>
+    <property name="ipProxyRetryServiceUrl" value="${ipProxyRetryServiceUrl}"/>
+    <property name="verifyUrl" value="http://www.yhd.com"/>
+    <property name="verifyPassedText" value="1号店"/>
+    <property name="allowGetIpAddress" value="false"/>
+    <property name="_allowVerifyIpAddress" value="${allowVerifyIpAddress}"/>
+  </bean>
   
   <bean id="freeProxyProcessor" class="com.ly.proxy.FreeProxyProcessor">
     <property name="fetchPageSize" value="10"/>

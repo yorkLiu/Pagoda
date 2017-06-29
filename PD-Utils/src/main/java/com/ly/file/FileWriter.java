@@ -152,6 +152,18 @@ public class FileWriter implements InitializingBean {
     FileUtils.writeContentToFile(filePath, new Object[] { content, "" }, delimiter);
   }
   
+  public void writeToFileln(String fileNamePrefix, String content) {
+    writeToFile(fileNamePrefix, content, "\n");
+  }
+
+  public void writeToFile(String fileNamePrefix, String content, String paramDelimiter) {
+//    String filePath = getFilePath(fileNamePrefix);
+    String filePath = getFilePathIncludeFileName(fileNamePrefix);
+    paramDelimiter = paramDelimiter != null && StringUtils.hasText(paramDelimiter)? paramDelimiter : delimiter;
+
+    FileUtils.writeContentToFile(filePath, new Object[] { content, "" }, paramDelimiter);
+  }
+  
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

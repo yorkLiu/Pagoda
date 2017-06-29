@@ -3,6 +3,7 @@ package com.ly.web.yhd;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ly.proxy.PagodaProxyProcessor;
 import com.ly.proxy.ProxyProcessor;
 import com.ly.web.constant.Constant;
 import com.ly.web.dp.YHDOrderDataProvider;
@@ -54,6 +55,7 @@ public class YHDBaseOrderCase extends SeleniumBaseObject {
   @Autowired protected YHDOrderConfig yhdOrderConfig;
 
   @Autowired  protected ProxyProcessor proxyProcessor;
+  @Autowired  protected PagodaProxyProcessor pagodaProxyProcessor;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -188,5 +190,9 @@ public class YHDBaseOrderCase extends SeleniumBaseObject {
 
   public void setProxyProcessor(ProxyProcessor proxyProcessor) {
     this.proxyProcessor = proxyProcessor;
+  }
+
+  public void setPagodaProxyProcessor(PagodaProxyProcessor pagodaProxyProcessor) {
+    this.pagodaProxyProcessor = pagodaProxyProcessor;
   }
 } // end class YHDBaseOrderCase
