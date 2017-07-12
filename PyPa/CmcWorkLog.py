@@ -334,14 +334,18 @@ def get_worklog_by_tickets(tickets):
 
             log.info("Find the WorkLog for ticket No.[%s]", ticketNo)
             issue = cmc_jira.issue(ticketNo)
+            ###### get the total estimate hours START##################
             total_oz_estimate_hours= float(issue.fields.customfield_12751) if issue.fields.customfield_12751 else 0
+            reminder_oz_hours = float(issue.fields.customfield_13253) if issue.fields.customfield_13253 else 0
+            total_oz_estimate_hours = total_oz_estimate_hours or reminder_oz_hours
+            ###### get the total estimate hours END###################
             oz_logged_hours=0.0
             oz_current_month_logged_hours=0.0
             ticket_work_logs = []
             worklogs = cmc_jira.worklogs(ticketNo)
             for worklog in worklogs:
                 logged_author_name = worklog.raw['author']['name']
-                if logged_author_name in ('ozintel'):
+                if logged_author_name in ('ozintel', 'ozdev'):
                     log_comment = worklog.raw['comment']
                     log_date = worklog.raw['started'].split('T')[0]
                     log_time_seconds=worklog.raw['timeSpentSeconds']
