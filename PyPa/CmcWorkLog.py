@@ -337,7 +337,8 @@ def get_worklog_by_tickets(tickets):
             ###### get the total estimate hours START##################
             total_oz_estimate_hours= float(issue.fields.customfield_12751) if issue.fields.customfield_12751 else 0
             reminder_oz_hours = float(issue.fields.customfield_13253) if issue.fields.customfield_13253 else 0
-            total_oz_estimate_hours = total_oz_estimate_hours or reminder_oz_hours
+            reminder_dev_oz_hours = float(issue.fields.customfield_13252) if issue.fields.customfield_13252 else 0
+            total_oz_estimate_hours = total_oz_estimate_hours or reminder_oz_hours or reminder_dev_oz_hours
             ###### get the total estimate hours END###################
             oz_logged_hours=0.0
             oz_current_month_logged_hours=0.0
