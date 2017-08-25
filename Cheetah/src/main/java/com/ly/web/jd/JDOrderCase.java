@@ -3,15 +3,13 @@ package com.ly.web.jd;
 import com.ly.web.command.ItemInfoCommand;
 import com.ly.web.command.ObserverDriver;
 import com.ly.web.command.OrderCommand;
+import com.ly.web.common.OrderObserver;
 import com.ly.web.dp.JDOrderDataProvider;
 import com.ly.web.exception.PageNotLoadedException;
 import com.ly.web.exception.SearchException;
 import com.ly.web.exceptions.OrderAddToShoppingCarFailedException;
 import com.ly.web.exceptions.OrderCheckoutFailedException;
 import com.ly.web.exceptions.OrderConfirmFailedException;
-import com.ly.web.yhd.AddProductionToShoppingCar;
-import com.ly.web.yhd.PaymentOrder;
-import com.ly.web.yhd.SearchEngine;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.testng.annotations.Test;
@@ -24,7 +22,7 @@ import java.util.List;
  */
 public class JDOrderCase extends JDBaseOrderCase {
   
-  private JDOrderObserver jdOrderObserver;
+  private OrderObserver jdOrderObserver;
   private Thread observerThread=null;
 
   @Override protected void initProperties() {
@@ -160,7 +158,7 @@ public class JDOrderCase extends JDBaseOrderCase {
   private void addToObserver(OrderCommand orderInfo){
     logger.info("Starting observer order......");
     if(jdOrderObserver == null){
-      jdOrderObserver = new JDOrderObserver();
+      jdOrderObserver = new OrderObserver();
       jdOrderObserver.setOrderWriter(orderWriter);
     }
     

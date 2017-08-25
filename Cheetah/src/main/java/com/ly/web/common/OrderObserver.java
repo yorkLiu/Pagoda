@@ -1,4 +1,4 @@
-package com.ly.web.jd;
+package com.ly.web.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +20,10 @@ import com.ly.web.writer.OrderWriter;
  *
  * @author       <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version      08/24/2017 13:16
- * @Description  Observer the the webDriver which was gived up by selenium
+ * @Description  Observer the the webDriver which was give up by selenium
  */
 
-public class JDOrderObserver implements Runnable {
+public class OrderObserver implements Runnable {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   private final Log logger = LogFactory.getLog(getClass());
@@ -145,4 +145,4 @@ public class JDOrderObserver implements Runnable {
       logger.info("Removed one observer.... ");
     }
   }
-} // end class JDOrderObserver
+} // end class OrderObserver
