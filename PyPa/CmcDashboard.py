@@ -39,13 +39,13 @@ cmc_jira_password='0zPa$$123'
 ### START config Email Sender
 email_server_key = 'key-063b98a4091398b81baa16959b20d660'
 email_server_api_user = 'sandbox9597735f17034d268fa4a01a3e6292d0.mailgun.org'
-email_username='yong.liu@ozstrategy.com'
-email_password='dXUwMDAwMDA='
+email_username='mail.com'
+email_password='password'
 email_from='Dashboard Observer <dashboard_observer@ozstrategy.com>'
 email_subject='OZStrategy Dashboard in CMC Side on %s' % today
 
 # config the email address here
-email_to_addres = 'yong.liu@ozstrategy.com'
+email_to_addres = 'mail.com'
 email_to_tech_leads=email_to_addres.split(',')
 
 ### END config Email Sender
