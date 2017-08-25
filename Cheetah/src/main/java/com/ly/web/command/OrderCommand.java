@@ -28,6 +28,12 @@ public class OrderCommand {
   private String password;
 
   private String username;
+  
+  /**订单备注*/
+  private String orderCommentText;
+  
+  private String usedIpProxy;
+  private String storeName;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -233,6 +239,30 @@ public class OrderCommand {
     return addressInfo != null ? addressInfo.getProvince() : null;
   }
 
+  public String getOrderCommentText() {
+    return orderCommentText;
+  }
+
+  public void setOrderCommentText(String orderCommentText) {
+    this.orderCommentText = orderCommentText;
+  }
+
+  public String getUsedIpProxy() {
+    return usedIpProxy;
+  }
+
+  public void setUsedIpProxy(String usedIpProxy) {
+    this.usedIpProxy = usedIpProxy;
+  }
+
+  public String getStoreName() {
+    return storeName;
+  }
+
+  public void setStoreName(String storeName) {
+    this.storeName = storeName;
+  }
+
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
@@ -244,8 +274,33 @@ public class OrderCommand {
     sb.append(", password='").append(password).append('\'');
     sb.append(", allowOversea=").append(allowOversea).append('\'');
     sb.append(", groupName=").append(groupName);
+    sb.append(", orderCommentText=").append(orderCommentText);
     sb.append('}');
 
     return sb.toString();
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    OrderCommand that = (OrderCommand) o;
+
+    if (items != null ? !items.equals(that.items) : that.items != null) return false;
+    if (username != null ? !username.equals(that.username) : that.username != null) return false;
+    if (usedIpProxy != null ? !usedIpProxy.equals(that.usedIpProxy) : that.usedIpProxy != null) return false;
+    return storeName != null ? storeName.equals(that.storeName) : that.storeName == null;
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = items != null ? items.hashCode() : 0;
+    result = 31 * result + (username != null ? username.hashCode() : 0);
+    result = 31 * result + (usedIpProxy != null ? usedIpProxy.hashCode() : 0);
+    result = 31 * result + (storeName != null ? storeName.hashCode() : 0);
+    return result;
   }
 } // end class OrderCommand

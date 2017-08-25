@@ -144,6 +144,61 @@ public class OrderWriter extends FileWriter {
 
   } // end method writeOrderInfo
 
+  public void writeOrderInfo2(OrderCategory orderCategory, OrderResultInfo orderResultInfo,
+                             Boolean appendOrderDateTime) {
+    String now      = DateUtil.formatDate(new Date(), DateUtil.DATETIME_FORMATTER);
+    String filePath = getFilePath(((fileNamePrefix != null) && StringUtils.hasText(fileNamePrefix))
+      ? fileNamePrefix : orderCategory.toString());
+
+    FileUtils.writeContentToFile(filePath,
+      new Object[] {
+        // store name
+        orderResultInfo.getStoreName(),
+        
+        // orderNo
+        orderResultInfo.getOrderNo(),
+        
+        // username
+        orderResultInfo.getUsername(),
+
+        // password
+        orderResultInfo.getPassword(),
+        
+        // keyword
+        orderResultInfo.getKeyword(),
+
+        // full name
+        orderResultInfo.getAddressInfo().getFullName(),
+
+        // full address
+        orderResultInfo.getAddressInfo().getFullAddress(),
+
+        // telephone number
+        orderResultInfo.getAddressInfo().getTelephoneNum(),
+
+        // order price
+        orderResultInfo.getPrice(),
+
+        // group name (merchant name)
+        orderResultInfo.getGroupName(),
+        
+        // use ip proxy
+        orderResultInfo.getUsedIpProxy(),
+
+        // append order date
+        ((appendOrderDateTime != null) && appendOrderDateTime) ? now : "",
+
+        // new line
+        DEFAULT_LINE_SEPARATOR
+      } ,
+//      getHeader(),
+//      delimiter
+      "|"
+    );
+
+  } // end method writeOrderInfo
+  
+
   //~ ------------------------------------------------------------------------------------------------------------------
 
   private String getHeader() {

@@ -85,20 +85,8 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
     
     try {
       Set<String> tabs = webDriver.getWindowHandles();
-
-      for (String tab : tabs) {
-        String currentUrl = webDriver.switchTo().window(tab).getCurrentUrl();
-
-        if (logger.isDebugEnabled()) {
-          logger.debug("Current tab url: " + currentUrl);
-        }
-
-        if (currentUrl.contains(sku)) {
-          foundSkuTag = Boolean.TRUE;
-
-          break;
-        }
-      }
+      
+      foundSkuTag = switchToCorrectTab(sku);
 
       if (!foundSkuTag) {
         added = Boolean.FALSE;
@@ -108,7 +96,7 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
       }
       
       // browse the production page.
-      browseProduction(sku);
+      browseProduction(sku, this.getBrowserTime());
       
 
       // 1. attention production
@@ -132,64 +120,28 @@ public class AddProductionToShoppingCar extends YHDAbstractObject {
 
     return added;
   } // end method addToShoppingCar
-
-  private void browseProduction(String sku) {
-    Integer browseTime = this.getBrowserTime();
-
-    if ((browseTime != null) && (browseTime > 0)) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Will browse this sku[" + sku + "] " + this.getBrowserTime() + " seconds.");
-      }
-
-
-      int        firstTime = 1000;
-      final long stayTime  = browseTime * 1000;
-      Timer      timer     = new Timer();
-
-      timer.scheduleAtFixedRate(new TimerTask() {
-          private long    startTime;
-          private boolean cancelFlag = Boolean.FALSE;
-          private int     startPosition   = 1000;
-          private int     count      = 0;
-          private int[]   positionOffsets = new int[]{ 500, 800, 1500, 1700, 3400, 800};
-
-          @Override public void run() {
-            if (startTime <= 0) {
-              startTime = this.scheduledExecutionTime();
-            }
-            cancelFlag = (System.currentTimeMillis() - startTime) >= stayTime;
-
-            if (count < 6) {
-              startPosition += positionOffsets[count];
-              scrollOverflowY(startPosition);
-            } else {
-              cancelFlag = Boolean.TRUE;
-            }
-
-            count++;
-
-            if (cancelFlag) {
-              scrollOverflowY(0);
-              timer.cancel();
-              timer.purge();
-
-              if (logger.isDebugEnabled()) {
-                logger.debug("The timer is cancelled.");
-              }
-            }
-          } // end method run
-        }, firstTime, 5000);
-
-      delay(browseTime + 1);
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("Browse the production page " + browseTime + " seconds, Done!");
-      }
-
-    } // end if
-  }   // end method browseProduction
-
+  
   //~ ------------------------------------------------------------------------------------------------------------------
+  
+  private Boolean switchToCorrectTab(String sku){
+    Boolean foundSkuTag = Boolean.FALSE;
+    Set<String> tabs = webDriver.getWindowHandles();
+
+    for (String tab : tabs) {
+      String currentUrl = webDriver.switchTo().window(tab).getCurrentUrl();
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Current tab url: " + currentUrl);
+      }
+
+      if (currentUrl.contains(sku)) {
+        foundSkuTag = Boolean.TRUE;
+
+        break;
+      }
+    }
+    return foundSkuTag;
+  }
 
   private void addProductionToShoppingCar(String sku) {
     if (logger.isDebugEnabled()) {

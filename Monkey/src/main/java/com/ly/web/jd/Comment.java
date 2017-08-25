@@ -213,6 +213,8 @@ public class Comment extends AbstractObject {
     }
 
     if ((commentMap != null) && (commentMap.size() > 0)) {
+      // check if this page has popped up dialog window.
+      checkHasAnyPopWindow();
       // 1. five star comments
       // I think this can be move to outside for sentence.
       // if front-end need comment production size > the excel file wrote, 
@@ -239,6 +241,20 @@ public class Comment extends AbstractObject {
   } // end method comment
 
   //~ ------------------------------------------------------------------------------------------------------------------
+  
+  private void checkHasAnyPopWindow(){
+    try {
+      WebElement dialog = webDriver.findElement(By.xpath("//div[contains(@class, 'ui-dialog')]"));
+      if(dialog != null){
+        scrollToElementPosition(dialog);
+        WebElement closeBtn = dialog.findElement(By.xpath("/a[contains(@class, 'ui-dialog-close')]"));
+        if(closeBtn != null){
+          closeBtn.click();
+          delay(2);
+        }
+      }
+    }catch (NoSuchElementException e){}
+  }
 
   /**
    * find SKU from front-end (comment page).
@@ -708,6 +724,8 @@ public class Comment extends AbstractObject {
       if (logger.isDebugEnabled()) {
         logger.debug("Ready for submit comment for orderId#" + orderId);
       }
+      // check if this page has popped up dialog window.
+      checkHasAnyPopWindow();
 
       WebElement submitBtn = ExpectedConditions.elementToBeClickable(By.xpath(SUBMIT_BTN_XPATH)).apply(
           webDriver);

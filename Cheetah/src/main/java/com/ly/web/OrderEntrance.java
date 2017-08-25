@@ -3,6 +3,7 @@ package com.ly.web;
 import java.util.Properties;
 
 import com.ly.utils.TimeUtils;
+import com.ly.web.jd.JDOrderCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,6 +28,7 @@ public class OrderEntrance {
 
   private static final String JOB_YHD = "YHD";
   private static final String JOB_YHT = "YHT";
+  private static final String JOB_JD = "JD";
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -81,6 +83,12 @@ public class OrderEntrance {
     } else if (jobName.equalsIgnoreCase(JOB_YHT)) {
       TestNG  testng  = new TestNG();
       Class[] classes = new Class[] { YHTOrderCase.class };
+
+      testng.setTestClasses(classes);
+      testng.run();
+    } else if (jobName.equalsIgnoreCase(JOB_JD)){
+      TestNG  testng  = new TestNG();
+      Class[] classes = new Class[] { JDOrderCase.class };
 
       testng.setTestClasses(classes);
       testng.run();

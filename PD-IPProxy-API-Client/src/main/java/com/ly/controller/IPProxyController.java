@@ -58,7 +58,7 @@ import net.sf.json.JSONObject;
     @RequestParam(required = false) String filter) {
     
     num      = getDefaultValue(num, 5);
-    operator = getDefaultValue(operator, 0);
+    operator = getDefaultValue(operator, null);
     area     = getDefaultValue(area, null);
 
     Boolean isFilterOut = getFiltered(filter);

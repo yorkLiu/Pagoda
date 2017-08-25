@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <import resource="applicationConfig.xml"/>
+
+  <bean id="placeHolderProperties" class="com.ly.config.PropFileCMDLinePropertyPlaceHolderConfigurer" >
+    <property name="commandLineParams" ref="commandLineParams" />
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- Do not search environment properties -->
+    <property name="searchSystemEnvironment" value="true"/>
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+    <property name="order" value="100" />
+    <property name="fileEncoding" value="UTF-8"/>
+  </bean>
+  
+  <bean id="jdOrderConfig" class="com.ly.config.JDOrderConfig">
+    <property name="chromeDriverPath" value="${chromeDriverPath}"/>
+    <property name="firefoxDriverPath" value="${firefoxDriverPath}"/>
+    <property name="ieDriverPath" value="${ieDriverPath}"/>
+    <property name="orderFileNamePrefix" value="${orderFileNamePrefix}"/>
+    <property name="compareGoodsCount" value="${compareGoodsCount}"/>
+    <property name="browserTime" value="${browserTime}"/>
+    <property name="maxSearchPageNum" value="${maxSearchPageNum}"/>
+    <property name="searchByPriceOffset" value="${searchByPriceOffset}"/>
+    <property name="maxDelaySecondsForNext" value="${maxDelaySecondsForNext}"/>
+    <property name="useIpProxy" value="${useIpProxy}"/>
+    <property name="warningVoiceFile" value="${warningVoiceFile}"/>
+    <property name="filesPath" value="${filesPath}"/>
+  </bean>
+  
+  <bean id="proxyProcessor" class="com.ly.proxy.ProxyProcessor">
+    <property name="ipProxyServiceUrl" value="${ipProxyServiceUrl}"/>
+    <property name="ipProxyRetryServiceUrl" value="${ipProxyRetryServiceUrl}"/>
+    <property name="verifyUrl" value="https://www.jd.com"/>
+    <property name="verifyPassedText" value="京东"/>
+    <property name="allowGetIpAddress" value="true"/>
+  </bean>
+
+  <bean id="pagodaProxyProcessor" class="com.ly.proxy.PagodaProxyProcessor">
+    <property name="ipProxyServiceUrl" value="${ipProxyServiceUrl}"/>
+    <property name="ipProxyRetryServiceUrl" value="${ipProxyRetryServiceUrl}"/>
+    <property name="verifyUrl" value="https://www.jd.com"/>
+    <property name="verifyPassedText" value="京东"/>
+    <property name="allowGetIpAddress" value="false"/>
+    <property name="_allowVerifyIpAddress" value="${allowVerifyIpAddress}"/>
+  </bean>
+  
+  <bean id="freeProxyProcessor" class="com.ly.proxy.FreeProxyProcessor">
+    <property name="fetchPageSize" value="10"/>
+    <property name="protocol" value="HTTP"/>
+    <property name="verifyUrl" value="https://www.jd.com"/>
+    <property name="verifyPassedText" value="京东"/>
+  </bean>
+
+</beans>

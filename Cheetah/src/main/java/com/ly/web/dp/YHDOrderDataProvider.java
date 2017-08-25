@@ -28,7 +28,7 @@ import com.ly.web.reader.ExcelReader;
 public class YHDOrderDataProvider {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
-  private static final Logger logger = Logger.getLogger(JDDataProvider.class);
+  private static final Logger logger = Logger.getLogger(YHDOrderDataProvider.class);
 
   /** DOCUMENT ME! */
   public static String normalOrderPath = null;

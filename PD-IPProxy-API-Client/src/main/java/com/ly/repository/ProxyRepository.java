@@ -19,13 +19,13 @@ import java.util.List;
 @Repository public interface ProxyRepository extends PagingAndSortingRepository<Proxy, Long> {
 
 
-  @Query("select p from Proxy p where p.country='国内' and p.types>=:types and p.area like CONCAT('%', :area, '%') and p.id not in (select pa.proxyId from ProxyAudit pa where pa.tokenId=:tokenId)")
+  @Query("select p from Proxy p where p.country='国内' and p.types>=:types and p.area like CONCAT('%', :area, '%') and p.id not in (select pa.proxyId from ProxyAudit pa where pa.tokenId=:tokenId) order by p.score desc, p.speed ASC")
   List<Proxy> getIp( @Param("tokenId")String tokenId, @Param("types")Integer types, @Param("area")String area, Pageable p);
 
 
-  @Query("select p from Proxy p where p.country='国内' and p.area like CONCAT('%', :area, '%') and p.id not in (select pa.proxyId from ProxyAudit pa where pa.tokenId=:tokenId)")
+  @Query("select p from Proxy p where p.country='国内' and p.area like CONCAT('%', :area, '%') and p.id not in (select pa.proxyId from ProxyAudit pa where pa.tokenId=:tokenId) order by p.score desc, p.speed ASC")
   List<Proxy> getIp( @Param("tokenId")String tokenId, @Param("area")String area,  Pageable p);
 
-  @Query("select p from Proxy p where p.country='国内' and p.id not in (select pa.proxyId from ProxyAudit pa where pa.tokenId=:tokenId)")
+  @Query("select p from Proxy p where p.country='国内' and p.id not in (select pa.proxyId from ProxyAudit pa where pa.tokenId=:tokenId) order by p.score desc, p.speed ASC")
   List<Proxy> getIp( @Param("tokenId")String tokenId,  Pageable p);
 }

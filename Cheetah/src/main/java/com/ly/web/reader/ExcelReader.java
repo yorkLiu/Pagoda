@@ -23,8 +23,8 @@ import com.ly.utils.ExcelUtils;
 import com.ly.utils.FileUtils;
 
 import com.ly.web.command.OrderCommand;
-import com.ly.web.utils.YHDNormalOrderColumns;
-import com.ly.web.utils.YHDOrderUtils;
+import com.ly.web.utils.OrderColumns;
+import com.ly.web.utils.OrderUtils;
 
 
 /**
@@ -39,6 +39,19 @@ public class ExcelReader extends BaseExcelReader {
   private static final long serialVersionUID = -3417859052742663138L;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+
+  /**
+   * readJDOrdersFromExcelToObject.
+   *
+   * @param   path  String
+   *
+   * @return  List
+   */
+  public List<OrderCommand> readJDOrdersFromExcelToObject(String path) {
+    return readJDOrderInfoFromExcel(path, Boolean.FALSE);
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * readYHDNormalOrderExcelToObject.
@@ -66,7 +79,41 @@ public class ExcelReader extends BaseExcelReader {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private List<OrderCommand> readYHDNormalOrderExcel(Workbook wb, int sheetIndex, int startReadLine, int tailLine,
+  private List<OrderCommand> readJDOrderInfoFromExcel(String path, boolean isGroupBuy) {
+    return readOrderInfoFromExcel(path, 0, 2, 0, isGroupBuy);
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private List<OrderCommand> readOrderInfoFromExcel(String path, int sheetIndex, int startReadLine, int tailLine,
+    boolean isGroupBuy) {
+    Workbook wb = null;
+
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<<<<<<<Start process excel from path: " + path);
+      }
+
+      String groupName = FileUtils.getFileNameWithoutExtension(path);
+      wb = WorkbookFactory.create(new File(path));
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("<<<<<<<<<<End processed excel");
+      }
+
+      return readOrdersFromExcel(wb, sheetIndex, startReadLine, tailLine, groupName, isGroupBuy);
+    } catch (InvalidFormatException e) {
+      logger.error(e.getMessage(), e);
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+    }
+
+    return null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  private List<OrderCommand> readOrdersFromExcel(Workbook wb, int sheetIndex, int startReadLine, int tailLine,
     String groupName, boolean isGroupBuy) {
     List<OrderCommand> ordersInfoList = new LinkedList<>();
     Sheet              sheet          = wb.getSheetAt(sheetIndex);
@@ -127,13 +174,18 @@ public class ExcelReader extends BaseExcelReader {
         if (isMerge) {
           cell = getMergeCell(sheet, row.getRowNum(), cell.getColumnIndex());
         }
+        
+        try {
 
-        YHDOrderUtils.assembleNormalOrderExclusiveProductionInfo(orderInfo, row, cell);
+          OrderUtils.assembleNormalOrderExclusiveProductionInfo(orderInfo, row, cell);
 
-        if (cell.getColumnIndex() >= YHDNormalOrderColumns.PRODUCTION_URL_COLUMN) {
-          YHDOrderUtils.assembleNormalOrderProductionInfo(orderInfo, row, isGroupBuy);
+          if (cell.getColumnIndex() >= OrderColumns.PRODUCTION_URL_COLUMN) {
+            OrderUtils.assembleNormalOrderProductionInfo(orderInfo, row, isGroupBuy);
 
-          break;
+            break;
+          }
+        }catch (Exception e){
+          e.printStackTrace();
         }
       }
     } // end for
@@ -145,33 +197,12 @@ public class ExcelReader extends BaseExcelReader {
     logger.info("Found " + ordersInfoList.size() + " order(s) for group: " + groupName);
 
     return ordersInfoList;
-  } // end method readYHDNormalOrderExcel
+  } // end method readOrdersFromExcel
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
   private List<OrderCommand> readYHDOrderInfoFromExcel(String path, boolean isGroupBuy) {
-    Workbook wb = null;
-
-    try {
-      if (logger.isDebugEnabled()) {
-        logger.debug("<<<<<<<<<<Start process excel from path: " + path);
-      }
-
-      String groupName = FileUtils.getFileNameWithoutExtension(path);
-      wb = WorkbookFactory.create(new File(path));
-
-      if (logger.isDebugEnabled()) {
-        logger.debug("<<<<<<<<<<End processed excel");
-      }
-
-      return readYHDNormalOrderExcel(wb, 0, 2, 0, groupName, isGroupBuy);
-    } catch (InvalidFormatException e) {
-      logger.error(e.getMessage(), e);
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-    }
-
-    return null;
+    return readOrderInfoFromExcel(path, 0, 2, 0, isGroupBuy);
   }
 
 } // end class ExcelReader

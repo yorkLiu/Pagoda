@@ -186,10 +186,7 @@ public abstract class YHDAbstractObject extends AbstractObject {
     return closed;
   }
 
-  protected void refreshPage(){
-    String             script = "window.location.reload();";
-    executeJavaScript(script);
-  }
+  
   
   protected Boolean loginYHDinEmbedLoginPage(String username, String password, int pageId){
     Boolean success = Boolean.TRUE;

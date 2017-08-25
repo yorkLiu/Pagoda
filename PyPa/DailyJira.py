@@ -88,6 +88,9 @@ proxies = {
     'https': 'socks5://192.168.100.3:1083'
 }
 
+
+do_not_append_sprint_status_contains=['PM', 'PENDING']
+
 # Connect to jira server with username and password
 def connect_jira(jira_server, jira_user, jira_password, use_proxy=False):
     log.info("Connecting: %s with author: %s", jira_server,jira_user)
@@ -383,10 +386,18 @@ def update_oz_ticket_extra_info(oz_issue, cmc_issue, linkedIssue=None, epicIssue
     ret_map = {}
 
     try:
+        add_sprint_info = True,
         cmc_issue_status = cmc_issue.fields.status.name
+        cmc_issue_type = str(cmc_issue.fields.issuetype.name).upper()
         cmc_issue_sprint = get_sprint_name_from_ticket(cmc_issue.fields.customfield_11263[0] if cmc_issue.fields.customfield_11263 else None)
         cmc_issue_software_branches = cmc_issue.fields.customfield_13450
         cmc_issue_software_branch_names = get_cmc_ticket_software_branches(cmc_issue_software_branches)
+
+        if cmc_issue_type in ('STORY'):
+            for t in do_not_append_sprint_status_contains:
+                if t.upper() in cmc_issue_status.upper():
+                    add_sprint_info = False
+                    break
 
         if oz_issue:
             oz_stored_cmc_status = oz_issue.fields.customfield_10321
@@ -412,14 +423,15 @@ def update_oz_ticket_extra_info(oz_issue, cmc_issue, linkedIssue=None, epicIssue
             update_issue(oz_issue, fields={"versions": get_oz_affect_versions(cmc_issue_software_branch_names)})
 
             # update OZ Sprint [Start]
-            # "customfield_10021" -> OZ Sprint
-            oz_sprint = get_sprint_name_from_ticket(oz_issue.fields.customfield_10021[0] if oz_issue.fields.customfield_10021 else None)
-            if oz_sprint == None or str(oz_sprint).isspace():
-                current_sprint_id = current_oz_sprint['id'] if current_oz_sprint.has_key('id') else None
-                print "current_sprint_id:", current_sprint_id
-                if current_sprint_id:
-                    # oz_issue.update(fields={"customfield_10021": str(current_sprint_id)})
-                    update_issue(oz_issue, fields={"customfield_10021": str(current_sprint_id)})
+            if add_sprint_info:
+                # "customfield_10021" -> OZ Sprint
+                oz_sprint = get_sprint_name_from_ticket(oz_issue.fields.customfield_10021[0] if oz_issue.fields.customfield_10021 else None)
+                if oz_sprint == None or str(oz_sprint).isspace():
+                    current_sprint_id = current_oz_sprint['id'] if current_oz_sprint.has_key('id') else None
+                    print "current_sprint_id:", current_sprint_id
+                    if current_sprint_id:
+                        # oz_issue.update(fields={"customfield_10021": str(current_sprint_id)})
+                        update_issue(oz_issue, fields={"customfield_10021": str(current_sprint_id)})
             # update OZ Sprint [End]
     except JIRAError, e:
         log.info('>>>>Update OZ ticket extra info ERROR>>>>')

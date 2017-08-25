@@ -9,9 +9,14 @@ package com.ly.web.command;
 public class AddressInfoCommand {
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
+  /** 市*/
   private String city;
 
+  /**﻿区/县*/
   private String country;
+  
+  /**﻿镇/街道*/
+  private String twon;
 
   private String fullAddress;
 
@@ -87,6 +92,13 @@ public class AddressInfoCommand {
    * @return  String
    */
   public String getProvince() {
+    return province;
+  }
+  
+  public String getJDProvince(){
+    if(province != null){
+      return province.replace("省", "").replace("市", "");
+    }
     return province;
   }
 
@@ -179,6 +191,15 @@ public class AddressInfoCommand {
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
+
+
+  public String getTwon() {
+    return twon;
+  }
+
+  public void setTwon(String twon) {
+    this.twon = twon;
+  }
 
   /**
    * @see  java.lang.Object#toString()

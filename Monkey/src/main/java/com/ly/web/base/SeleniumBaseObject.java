@@ -432,7 +432,12 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
         driverName = DRIVER_CHROME;
       }
 
-      setupDriver(driverName, ipProxy);
+      if(ipProxy == null){
+        setupDriver(driverName);
+      } else {
+        setupDriver(driverName, ipProxy);
+      }
+      
 
       if (logger.isDebugEnabled()) {
         logger.debug("Maximum " + currentDriver);
@@ -440,14 +445,15 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
 
       driver.manage().deleteAllCookies();
       driver.manage().window().maximize();
-      driver.manage().deleteAllCookies();
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
     }
   }
   
   protected void initProperties(){
-    this.voiceFilePath = webDriverProperties.getWarningVoiceFile();
+    if(webDriverProperties != null){
+      this.voiceFilePath = webDriverProperties.getWarningVoiceFile();
+    }
   }
 
   /**

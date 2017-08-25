@@ -59,6 +59,36 @@ public class Login extends AbstractObject {
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
+  
+  public boolean checkPageCssLoaded(int index){
+    if(index > 5){
+      throw new TimeoutException("The Login page css was not loaded, login failed.");
+    }
+    
+    try {
+      
+      String pageState = (String) executeJavaScript("return document.readyState;");
+      System.out.println("----pageState: " + pageState);
+      
+      String uuidV = (String) executeJavaScript("return $('#uuid').val();");
+
+      System.out.println("-----uuidV: " + uuidV);
+      
+      if(uuidV != null && StringUtils.hasText(uuidV)){
+        return Boolean.TRUE;
+      }
+
+      throw new TimeoutException("The Login page css was not loaded, login failed.");
+    }catch (Exception e){
+      if(isCurrentPage(webDriver.getCurrentUrl(), "login")){
+        refreshPage();
+        return checkPageCssLoaded(++index);
+      }
+    }
+   
+    return Boolean.FALSE;
+  }
+  
 
   /**
    * login.
@@ -89,14 +119,15 @@ public class Login extends AbstractObject {
       
       delay(5);
 
+      checkPageCssLoaded(0);
+
       if (logger.isDebugEnabled()) {
         logger.debug("Switch to account login.");
       }
 
       // switch to account login
       WebElement accountLogin = ExpectedConditions.presenceOfElementLocated(By.xpath(SWITCH_TO_ACCOUNT_LOGIN_XPATH))
-        .apply(
-          webDriver);
+        .apply(webDriver);
 
       if (accountLogin != null) {
         accountLogin.click();
@@ -167,6 +198,17 @@ public class Login extends AbstractObject {
             }
             voicePlayer.playLoop();
           }
+        } else {
+          
+          // if there is no vcode display, but after click the 'submit' button 30 seconds,  still stay the login page
+          // then throw a timeout exception
+
+          new WebDriverWait(this.webDriver, 30).until(new ExpectedCondition<Boolean>() {
+            @Override public Boolean apply(WebDriver d) {
+              return (!d.getCurrentUrl().contains("login"));
+            }
+          });
+          
         }
       } else {
         // no need input valid code.

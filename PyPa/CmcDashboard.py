@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*- 
-import os
-import sys
-import logging
-import requests
-import time
-import datetime
-from jira import JIRA
 import base64
+import datetime
+import logging
 import smtplib
+import sys
+import time
 from email.mime.text import MIMEText
+
+import os
+import requests
+from jira import JIRA
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -38,19 +39,20 @@ cmc_jira_password='0zPa$$123'
 ### START config Email Sender
 email_server_key = 'key-063b98a4091398b81baa16959b20d660'
 email_server_api_user = 'sandbox9597735f17034d268fa4a01a3e6292d0.mailgun.org'
-email_username='email_username@mail.com'
-email_password='email_password'
-email_from='Mail From <mail_from@mail.com>'
-email_subject='Mail Subject'
+email_username='yong.liu@ozstrategy.com'
+email_password='dXUwMDAwMDA='
+email_from='Dashboard Observer <dashboard_observer@ozstrategy.com>'
+email_subject='OZStrategy Dashboard in CMC Side on %s' % today
 
 # config the email address here
-email_to_addres = 'mail1@mail.com, mail2@mail.com'
+email_to_addres = 'yong.liu@ozstrategy.com'
 email_to_tech_leads=email_to_addres.split(',')
 
 ### END config Email Sender
 
 proxies = {
-            
+            'http': 'socks5://192.168.100.3:1083',
+            'https': 'socks5://192.168.100.3:1083'
           }
 ######################## Configuration [End] #################################
 
@@ -92,7 +94,12 @@ def getDashboardContent():
         jsonObj = response.json()
         issues = jsonObj['issuesData']['issues']
         for issueObj in issues:
+            assignee =  issueObj['assignee']
+            print issueObj['key'], assignee
+            if assignee not in ('ozdev', 'ozintel'):
+                continue
             key = issueObj['key']
+            print key, issueObj['hidden'], issueObj['assignee']
             summary = issueObj['summary']
             # type is 'defect', 'story'...
             type = issueObj['typeName']
@@ -183,7 +190,7 @@ def getDashboardContent():
             log.info("Get dashboard successfully. The result was in %s", filename)
 
             # call send email
-            send_email(filename)
+            # send_email(filename)
 
 
 def get_work_path(workDir):

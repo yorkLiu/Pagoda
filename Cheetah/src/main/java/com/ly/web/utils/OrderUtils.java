@@ -20,10 +20,10 @@ import com.ly.web.command.OrderCommand;
  * @author   <a href="mailto:yong.liu@ozstrategy.com">Yong Liu</a>
  * @version  11/09/2016 16:06
  */
-public class YHDOrderUtils {
+public class OrderUtils {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
-  private static final Logger logger = Logger.getLogger(YHDOrderUtils.class);
+  private static final Logger logger = Logger.getLogger(OrderUtils.class);
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -43,62 +43,72 @@ public class YHDOrderUtils {
     String cellValue = ExcelUtils.getCellValue(cell);
 
     switch (colIdx) {
-      case YHDNormalOrderColumns.USER_NAME_COLUMN: {
+      case OrderColumns.USER_NAME_COLUMN: {
         orderInfo.setUsername(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.PASSWORD_COLUMN: {
+      case OrderColumns.PASSWORD_COLUMN: {
         orderInfo.setPassword(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVER_NAME_COLUMN: {
+      case OrderColumns.RECEIVER_NAME_COLUMN: {
         orderInfo.getAddressInfo().setFullName(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVE_ADDRESS_COLUMN: {
+      case OrderColumns.RECEIVE_ADDRESS_COLUMN: {
         orderInfo.getAddressInfo().setFullAddress(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVE_MOBILE_PHONE_COLUMN: {
+      case OrderColumns.RECEIVE_MOBILE_PHONE_COLUMN: {
         orderInfo.getAddressInfo().setTelephoneNum(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVE_IDENTITY_CARD_NUM_COLUMN: {
+      case OrderColumns.RECEIVE_IDENTITY_CARD_NUM_COLUMN: {
         orderInfo.getAddressInfo().setIdentityCardNum(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVE_PROVINCE_COLUMN: {
+      case OrderColumns.RECEIVE_PROVINCE_COLUMN: {
         orderInfo.getAddressInfo().setProvince(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVE_CITY_COLUMN: {
+      case OrderColumns.RECEIVE_CITY_COLUMN: {
         orderInfo.getAddressInfo().setCity(cellValue);
 
         break;
       }
 
-      case YHDNormalOrderColumns.RECEIVE_COUNTRY_COLUMN: {
+      case OrderColumns.RECEIVE_COUNTRY_COLUMN: {
         orderInfo.getAddressInfo().setCountry(cellValue);
 
         break;
       }
+      case OrderColumns.RECEIVE_TOWN_COLUMN: {
+        orderInfo.getAddressInfo().setTwon(cellValue);
 
-      case YHDNormalOrderColumns.ALLOW_OVERSEA_COLUMN: {
+        break;
+      }
+
+      case OrderColumns.ALLOW_OVERSEA_COLUMN: {
         orderInfo.setAllowOversea(ExcelUtils.getBooleanValue(cellValue));
+
+        break;
+      }
+      case OrderColumns.RECEIVE_ORDER_COMMENT_COLUMN: {
+        orderInfo.setOrderCommentText(cellValue);
 
         break;
       }
@@ -115,25 +125,25 @@ public class YHDOrderUtils {
    * @param  isGroupBuy  boolean
    */
   public static void assembleNormalOrderProductionInfo(OrderCommand orderInfo, Row row, boolean isGroupBuy) {
-    String url  = ExcelUtils.getCellValue(row.getCell(YHDNormalOrderColumns.PRODUCTION_URL_COLUMN));
-    String name = ExcelUtils.getCellValue(row.getCell(YHDNormalOrderColumns.PRODUCTION_NAME_COLUMN));
+    String url  = ExcelUtils.getCellValue(row.getCell(OrderColumns.PRODUCTION_URL_COLUMN));
+    String name = ExcelUtils.getCellValue(row.getCell(OrderColumns.PRODUCTION_NAME_COLUMN));
 
     // price
-    Cell priceCell = row.getCell(YHDNormalOrderColumns.PRODUCTION_PRICE_COLUMN);
+    Cell priceCell = row.getCell(OrderColumns.PRODUCTION_PRICE_COLUMN);
     priceCell.setCellType(priceCell.CELL_TYPE_STRING);
 
     String price = ExcelUtils.getCellValue(priceCell);
 
-    String keyword = ExcelUtils.getCellValue(row.getCell(YHDNormalOrderColumns.PRODUCTION_KEYWORD_COLUMN));
+    String keyword = ExcelUtils.getCellValue(row.getCell(OrderColumns.PRODUCTION_KEYWORD_COLUMN));
 
     // count
-    Cell countCell = row.getCell(YHDNormalOrderColumns.PRODUCTION_COUNT_COLUMN);
+    Cell countCell = row.getCell(OrderColumns.PRODUCTION_COUNT_COLUMN);
     countCell.setCellType(countCell.CELL_TYPE_STRING);
 
     Integer count = ExcelUtils.getIntegerValue(ExcelUtils.getCellValue(countCell));
 
     Boolean addToFavorite = ExcelUtils.getBooleanValue(ExcelUtils.getCellValue(
-          row.getCell(YHDNormalOrderColumns.PRODUCTION_ADD_TO_FAVORITE_COLUMN)));
+          row.getCell(OrderColumns.PRODUCTION_ADD_TO_FAVORITE_COLUMN)));
 
 
     String sku = URLUtils.getSkuFromUrl(url);
@@ -157,4 +167,4 @@ public class YHDOrderUtils {
     }
   } // end method assembleNormalOrderProductionInfo
 
-} // end class YHDOrderUtils
+} // end class OrderUtils

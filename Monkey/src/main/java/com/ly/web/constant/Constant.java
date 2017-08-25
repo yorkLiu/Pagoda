@@ -62,6 +62,7 @@ public class Constant {
   
   
   public static final String JD_LOGIN_PAGE_URL="https://passport.jd.com/uc/login?ReturnUrl=http://order.jd.com/center/list.action";
+  public static final String JD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER="https://passport.jd.com/uc/login";
   public static final String JD_MY_ORDER_URL="http://order.jd.com/center/list.action";
   public static final String JD_MY_ORDER_RECYCLE_URL="http://order.jd.com/center/recycle.action?d=1";
   // http://club.jd.com/myJdcomments/orderVoucher.action?ruleid=20596221140&ot=22&payid=4&shipmentid=70
@@ -77,6 +78,13 @@ public class Constant {
   public static final String JD_ACCOUNT_FOLDER_NAME= ACCOUNT_FOLDER_NAME +File.separator + "JD-Account" + File.separator;
   public static final String JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Account-Locked";
   public static final String JD_ACCOUNT_COMMENT_FAILED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Comment-Failed";
+  
+  
+  public static final String JD_INDEX_PAGE_URL="https://www.jd.com";
+  public static final String JD_ITEM_URL_PREFIX="https://item.jd.com/%s.html";
+  public static final String JD_SHOPPING_CAR_URL="https://cart.jd.com/cart.action";
+  public static final String JD_CHECKOUT_ORDER_URL="https://trade.jd.com/shopping/order/getOrderInfo.action";
+  public static final String JD_PAYMENT_ORDER_PAGE_URL_PREFIX="https://pcashier.jd.com/cashier/index.action";
   
   
 }

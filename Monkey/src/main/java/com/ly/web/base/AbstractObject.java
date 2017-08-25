@@ -1,6 +1,8 @@
 package com.ly.web.base;
 
 import java.util.NoSuchElementException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import com.ly.web.constant.Constant;
@@ -246,6 +248,12 @@ public abstract class AbstractObject {
     JavascriptExecutor jsEngine = (JavascriptExecutor) webDriver;
 
     return jsEngine.executeScript(script);
+  } 
+  
+  protected Object executeJavaScript(String script, WebElement element) {
+    JavascriptExecutor jsEngine = (JavascriptExecutor) webDriver;
+
+    return jsEngine.executeScript(script, element);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -463,4 +471,69 @@ public abstract class AbstractObject {
       throw new AccountLockedException(userName, " The username[" + userName + "] was locked.");
     }
   }
+  
+  protected String getSKUUrl(String prefix, String sku){
+    return String.format(prefix, sku);
+  }
+  
+  
+  protected void browseProduction(String sku, Integer browseTime) {
+    if ((browseTime != null) && (browseTime > 0)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Will browse this sku[" + sku + "] " + browseTime + " seconds.");
+      }
+
+
+      int        firstTime = 1000;
+      final long stayTime  = browseTime * 1000;
+      Timer timer     = new Timer();
+
+      timer.scheduleAtFixedRate(new TimerTask() {
+        private long    startTime;
+        private boolean cancelFlag = Boolean.FALSE;
+        private int     startPosition   = 1000;
+        private int     count      = 0;
+        private int[]   positionOffsets = new int[]{ 500, 800, 1500, 1700, 3400, 800};
+
+        @Override public void run() {
+          if (startTime <= 0) {
+            startTime = this.scheduledExecutionTime();
+          }
+          cancelFlag = (System.currentTimeMillis() - startTime) >= stayTime;
+
+          if (count < 6) {
+            startPosition += positionOffsets[count];
+            scrollOverflowY(startPosition);
+          } else {
+            cancelFlag = Boolean.TRUE;
+          }
+
+          count++;
+
+          if (cancelFlag) {
+            scrollOverflowY(0);
+            timer.cancel();
+            timer.purge();
+
+            if (logger.isDebugEnabled()) {
+              logger.debug("The timer is cancelled.");
+            }
+          }
+        } // end method run
+      }, firstTime, 5000);
+
+      delay(browseTime + 1);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Browse the production page " + browseTime + " seconds, Done!");
+      }
+
+    } // end if
+  }   // end method browseProduction
+
+
+  protected boolean isCurrentPage(String currentWebDriveUrl, String currentPageUrl){
+    return currentWebDriveUrl.contains(currentPageUrl);
+  }
+
 } // end class AbstractObject

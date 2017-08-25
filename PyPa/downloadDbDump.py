@@ -4,8 +4,12 @@ from fabric.api import *
 import os
 import sys
 
-offshore = 'usser@ip:port'
-env.passwords = {offshore: 'password'}
+############ USAGE ##########################
+# fab -f DownloadDbDump.py download:files="yourdownloadfilename"
+############ USAGE ##########################
+
+offshore = 'yongliu@192.168.100.3:9721'
+env.passwords = {offshore: 'Pwd$123#'}
 
 db_dump_file_names = None
 
@@ -15,5 +19,9 @@ def download(files):
     print 'You want to download [%s]' % ','.join(db_dump_file_names)
     if db_dump_file_names.__len__() > 0:
         for file in db_dump_file_names:
-            filename = file.strip()
-            get("/tmp/%s" % filename, os.path.expanduser('~/DBDump/'))
+
+            s = run('ls /tmp/%s' % file)
+            print s
+
+            # filename = file.strip()
+            # get("/tmp/%s" % filename, os.path.expanduser('~/DBDump/'))

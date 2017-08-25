@@ -1,5 +1,6 @@
 package com.ly.web.command;
 
+import com.gargoylesoftware.htmlunit.util.StringUtils;
 import com.ly.utils.Constants;
 
 
@@ -27,6 +28,10 @@ public class OrderResultInfo {
   private String price;
 
   private String username;
+  
+  private String usedIpProxy;
+  
+  private String storeName;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -47,6 +52,8 @@ public class OrderResultInfo {
     this.groupName   = orderCommand.getGroupName();
     this.price       = orderCommand.getOrderPrice();
     this.keyword     = orderCommand.popupKeyword();
+    this.storeName   = orderCommand.getStoreName();
+    this.usedIpProxy = orderCommand.getUsedIpProxy();
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
@@ -220,12 +227,33 @@ public class OrderResultInfo {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
+  public String getUsedIpProxy() {
+    if(usedIpProxy == null || !org.springframework.util.StringUtils.hasText(usedIpProxy)){
+      return "NA";
+    }
+    return usedIpProxy;
+  }
+
+  public void setUsedIpProxy(String usedIpProxy) {
+    this.usedIpProxy = usedIpProxy;
+  }
+
+  public String getStoreName() {
+    return storeName;
+  }
+
+  public void setStoreName(String storeName) {
+    this.storeName = storeName;
+  }
+
   /**
    * setter method for username.
    *
    * @param  username  String
    */
   public void setUsername(String username) {
+    
+    
     this.username = username;
   }
 
