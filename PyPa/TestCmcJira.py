@@ -11,11 +11,10 @@ import re
 import requests
 
 proxies = {
-    'http': 'socks5://192.168.100.3:1083',
-    'https': 'socks5://192.168.100.3:1083'
+    
 }
 
-cmc_jira_server_url = 'https://jira.cmcassist.com'
+cmc_jira_server_url = 'https://jira.sss.com'
 
 
 log = logging.getLogger('JIRA')
@@ -53,8 +52,8 @@ def getEpicIssues(key):
 
 
 if __name__ == "__main__":
-    # cmc_username='ozdev'
-    # cmc_pwd = 'Oz1tel$123$'
+    # cmc_username=''
+    # cmc_pwd = ''
     # cmc_jira_server = connect_jira(cmc_jira_server_url, cmc_username, cmc_pwd, True)
     #
     # issue = cmc_jira_server.issue('CA-6891')

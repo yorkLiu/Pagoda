@@ -99,8 +99,8 @@ def get_sprint_name_from_ticket(sprint_text):
 
 
 if __name__ == '__main__':
-    username = "builder"
-    password = "builder$123"   
+    username = ""
+    password = ""   
     
     oz_jira_search_query = 'project = "CMC JIRA Tickets" AND summary ~ %s AND NOT issuetype=Sub-task'
     oz_jira = connect_jira(oz_jira_server, username, password)
