@@ -34,13 +34,13 @@ public class JDCheckoutOrder extends AbstractObject {
   private final String RECEIVER_ADDR_ID="consignee_address";
   private final String RECEIVER_MOBILE_ID="consignee_mobile";
   
-  private final String SAVE_CONTACT_BTN_XPATH="//a[contains(@class, 'btn-1)][contains(text(), '保存')]";
+  private final String SAVE_CONTACT_BTN_ID="saveConsigneeTitleDiv";
   
   private final String CHECKOUT_ORDER_PRICE_ID="sumPayPriceId";
   
   private final String SUBMIT_ORDER_BTN_ID="order-submit";
   
-  private final String SELECT_AREA_SCRIPT="function selectArea(){ var atags = $('div.ui-area-content > div[data-index=\"%s\"] > ul > li > a'); for(var i = 0; i < atags.length; i++){ var a = atags[i]; if (a){ text = $(a).text(); if(text.indexOf(\"%s\") > -1) { a.click(); return text; } } } return 'NA';} return selectArea();";
+  private final String SELECT_AREA_SCRIPT="function selectArea(allowDefaultSelect){ var atags = $('div.ui-area-content > div[data-index=\"%s\"] > ul > li > a'); var founded = false; var ret = 'NA'; for(var i = 0; i < atags.length; i++){ var a = atags[i]; if (a){ var text = $(a).text(); if(text.indexOf(\"%s\") > -1) { a.click(); founded = true; ret= text; break; } } } if(!founded && allowDefaultSelect && atags.length > 0){ var a = atags[0]; a.click(); ret= $(a).text(); } return ret;} return selectArea(%s);";
   
 
   /**
@@ -143,15 +143,27 @@ public class JDCheckoutOrder extends AbstractObject {
             logger.debug("Exists address info: " + addressInfoText);
           }
 
-          if (addressInfoText.contains(addressInfo.getFullName()) && addressInfoText.contains(addressInfo.getProvince())
+          if (addressInfoText.contains(addressInfo.getFullName()) && addressInfoText.contains(addressInfo.getJDProvince())
             && addressInfoText.contains(addressInfo.getCity())
             && addressInfoText.contains(addressInfo.getCountry())) {
             scrollToElementPosition(addressEle);
+
+            if (logger.isDebugEnabled()) {
+              logger.debug("Found the exists address info.");
+            }
+
             delay(2);
 
             clickableEle.click();
 
             selected = true;
+          } else {
+            if (logger.isDebugEnabled()) {
+              logger.debug("Not found the address info in 'Exists address info list' ");
+              logger.debug("In exists address info not found the address: ["
+                + String.format("%s %s %s %s", addressInfo.getFullName(), addressInfo.getJDProvince(),
+                  addressInfo.getCity(), addressInfo.getCountry()) + "]");
+            }
           }
         }
       }
@@ -192,20 +204,23 @@ public class JDCheckoutOrder extends AbstractObject {
       WebElement area = webDriver.findElement(By.id("jd_area"));
       area.click();
 
-      String selProvince = selectArea(String.format(AREA_SELECTOR_XPATH, "0", addressInfo.getJDProvince()), 0, addressInfo.getJDProvince());
-      
-      String selCity = selectArea(String.format(AREA_SELECTOR_XPATH, "1", addressInfo.getCity()), 1, addressInfo.getCity());
-      String selCountry = selectArea(String.format(AREA_SELECTOR_XPATH, "2", addressInfo.getCountry()), 2, addressInfo.getCountry());
-      String selTown = selectArea(String.format(AREA_SELECTOR_XPATH, "3", addressInfo.getTwon()), 3, addressInfo.getTwon());
+      String selProvince = selectArea(String.format(AREA_SELECTOR_XPATH, "0", addressInfo.getJDProvince()), 0, addressInfo.getJDProvince(), Boolean.FALSE);
+      String selCity = selectArea(String.format(AREA_SELECTOR_XPATH, "1", addressInfo.getCity()), 1, addressInfo.getCity(), Boolean.FALSE);
+      String selCountry = selectArea(String.format(AREA_SELECTOR_XPATH, "2", addressInfo.getCountry()), 2, addressInfo.getCountry(), Boolean.FALSE);
+      String selTown = selectArea(String.format(AREA_SELECTOR_XPATH, "3", addressInfo.getTwon()), 3, addressInfo.getTwon(), Boolean.TRUE);
 
-      System.out.println(String.format("Selected: %s %s %s %s", selProvince, selCity, selCountry, selTown));
+      logger.info(String.format("Selected: %s %s %s %s", selProvince, selCity, selCountry, selTown));
       
       inputValue(RECEIVER_NAME_ID, addressInfo.getFullName());
       inputValue(RECEIVER_ADDR_ID, addressInfo.getFullAddress());
       inputValue(RECEIVER_MOBILE_ID, addressInfo.getTelephoneNum());
 
-      WebElement saveContact = webDriver.findElement(By.xpath(SAVE_CONTACT_BTN_XPATH));
-      saveContact.click();
+
+      WebElement saveContact = ExpectedConditions.elementToBeClickable(By.id(SAVE_CONTACT_BTN_ID)).apply(webDriver);
+      if(saveContact != null){
+        logger.info("The 'Save contact button' was clicked.");
+        saveContact.click();
+      }
     }
 
   }
@@ -219,16 +234,13 @@ public class JDCheckoutOrder extends AbstractObject {
     }
   }
   
-  private String selectArea(String xpath, int index, String text){
+  private String selectArea(String xpath, int index, String text, Boolean allowSelectedDefault){
+    delay(3);
     WebElement element = ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)).apply(webDriver);
-//    WebElement element = webDriver.findElement(By.xpath(xpath));
     if(element != null){
-      //element.click();
-      
-      String script = String.format(SELECT_AREA_SCRIPT, index, text);
-      System.out.println("Script\n" + script);
-      String ret = (String)executeJavaScript(script);
-      return ret;
+      String script = String.format(SELECT_AREA_SCRIPT, index, text, allowSelectedDefault);
+//      System.out.println("Script\n" + script);
+      return (String)executeJavaScript(script);
     }
     return null;
   }

@@ -93,7 +93,7 @@ public class JDOrderCase extends JDBaseOrderCase {
         boolean loginSuccess = login(orderInfo, driverType);
         
         if (loginSuccess){
-          boolean addedToShoppingCar = Boolean.TRUE;
+          boolean addedToShoppingCar = Boolean.FALSE;
           boolean canCheckoutOrder = Boolean.FALSE;
           boolean orderSubmitted = Boolean.FALSE;
           for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
@@ -129,8 +129,10 @@ public class JDOrderCase extends JDBaseOrderCase {
           //////////////// close the web driver
 //          closeWebDriver();
 
-          logger.info("Will delay " + jdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
-          delay(jdOrderConfig.getMaxDelaySecondsForNext());
+          if(index < orderCommandList.size()){
+            logger.info("Will delay " + jdOrderConfig.getMaxDelaySecondsForNext() + " seconds to start next order.");
+            delay(jdOrderConfig.getMaxDelaySecondsForNext());
+          }
           
         } // end if
       } catch (Exception e) {
@@ -156,20 +158,24 @@ public class JDOrderCase extends JDBaseOrderCase {
   }
   
   private void addToObserver(OrderCommand orderInfo){
-    logger.info("Starting observer order......");
-    if(jdOrderObserver == null){
-      jdOrderObserver = new OrderObserver();
-      jdOrderObserver.setOrderWriter(orderWriter);
-    }
-    
-    jdOrderObserver.addObserverOrder(new ObserverDriver(driver, orderInfo));
-    
-    if(observerThread == null){
-      observerThread = new Thread(jdOrderObserver);
-    }
-    
-    if(!observerThread.isAlive()){
-      observerThread.start();
+    try {
+      logger.info("Starting observer order......");
+      if (jdOrderObserver == null) {
+        jdOrderObserver = new OrderObserver();
+        jdOrderObserver.setOrderWriter(orderWriter);
+      }
+
+      jdOrderObserver.addObserverOrder(new ObserverDriver(driver, orderInfo));
+
+      if (observerThread == null) {
+        observerThread = new Thread(jdOrderObserver);
+      }
+
+      if (!observerThread.isAlive()) {
+        observerThread.start();
+      }
+    }catch (Exception e){
+      logger.error(e.getMessage(), e);
     }
     
   }

@@ -37,6 +37,9 @@ public class AddressInfoCommand {
    * @return  String
    */
   public String getCity() {
+    if(city != null){
+      return city.trim();
+    }
     return city;
   }
 
@@ -48,6 +51,9 @@ public class AddressInfoCommand {
    * @return  String
    */
   public String getCountry() {
+    if(country != null){
+      return country.trim();
+    }
     return country;
   }
 
@@ -59,6 +65,10 @@ public class AddressInfoCommand {
    * @return  String
    */
   public String getFullAddress() {
+    if(fullAddress != null){
+      // remove the illegal characters
+      return fullAddress.replace(".", "");
+    }
     return fullAddress;
   }
 
@@ -70,6 +80,9 @@ public class AddressInfoCommand {
    * @return  String
    */
   public String getFullName() {
+    if(fullName != null){
+      return fullName.trim();
+    }
     return fullName;
   }
 
@@ -92,12 +105,15 @@ public class AddressInfoCommand {
    * @return  String
    */
   public String getProvince() {
+    if (province != null){
+      return province.trim();
+    }
     return province;
   }
   
   public String getJDProvince(){
     if(province != null){
-      return province.replace("省", "").replace("市", "");
+      return province.trim().replace("省", "").replace("市", "");
     }
     return province;
   }
