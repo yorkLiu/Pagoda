@@ -183,20 +183,38 @@
       <version>${commons-io.version}</version>
     </dependency>
 
+    <!--<dependency>-->
+      <!--<groupId>org.springframework</groupId>-->
+      <!--<artifactId>spring-core</artifactId>-->
+      <!--<version>${spring.version}</version>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+      <!--<groupId>org.springframework</groupId>-->
+      <!--<artifactId>spring-beans</artifactId>-->
+      <!--<version>${spring.version}</version>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+      <!--<groupId>org.springframework</groupId>-->
+      <!--<artifactId>spring-context</artifactId>-->
+      <!--<version>${spring.version}</version>-->
+    <!--</dependency>-->
+
     <!--http://www.oschina.net/p/jbrowserdriver-->
     <!--https://github.com/MachinePublishers/jBrowserDriver#readme-->
-    <dependency>
-      <groupId>com.machinepublishers</groupId>
-      <artifactId>jbrowserdriver</artifactId>
-      <version>0.16.3</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.machinepublishers</groupId>-->
+      <!--<artifactId>jbrowserdriver</artifactId>-->
+      <!--<version>0.16.3</version>-->
+    <!--</dependency>-->
 
-    <dependency>
-      <groupId>net.lightbody.bmp</groupId>
-      <artifactId>browsermob-core</artifactId>
-      <version>2.1.4</version>
-      <!--<scope>test</scope>-->
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>net.lightbody.bmp</groupId>-->
+      <!--<artifactId>browsermob-core</artifactId>-->
+      <!--<version>2.1.4</version>-->
+      <!--&lt;!&ndash;<scope>test</scope>&ndash;&gt;-->
+    <!--</dependency>-->
 
     <!--<dependency>-->
       <!--<groupId>com.ice.jni</groupId>-->
@@ -225,26 +243,52 @@
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
         <configuration>
-          <!--<archive>-->
-            <!--<manifest>-->
-              <!--<mainClass>com.ly.MainEntrance</mainClass>-->
-            <!--</manifest>-->
-          <!--</archive>-->
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>com.ly.web.OrderEntrance</mainClass>
+            </manifest>
+          </archive>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

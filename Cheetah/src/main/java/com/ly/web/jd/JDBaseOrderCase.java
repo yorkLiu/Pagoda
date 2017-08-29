@@ -1,11 +1,13 @@
 package com.ly.web.jd;
 
 import com.ly.config.JDOrderConfig;
+import com.ly.file.FileWriter;
 import com.ly.proxy.PagodaProxyProcessor;
 import com.ly.proxy.ProxyProcessor;
 import com.ly.web.base.SeleniumBaseObject;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.constant.Constant;
+import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.exceptions.LoginFailedException;
 import com.ly.web.writer.OrderWriter;
 import org.apache.commons.logging.Log;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 import org.testng.annotations.BeforeTest;
 
 import java.util.LinkedList;
@@ -43,20 +46,25 @@ public class JDBaseOrderCase extends SeleniumBaseObject {
 
   @Autowired  protected ProxyProcessor proxyProcessor;
   @Autowired  protected PagodaProxyProcessor pagodaProxyProcessor;
+  @Autowired  protected FileWriter fileWriter;
 
 
   @BeforeTest
   public void init(){
-    ApplicationContext parent = new ClassPathXmlApplicationContext(applicationContext);
-    ApplicationContext context = new ClassPathXmlApplicationContext(JD_Configs, parent);
-    context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
-      AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+    try {
+      ApplicationContext parent = new ClassPathXmlApplicationContext(applicationContext);
+      ApplicationContext context = new ClassPathXmlApplicationContext(JD_Configs, parent);
+      context.getAutowireCapableBeanFactory().autowireBeanProperties(this,
+        AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
 
-    this.webDriverProperties = jdOrderConfig;
-    if (null == orderWriter){
-      orderWriter = (OrderWriter)context.getBean("orderWriter");
+      this.webDriverProperties = jdOrderConfig;
+      if (null == orderWriter) {
+        orderWriter = (OrderWriter) context.getBean("orderWriter");
+      }
+      initProperties();
+    }catch (Exception e){
+      e.printStackTrace();
     }
-    initProperties();
   }
 
   @Override protected void initProperties() {
@@ -84,6 +92,15 @@ public class JDBaseOrderCase extends SeleniumBaseObject {
         throw new LoginFailedException("Failed to login with user: " + orderCommand.getUsername());
       }
 
+    } catch (AccountLockedException e){
+      loginSuccess = Boolean.FALSE;
+      // write this orderNo to file.
+      if(orderWriter != null){
+        String noneOrderId="None-Order-ID";
+        String content = StringUtils.arrayToDelimitedString(new String[]{orderCommand.getUsername(), orderCommand.getPassword(), noneOrderId}, "/");
+        orderWriter.writeToFileln(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
+      }
+      logger.error(e.getMessage(), e);
     } catch (Exception e) {
       loginSuccess = Boolean.FALSE;
       logger.error(e.getMessage());
@@ -103,5 +120,13 @@ public class JDBaseOrderCase extends SeleniumBaseObject {
 
   public void setPagodaProxyProcessor(PagodaProxyProcessor pagodaProxyProcessor) {
     this.pagodaProxyProcessor = pagodaProxyProcessor;
+  }
+
+  public void setOrderWriter(OrderWriter orderWriter) {
+    this.orderWriter = orderWriter;
+  }
+
+  public void setFileWriter(FileWriter fileWriter) {
+    this.fileWriter = fileWriter;
   }
 }

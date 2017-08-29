@@ -50,9 +50,22 @@ public class JDOrderCase extends JDBaseOrderCase {
   @Test(priority = 2)
   private void jdOrder() {
     String driverType = jdOrderConfig.getDriverType();
-    int total = orderCommandList.size();
     int index = 0;
     List<OrderCommand> failedOrders = new LinkedList<>();
+
+    Integer[] rangeIndexes = jdOrderConfig.getRanges();
+     
+    if(rangeIndexes != null){
+      int startIndex = rangeIndexes[0];
+      int endIndex = rangeIndexes[1] != null ? rangeIndexes[1]: orderCommandList.size();
+      startIndex = Math.max(0, startIndex-1);
+      endIndex = Math.min(endIndex, orderCommandList.size());
+      
+      logger.info("rangeIndexes: [" + startIndex + ", " + endIndex + "]");
+      orderCommandList = orderCommandList.subList(startIndex, endIndex);
+    }
+    
+    int total = orderCommandList.size();
 
     if (logger.isDebugEnabled()) {
       logger.debug("Total order list size:" + orderCommandList.size());

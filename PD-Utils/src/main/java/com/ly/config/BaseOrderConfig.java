@@ -48,6 +48,14 @@ public class BaseOrderConfig extends WebDriverProperties {
    */
   protected String useIpProxy;
 
+  /**
+   * How many orders for per instance
+   * i.e:
+   *  instance 1: orderRange=1-10  (means instance 1 will only process 1-10 orders)
+   *  instance 2: orderRange=11-20 (means instance 2 will only process 2-20 orders)
+   */
+  protected String orderRange;
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
@@ -154,6 +162,39 @@ public class BaseOrderConfig extends WebDriverProperties {
 
     return priceOffsets;
   } // end method getPriceOffsets
+  
+  public Integer[] getRanges(){
+    Integer[] ranges = null;
+    
+    if(orderRange != null && StringUtils.hasText(orderRange)){
+      try {
+        String[] tmpRanges = StringUtils.delimitedListToStringArray(StringUtils.deleteAny(orderRange,
+          Constants.SPACER), "-");
+        if (tmpRanges.length > 0) {
+          ranges = new Integer[2];
+        }
+
+        switch (tmpRanges.length) {
+          case 2: {
+            ranges[0] = parseIntSafe(tmpRanges[0].trim());
+            ranges[1] = parseIntSafe(tmpRanges[1].trim());
+
+            break;
+          }
+          case 1: {
+            ranges[0] = parseIntSafe(tmpRanges[0].trim());
+            ranges[1] = null;
+
+            break;
+          }
+        }
+      }catch (Exception e){
+        logger.error(e.getMessage());
+      }
+    }
+    
+    return ranges;
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -283,6 +324,14 @@ public class BaseOrderConfig extends WebDriverProperties {
    */
   public void setUseIpProxy(String useIpProxy) {
     this.useIpProxy = useIpProxy;
+  }
+
+  public String getOrderRange() {
+    return orderRange;
+  }
+
+  public void setOrderRange(String orderRange) {
+    this.orderRange = orderRange;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

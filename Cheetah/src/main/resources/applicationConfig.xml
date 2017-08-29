@@ -4,16 +4,16 @@
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <util:map id="commandLineParams"></util:map>
+<util:map id="commandLineParams"></util:map>
 
-  <bean id="orderWriter" class="com.ly.web.writer.OrderWriter">
-    <property name="workDir" value="${workDir}"/>
-    <property name="delimiter" value="  "/>
-    <property name="fileNamePrefix" value="${orderFileNamePrefix}"/>
-    <property name="headers" value="账号,密码,付款链接,订单号,关键词,姓名,地址,电话,价格,下单时间,商家"/>
-  </bean>
+<bean id="orderWriter" class="com.ly.web.writer.OrderWriter">
+  <property name="workDir" value="${workDir}"/>
+  <property name="delimiter" value="  "/>
+  <property name="fileNamePrefix" value="${orderFileNamePrefix}"/>
+  <property name="headers" value="账号,密码,付款链接,订单号,关键词,姓名,地址,电话,价格,下单时间,商家"/>
+</bean>
 
 </beans>
