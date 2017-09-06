@@ -34,6 +34,7 @@ public class YHDUtils {
   private static final int    COMMENT_CONTENT_COLUMN          = 4;
   private static final int    ONLY_RECEIPT_NOT_COMMENT_COLUMN = 5;
   private static final int    MUST_SELECT_TAG_COLUMN          = 6;
+  private static final int    PROVINCE_COLUMN                 = 7;
 
   private static int INDEX = 1;
 
@@ -158,6 +159,17 @@ public class YHDUtils {
 
         break;
       }
+      
+      case PROVINCE_COLUMN: {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Province " + cellValue );
+        }
+
+        commentsInfo.setProvince(cellValue);
+
+        break;
+      }
+      
     } // end switch
   }   // end method assembleCommentInfoByCell
 

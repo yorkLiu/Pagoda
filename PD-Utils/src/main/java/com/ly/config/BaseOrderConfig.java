@@ -166,10 +166,11 @@ public class BaseOrderConfig extends WebDriverProperties {
   public Integer[] getRanges(){
     Integer[] ranges = null;
     
-    if(orderRange != null && StringUtils.hasText(orderRange)){
+    if ((orderRange != null) && StringUtils.hasText(orderRange) && (!("NA".equalsIgnoreCase(orderRange)))) {
       try {
         String[] tmpRanges = StringUtils.delimitedListToStringArray(StringUtils.deleteAny(orderRange,
-          Constants.SPACER), "-");
+              Constants.SPACER), "-");
+
         if (tmpRanges.length > 0) {
           ranges = new Integer[2];
         }

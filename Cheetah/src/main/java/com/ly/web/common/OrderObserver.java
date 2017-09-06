@@ -129,13 +129,22 @@ public class OrderObserver implements Runnable {
         }
 
         Utils.writeJDOrderInfoToFile(getOrderWriter(), orderResultInfo);
-        
+
+        if (observerDriver.getFailedOrders() != null) {
+          if (logger.isDebugEnabled()) {
+            logger.debug("Remove observer order from failed orders: [" + orderInfo.getUsername() + " - "
+              + orderInfo.getStoreName() + "]");
+          }
+
+          observerDriver.getFailedOrders().remove(orderInfo);
+        }
+
         removeObserver(observerDriver);
-      }
+      } // end if
     } catch (Exception e) {
       throw e;
     } // end try-catch
-  } // end method checkIsOnPaymentPage
+  }   // end method checkIsOnPaymentPage
 
   //~ ------------------------------------------------------------------------------------------------------------------
 

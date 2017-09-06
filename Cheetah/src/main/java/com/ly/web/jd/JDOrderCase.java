@@ -154,7 +154,7 @@ public class JDOrderCase extends JDBaseOrderCase {
         failedOrders.add(orderInfo);
 
         // add this order to observer.
-        addToObserver(orderInfo);
+        addToObserver(orderInfo, failedOrders);
       }
     }
 
@@ -170,7 +170,7 @@ public class JDOrderCase extends JDBaseOrderCase {
     stopObserver();
   }
   
-  private void addToObserver(OrderCommand orderInfo){
+  private void addToObserver(OrderCommand orderInfo, List<OrderCommand> failedOrders){
     try {
       logger.info("Starting observer order......");
       if (jdOrderObserver == null) {
@@ -178,7 +178,7 @@ public class JDOrderCase extends JDBaseOrderCase {
         jdOrderObserver.setOrderWriter(orderWriter);
       }
 
-      jdOrderObserver.addObserverOrder(new ObserverDriver(driver, orderInfo));
+      jdOrderObserver.addObserverOrder(new ObserverDriver(driver, orderInfo, failedOrders));
 
       if (observerThread == null) {
         observerThread = new Thread(jdOrderObserver);

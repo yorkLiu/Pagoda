@@ -212,6 +212,7 @@ public class Comment extends AbstractObject {
       logger.debug("The comment map is: " + commentMap);
     }
 
+    Boolean canSubmit = Boolean.TRUE;
     if ((commentMap != null) && (commentMap.size() > 0)) {
       // check if this page has popped up dialog window.
       checkHasAnyPopWindow();
@@ -228,15 +229,20 @@ public class Comment extends AbstractObject {
         selectTheTags(orderId, sku, mustSelectTagCount);
 
         // 4. input the comments for per production
-        writeComment(sku, commentMap);
+        canSubmit = writeComment(sku, commentMap);
       }
     }
 
-    // delay 10 seconds then submit
-    delay(3);
+    if(canSubmit){
+      // delay 3 seconds then submit
+      delay(3);
 
-    // 5. submit
-    submit(orderId);
+      // 5. submit
+      submit(orderId);
+    } else {
+      logger.warn("The order[" + orderId + "] has commented");
+    }
+   
 
   } // end method comment
 
@@ -281,9 +287,11 @@ public class Comment extends AbstractObject {
       }
       if (key.startsWith(Constant.NONE_SKU_KEY_PREFIX)) {
         tempMap.put(skuList.get(idx), commentMap.get(key));
-      } else if (!skuList.contains(key)) {
-        tempMap.put(skuList.get(idx), commentMap.get(key));
-      } else {
+      }
+//      else if (!skuList.contains(key)) {
+//        tempMap.put(skuList.get(idx), commentMap.get(key));
+//      } 
+      else {
         tempMap.put(key, commentMap.get(key));
       }
 
@@ -753,8 +761,11 @@ public class Comment extends AbstractObject {
   }   // end method submit
 
   //~ ------------------------------------------------------------------------------------------------------------------
+  
+  
 
-  private void writeComment(String sku, Map<String, String> commentMap) {
+  private Boolean writeComment(String sku, Map<String, String> commentMap) {
+    Boolean commentedEntered = Boolean.FALSE;
     if (logger.isDebugEnabled()) {
       logger.debug("Write comment for production[" + sku + "]");
     }
@@ -772,12 +783,15 @@ public class Comment extends AbstractObject {
         if (logger.isDebugEnabled()) {
           logger.debug("Try to find the text area element by xpath: " + PAGE_LOADING_XPATH);
         }
-
-        textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(PAGE_LOADING_XPATH)).apply(
+        
+        if(sku.startsWith(Constant.NONE_SKU_KEY_PREFIX)){
+          textArea = ExpectedConditions.presenceOfElementLocated(By.xpath(PAGE_LOADING_XPATH)).apply(
             webDriver);
+        }
       }
 
       if (textArea != null) {
+        commentedEntered = Boolean.TRUE;
         // wait 5 seconds
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -794,6 +808,8 @@ public class Comment extends AbstractObject {
     } else {
       logger.warn("No sku or sku is empty.");
     } // end if-else
+    
+    return commentedEntered;
   }   // end method writeComment
 
 } // end class Comment

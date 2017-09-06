@@ -1,5 +1,7 @@
 package com.ly.web.command;
 
+import java.util.List;
+
 import org.openqa.selenium.WebDriver;
 
 
@@ -11,6 +13,8 @@ import org.openqa.selenium.WebDriver;
  */
 public class ObserverDriver {
   //~ Instance fields --------------------------------------------------------------------------------------------------
+
+  private List<OrderCommand> failedOrders = null;
 
   private OrderCommand orderInfo;
 
@@ -32,6 +36,12 @@ public class ObserverDriver {
   public ObserverDriver(WebDriver webDriver, OrderCommand orderInfo) {
     this.webDriver = webDriver;
     this.orderInfo = orderInfo;
+  } 
+  
+  public ObserverDriver(WebDriver webDriver, OrderCommand orderInfo, List<OrderCommand> failedOrders) {
+    this.webDriver = webDriver;
+    this.orderInfo = orderInfo;
+    this.failedOrders = failedOrders;
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
@@ -56,6 +66,17 @@ public class ObserverDriver {
 
     return (orderInfo != null) ? orderInfo.equals(that.orderInfo) : (that.orderInfo == null);
 
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for failed orders.
+   *
+   * @return  List
+   */
+  public List<OrderCommand> getFailedOrders() {
+    return failedOrders;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -90,6 +111,17 @@ public class ObserverDriver {
     result = (31 * result) + ((orderInfo != null) ? orderInfo.hashCode() : 0);
 
     return result;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for failed orders.
+   *
+   * @param  failedOrders  List
+   */
+  public void setFailedOrders(List<OrderCommand> failedOrders) {
+    this.failedOrders = failedOrders;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

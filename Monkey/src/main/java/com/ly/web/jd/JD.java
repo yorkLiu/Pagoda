@@ -6,7 +6,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.ly.config.JDConfig;
+import com.ly.config.WebDriverProperties;
+import com.ly.exceptions.LoginFailedException;
 import com.ly.file.FileWriter;
+import com.ly.proxy.PagodaProxyProcessor;
 import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.utils.PagodaOrderSortUtils;
 
@@ -66,6 +69,9 @@ public class JD extends SeleniumBaseObject {
   
   @Autowired
   private FileWriter fileWriter;
+
+  @Autowired  
+  protected PagodaProxyProcessor pagodaProxyProcessor;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -198,7 +204,9 @@ public class JD extends SeleniumBaseObject {
 
 
       // 1. login
+//      boolean loginSuccess = login(!(index > 1), WebDriverProperties.DRIVER_CHROME);//login(!(index > 1));
       boolean loginSuccess = login(!(index > 1));
+      
 
       if (loginSuccess) {
         // 2. confirmReceipt
@@ -326,7 +334,37 @@ public class JD extends SeleniumBaseObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private boolean login(boolean isFirst) {
+  private boolean login(boolean isFirst, String driverType){
+    boolean loginSuccess = Boolean.FALSE;
+    String ipProxy = null;
+    try{
+      ////////////// get the ip proxy by province [start]
+      // find the ip proxy by province
+//      String ipProxy = null;
+      if (useProxy) {
+        ipProxy = pagodaProxyProcessor.getIpProxy(commentsInfo.getJDProvince());
+      }
+
+      ////////////// get the ip proxy by province [end]
+
+      ///////////// init the web driver [start]
+      initWebDriver(driverType, ipProxy);
+      Assert.notNull(driver, "Driver could not be null.");
+      ///////////// init the web driver [end]
+
+      loginSuccess = login(isFirst);
+
+    }catch (Exception e){
+      logger.warn("The ip Proxy["+ipProxy+"] was too slowly, change a new ip proxy.");
+      closeWebDriver();
+      return login(isFirst, driverType);
+    }
+
+    return loginSuccess;
+  }
+  
+
+  private boolean login(boolean isFirst)  throws LoginFailedException {
     boolean loginSuccess = Boolean.TRUE;
     String username  = commentsInfo.getUsername();
     String pwd = commentsInfo.getPassword();
@@ -358,7 +396,7 @@ public class JD extends SeleniumBaseObject {
       loginSuccess = Boolean.FALSE;
       // write this orderNo to file.
       if(fileWriter != null){
-        String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "/");
+        String content = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId()}, "|");
         fileWriter.writeToFileln(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
 
         // locked order write this orderNo to file yet.
@@ -370,6 +408,7 @@ public class JD extends SeleniumBaseObject {
     } catch (Exception e) {
       loginSuccess = Boolean.FALSE;
       logger.error(e.getMessage(), e);
+      throw new LoginFailedException(e);
     } // end try-catch
 
     return loginSuccess;
@@ -398,6 +437,10 @@ public class JD extends SeleniumBaseObject {
 
   public void setFileWriter(FileWriter fileWriter) {
     this.fileWriter = fileWriter;
+  }
+
+  public void setPagodaProxyProcessor(PagodaProxyProcessor pagodaProxyProcessor) {
+    this.pagodaProxyProcessor = pagodaProxyProcessor;
   }
 
   private void writeFailedOrder(){

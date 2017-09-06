@@ -8,7 +8,7 @@ import com.ly.web.base.SeleniumBaseObject;
 import com.ly.web.command.OrderCommand;
 import com.ly.web.constant.Constant;
 import com.ly.web.exceptions.AccountLockedException;
-import com.ly.web.exceptions.LoginFailedException;
+import com.ly.exceptions.LoginFailedException;
 import com.ly.web.writer.OrderWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,7 +97,7 @@ public class JDBaseOrderCase extends SeleniumBaseObject {
       // write this orderNo to file.
       if(orderWriter != null){
         String noneOrderId="None-Order-ID";
-        String content = StringUtils.arrayToDelimitedString(new String[]{orderCommand.getUsername(), orderCommand.getPassword(), noneOrderId}, "/");
+        String content = StringUtils.arrayToDelimitedString(new String[]{orderCommand.getUsername(), orderCommand.getPassword(), noneOrderId}, "|");
         orderWriter.writeToFileln(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
       }
       logger.error(e.getMessage(), e);

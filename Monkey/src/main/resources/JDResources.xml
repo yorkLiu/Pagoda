@@ -29,4 +29,14 @@
     <property name="exclusiveTags" value="${exclusiveTags}"/>
   </bean>
 
+
+  <bean id="pagodaProxyProcessor" class="com.ly.proxy.PagodaProxyProcessor">
+    <property name="ipProxyServiceUrl" value="${ipProxyServiceUrl}"/>
+    <property name="ipProxyRetryServiceUrl" value="${ipProxyRetryServiceUrl}"/>
+    <property name="verifyUrl" value="https://www.jd.com"/>
+    <property name="verifyPassedText" value="京东"/>
+    <property name="allowGetIpAddress" value="false"/>
+    <property name="_allowVerifyIpAddress" value="${allowVerifyIpAddress}"/>
+  </bean>
+
 </beans>

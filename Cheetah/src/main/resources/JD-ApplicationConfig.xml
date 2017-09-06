@@ -32,7 +32,7 @@
     <property name="useIpProxy" value="${useIpProxy}"/>
     <property name="warningVoiceFile" value="${warningVoiceFile}"/>
     <property name="filesPath" value="${filesPath}"/>
-    <property name="orderRange" value="${orderRange}"/>
+    <property name="orderRange" value="${orderRange:NA}"/>
   </bean>
   
   <bean id="proxyProcessor" class="com.ly.proxy.ProxyProcessor">

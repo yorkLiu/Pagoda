@@ -42,6 +42,8 @@ public class CommentsInfo implements Serializable {
   private Integer tagsCount;
 
   private String username;
+  
+  private String province;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -253,6 +255,21 @@ public class CommentsInfo implements Serializable {
    */
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getProvince() {
+    return province;
+  }
+
+  public void setProvince(String province) {
+    this.province = province;
+  }
+
+  public String getJDProvince(){
+    if(province != null){
+      return province.trim().replace("省", "").replace("市", "");
+    }
+    return province;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-package com.ly.web.exceptions;
+package com.ly.exceptions;
 
 /**
  * Created by yongliu on 8/18/17.
