@@ -205,6 +205,7 @@ public class ConfirmOrder extends AbstractObject {
         scrollToElementPosition(submitBtnEle);
         delay(3);
 
+        closeJDPopupWindow();
         submitBtnEle.click();
 
         delay(3);
@@ -215,18 +216,18 @@ public class ConfirmOrder extends AbstractObject {
         stopVoice();
       }
 
-      success = (new WebDriverWait(this.webDriver, 20)).until(new ExpectedCondition<Boolean>() {
+      success = (new WebDriverWait(this.webDriver, 5)).until(new ExpectedCondition<Boolean>() {
         @Override public Boolean apply(WebDriver d) {
           return (!d.getCurrentUrl().contains("cart"));
         }
       });
     } catch (TimeoutException ex){
-      if (index > 2){
+      if (index <= 3){
         logger.info("-----refresh page....");
         refreshPage();
         delay(4);
+        return submitBtnClick(username, password, ++index);
       }
-      return submitBtnClick(username, password, ++index);
     }catch (Exception e){
       logger.error(e.getMessage(), e);
     }
@@ -255,6 +256,7 @@ public class ConfirmOrder extends AbstractObject {
         if (isChecked) {
           scrollToElementPosition(checkAllEle);
           delay(2);
+          closeJDPopupWindow();
           checkAllEle.click();
 
           if (logger.isDebugEnabled()) {
@@ -290,6 +292,7 @@ public class ConfirmOrder extends AbstractObject {
           if (!itemCheckFlag) {
             scrollToElementPosition(checkBoxEle);
             delay(2);
+            closeJDPopupWindow();
             checkBoxEle.click();
 
             if (logger.isDebugEnabled()) {
@@ -368,6 +371,7 @@ public class ConfirmOrder extends AbstractObject {
             logger.debug("Click 'Login' button");
           }
 
+          closeJDPopupWindow();
           loginBtnEle.click();
         }
 

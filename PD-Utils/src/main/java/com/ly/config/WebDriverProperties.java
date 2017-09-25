@@ -6,6 +6,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.springframework.util.StringUtils;
 
+import com.ly.utils.ExcelUtils;
+
 
 /**
  * Created by yongliu on 11/2/16.
@@ -14,11 +16,9 @@ import org.springframework.util.StringUtils;
  * @version  11/02/2016 16:57
  */
 public abstract class WebDriverProperties implements InitializingBean {
-  //~ Instance fields --------------------------------------------------------------------------------------------------
+  //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
-  /** DOCUMENT ME! */
-  protected Logger logger = Logger.getLogger(getClass());
-
+  /** TODO: DOCUMENT ME! */
   public static final String DRIVER_CHROME = "chrome";
 
   /** TODO: DOCUMENT ME! */
@@ -26,6 +26,11 @@ public abstract class WebDriverProperties implements InitializingBean {
 
   /** TODO: DOCUMENT ME! */
   public static final String DRIVER_IE = "ie";
+
+  //~ Instance fields --------------------------------------------------------------------------------------------------
+
+  /** DOCUMENT ME! */
+  protected Logger logger = Logger.getLogger(getClass());
 
   private String chromeDriverPath;
 
@@ -35,6 +40,12 @@ public abstract class WebDriverProperties implements InitializingBean {
 
   /** only using when comment. */
   private Integer maxDelaySecondsForNext;
+
+  /**
+   * The flag of turn on or off the unlock account automatic. By default is 'FALSE' <code>Value: TRUE, Y, FALSE,
+   * N</code>
+   */
+  private String unlockAccountAutomatic;
 
   /** when the login page show need input valid code, play voice file to warning. */
   private String warningVoiceFile;
@@ -60,6 +71,25 @@ public abstract class WebDriverProperties implements InitializingBean {
    */
   public String getChromeDriverPath() {
     return chromeDriverPath;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for driver type.
+   *
+   * @return  String
+   */
+  public String getDriverType() {
+    if ((getChromeDriverPath() != null) && StringUtils.hasText(getChromeDriverPath())) {
+      return DRIVER_CHROME;
+    } else if ((getFirefoxDriverPath() != null) && StringUtils.hasText(getFirefoxDriverPath())) {
+      return DRIVER_FIREFOX;
+    } else if ((getIeDriverPath() != null) && StringUtils.hasText(getIeDriverPath())) {
+      return DRIVER_IE;
+    }
+
+    return null;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -108,6 +138,21 @@ public abstract class WebDriverProperties implements InitializingBean {
     }
 
     return maxDelaySecondsForNext;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for unlock account automatic.
+   *
+   * @return  Boolean
+   */
+  public Boolean getUnlockAccountAutomatic() {
+    if (null == unlockAccountAutomatic) {
+      return Boolean.FALSE;
+    }
+
+    return ExcelUtils.getBooleanValue(unlockAccountAutomatic);
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -187,22 +232,22 @@ public abstract class WebDriverProperties implements InitializingBean {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for unlock account automatic.
+   *
+   * @param  unlockAccountAutomatic  String
+   */
+  public void setUnlockAccountAutomatic(String unlockAccountAutomatic) {
+    this.unlockAccountAutomatic = unlockAccountAutomatic;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for warning voice file.
    *
    * @param  warningVoiceFile  String
    */
   public void setWarningVoiceFile(String warningVoiceFile) {
     this.warningVoiceFile = warningVoiceFile;
-  }
-  
-  public String getDriverType(){
-    if(getChromeDriverPath() != null && StringUtils.hasText(getChromeDriverPath())){
-      return DRIVER_CHROME;
-    } else if(getFirefoxDriverPath() != null && StringUtils.hasText(getFirefoxDriverPath())){
-      return DRIVER_FIREFOX;
-    } else if(getIeDriverPath() != null && StringUtils.hasText(getIeDriverPath())){
-      return DRIVER_IE;
-    }
-    return null;
   }
 } // end class WebDriverProperties

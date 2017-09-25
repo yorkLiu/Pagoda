@@ -68,7 +68,7 @@ public class JDSearch extends AbstractObject {
   }
 
 
-  public boolean search(ItemInfoCommand itemInfo, OrderCommand orderInfo) throws PageNotLoadedException,
+  public boolean search(ItemInfoCommand itemInfo, OrderCommand orderInfo, int index) throws PageNotLoadedException,
     SearchException {
     Boolean found     = Boolean.TRUE;
     String  keyword   = itemInfo.getKeyword();
@@ -81,22 +81,39 @@ public class JDSearch extends AbstractObject {
     Assert.notNull(keyword);
 
     try {
-      if (!webDriver.getCurrentUrl().equalsIgnoreCase(Constant.JD_INDEX_PAGE_URL)) {
-        navigateTo(Constant.JD_INDEX_PAGE_URL);
-      }
+      Boolean needRedirectToIndexPage = Boolean.FALSE;
+      
+      if (index == 0 && !webDriver.getCurrentUrl().equalsIgnoreCase(Constant.JD_INDEX_PAGE_URL)) {
+        needRedirectToIndexPage = Boolean.TRUE;
+      } else if(index > 0){
+        try{
+          waitForById(elementKeywordID, null);
 
-      // check the page is loaded.
-      waitForById(elementKeywordID, null);
+          closeTabsExcept(webDriver.getCurrentUrl());
+          delay(2);
+          
+        }catch (TimeoutException teo){
+          needRedirectToIndexPage = Boolean.TRUE;
+        }
+      }
+      
+      if(needRedirectToIndexPage){
+        navigateTo(Constant.JD_INDEX_PAGE_URL);
+        // check the page is loaded.
+        waitForById(elementKeywordID, null);
+      }
 
       // find the search element
-      WebElement searchElement = ExpectedConditions.presenceOfElementLocated(By.id(elementKeywordID)).apply(webDriver);
-
-      if (searchElement != null) {
-        searchElement.sendKeys(keyword);
-        searchElement.sendKeys(Keys.ENTER); // press enter
+//      WebElement searchElement = ExpectedConditions.presenceOfElementLocated(By.id(elementKeywordID)).apply(webDriver);
+//
+//      if (searchElement != null) {
+//        searchElement.sendKeys(keyword);
+//        searchElement.sendKeys(Keys.ENTER); // press enter
+//      }
+      
+      if(waitForSearchAfterClickSearchBtn(keyword, 0)){
+        findProduction(itemInfo, orderInfo);
       }
-
-      findProduction(itemInfo, orderInfo);
       
     } catch (TimeoutException ex) {
       found = Boolean.FALSE;
@@ -110,6 +127,29 @@ public class JDSearch extends AbstractObject {
 
     return found;
 
+  }
+  
+  private Boolean waitForSearchAfterClickSearchBtn(String keyword, int index){
+    try {
+      WebElement searchElement = ExpectedConditions.presenceOfElementLocated(By.id(elementKeywordID)).apply(webDriver);
+
+      if (searchElement != null) {
+        searchElement.sendKeys(keyword);
+        searchElement.sendKeys(Keys.ENTER); // press enter
+        
+        delay(3);
+        if(!webDriver.getCurrentUrl().contains("search")){
+          throw new RuntimeException("The URL was not change, will refresh current page to try again.");
+        }
+      }
+    }catch (Exception e){
+      refreshPage();
+      if (index <= 3){
+        return waitForSearchAfterClickSearchBtn(keyword, ++index);  
+      }
+    }
+    
+    return Boolean.TRUE;
   }
   
   private Integer getTotalPageNumber(){
@@ -141,6 +181,7 @@ public class JDSearch extends AbstractObject {
     Boolean result = searchProductionOnPage(productionInfo, currentPageNum, totalPageNum);
     if(result){
       orderInfo.setStoreName(productionInfo.getStoreName());
+      orderInfo.addPageInfo(itemInfo.getKeyword(), productionInfo.getPageNum());
     }
     
     return result;
@@ -163,6 +204,8 @@ public class JDSearch extends AbstractObject {
       logger.info(">>>>>>>>>>>> Will buy this production by visit the url: " + ulr);
 
       webDriver.get(ulr);
+
+      productionInfo.setPageNum(ProductionInfo.DIRECT_PAGE);
 
       return Boolean.TRUE;
     }
@@ -223,8 +266,10 @@ public class JDSearch extends AbstractObject {
           WebElement nextBtn = parentLiEle.findElement(By.xpath("div/div[contains(@class, 'p-scroll')]/span[contains(@class, 'ps-nex')]"));
           
           if (nextBtn.isEnabled()){
+            closeJDPopupWindow();
             nextBtn.click();
           } else if(prevBtn.isEnabled()){
+            closeJDPopupWindow();
             prevBtn.click();
           }
           delay(2);
@@ -254,6 +299,7 @@ public class JDSearch extends AbstractObject {
           WebElement clickEle = ExpectedConditions.elementToBeClickable(iconEle).apply(webDriver);
           if (clickEle != null){
             delay(1);
+            closeJDPopupWindow();
             clickEle.click();
           }
 
@@ -328,6 +374,7 @@ public class JDSearch extends AbstractObject {
     WebElement element = ExpectedConditions.elementToBeClickable(By.xpath(mainImageXpath)).apply(webDriver);
 
 
+    closeJDPopupWindow();
     element.click();
   } // end method searchAndOpenProduction
 
@@ -370,6 +417,8 @@ public class JDSearch extends AbstractObject {
       productionInfo.setPrice(new BigDecimal(price));
       productionInfo.setProductionName(productName);
       productionInfo.setProductionUrl(getSKUUrl(Constant.JD_ITEM_URL_PREFIX, productionInfo.getSku()));
+      productionInfo.setPageNum(getCurrentPageNumber().toString());
+      
     }catch (Exception e){
       logger.error(e.getMessage(), e);
     }
@@ -427,6 +476,7 @@ public class JDSearch extends AbstractObject {
             clickedProductionCount++;
             scrollToElementPosition(production);
             delay(2);
+            closeJDPopupWindow();
             production.click();
             delay(2);
           }
@@ -486,6 +536,7 @@ public class JDSearch extends AbstractObject {
 
       delay(2);
 
+      closeJDPopupWindow();
       nextPageBtn.click();
 
       

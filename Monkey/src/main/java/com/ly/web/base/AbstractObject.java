@@ -1,10 +1,15 @@
 package com.ly.web.base;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import com.ly.model.SMSReceiverInfo;
+import com.ly.suma.api.ApiService;
 import com.ly.web.constant.Constant;
 import com.ly.web.exceptions.AccountLockedException;
 import org.apache.commons.lang.StringUtils;
@@ -176,19 +181,39 @@ public abstract class AbstractObject {
    */
   public void switchWindow(String targetPartUrl) {
     for (String handle : this.webDriver.getWindowHandles()) {
-      if (!handle.equalsIgnoreCase(this.webDriver.getWindowHandle())) {
-        this.webDriver.switchTo().window(handle);
+      this.webDriver.switchTo().window(handle);
 
-        if (this.webDriver.getCurrentUrl().contains(targetPartUrl)) {
-          if (logger.isDebugEnabled()) {
-            logger.debug("switchWindow:" + this.webDriver.getCurrentUrl());
-          }
-
-          break;
+      if (this.webDriver.getCurrentUrl().contains(targetPartUrl)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("switchWindow:" + this.webDriver.getCurrentUrl());
         }
+
+        break;
       }
     }
 
+  }
+  
+  public void closeTabsExcept(String url){
+    String activeTab = null;
+    for (String tab : this.webDriver.getWindowHandles()) {
+      WebDriver currentTab = webDriver.switchTo().window(tab);
+      String currentUrl = currentTab.getCurrentUrl();
+      
+      if (!currentUrl.contains(url)) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Close tab: " + currentUrl);
+        }
+        currentTab.close();
+      } else {
+        activeTab = tab;
+      }
+    }
+    
+    activeTab = activeTab != null? activeTab : this.webDriver.getWindowHandles().iterator().next();
+    if(activeTab != null){
+      webDriver.switchTo().window(activeTab);
+    }
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -472,6 +497,140 @@ public abstract class AbstractObject {
     }
   }
   
+  protected String bindMobilePhoneToUnlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNumber){
+    String bindPhoneNum = null;
+    if(this.webDriver.getCurrentUrl().contains(Constant.JD_ACCOUNT_LOCKED_URL_PREFIX)){
+      WebElement historyMobileEl = null;
+      try {
+        historyMobileEl = this.webDriver.findElement(By.id("historyMobile"));
+
+        WebElement bindMobilePhoneEl = this.webDriver.findElement(By.id("mobile"));
+//        WebElement bindMobilePhoneBtn = this.webDriver.findElement(By.id("sendMobileCode"));
+        WebElement codeEl = this.webDriver.findElement(By.id("code"));
+        
+        historyMobileEl.clear();
+        historyMobileEl.sendKeys(orderPhoneNumber);
+
+
+        if(!smsReceiverInfo.isLogin()){
+          String token = ApiService.login(smsReceiverInfo.getUsername(), smsReceiverInfo.getPassword());
+          if(token != null && org.springframework.util.StringUtils.hasText(token)){
+            smsReceiverInfo.setToken(token);
+          } else {
+            logger.error("SMS Platform login failed....");
+            return null;
+          }
+        }
+        
+        // get user infomation
+        String userInfo = ApiService.getUserInfo(smsReceiverInfo.getUsername(), smsReceiverInfo.getToken());
+        logger.info("SMS Platform user info: " + userInfo);
+        String[] infos = userInfo.split(";");
+        String score = infos[1];
+        Integer balance = new Integer(infos[2]);
+        String maxGetCount = infos[3];
+
+        System.out.println("****************************INFO****************************");
+        System.out.println(String.format("积分: %s, 余额: %s, 可同时获取号码数: %s", score, (balance/100.00), maxGetCount));
+        System.out.println("************************************************************");
+        
+        String phoneNumber = getPhoneNumberFromPlatForm(smsReceiverInfo.getPid(), smsReceiverInfo, 0);
+        bindMobilePhoneEl.clear();
+        bindMobilePhoneEl.sendKeys(phoneNumber);
+        
+        
+        // get the message from the phone number.
+        String message = getVCodeFromPhoneNum(smsReceiverInfo, phoneNumber, 0);
+        String vCodeFromSms = ApiService.getVCodeFromSms(message);
+        codeEl.clear();
+        codeEl.sendKeys(vCodeFromSms);
+        
+        String submitScriptTpl = "function func2(){ var retVal; $.ajaxSetup({async: false}); $.get('https://safe.jd.com/dangerousVerify/bindMobile.action?code=$code$&k=$k&historyMobile=$historyMobile$&t=$t&eid=$eid&fp=$fp'.replace('$k', $('#sendMobileCode').attr('href').match(/'(.*)'/)[1]).replace('$t',new Date().getTime()).replace('$eid', $('#eid').val()).replace('$fp', $('#fp').val()),"
+          + "function(data){"
+          + "retVal =  data ? data.resultCode+'|' + data.resultMessage : 'ERROR';"
+          + "}, 'json'); return retVal;} return func2();";
+        
+        
+        String submitScript =submitScriptTpl.replace("$code$", vCodeFromSms).replace("$historyMobile$", orderPhoneNumber);
+
+        String resultCode = (String)executeJavaScript(submitScript);
+        
+        logger.info("---resultCode:" + resultCode);
+        if(resultCode != null && resultCode.startsWith("0")){
+          bindPhoneNum = phoneNumber;
+          logger.info("The Phone number["+phoneNumber+"] has bind successfully.");
+        }
+        
+      }catch(NoSuchElementException e){
+        logger.error("This account has bind the phone");
+      }
+    }
+    
+    return bindPhoneNum;
+  }
+  
+  protected String getVCodeFromPhoneNum(SMSReceiverInfo smsReceiverInfo, String phoneNumber, int index){
+    String retMsg = null;
+    String message = ApiService.getVcodeAndReleaseMobile(smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), phoneNumber, smsReceiverInfo.getAuthorID());
+    if(message.startsWith(phoneNumber)){
+      logger.info("SMS was received, message: " + message);
+      retMsg = message.split("\\|")[1];
+    } else if(message.contains("not_receive")) {
+      if(index<=15){
+        logger.warn("SMS receive error, will wait 2 seconds and try again.");
+        delay(2);
+        return getVCodeFromPhoneNum(smsReceiverInfo, phoneNumber, ++index);
+      } else {
+        logger.warn("The phone [" + phoneNumber + "] was not received message.");
+      }
+    }
+    
+    return retMsg;
+  }
+  
+  
+  protected String getPhoneNumberFromPlatForm(String pid, SMSReceiverInfo smsReceiverInfo, int index){
+    String verifyPhoneScript="function getOne(){var retVal; $.ajaxSetup({async: false}); $.get('https://safe.jd.com/dangerousVerify/getCode.action?mobile=%2B0086$phone$&k=$k&t=$t'.replace('$k', ($('#sendMobileCode').attr('href')).match(/'(.*)'/)[1]).replace('$t', new Date().getTime()), function(data){var result = data.resultCode+'|'; result= data.resultCode == '0'? result+data.retryNum : result+data.resultMessage; retVal = result;}, 'json'); return retVal;} return getOne();";
+    String[] phoneNumbers = ApiService.getMobileNums(pid, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), 5);
+    List<String> ignorePhones = new ArrayList<>();
+
+    if(phoneNumbers != null){
+      String foundedPhoneNum = null;
+      for (String phoneNumber : phoneNumbers) {
+        // verify is the phone number has been binded 
+        String script = verifyPhoneScript.replace("$phone$", phoneNumber);
+        String retInfo = (String)executeJavaScript(script);
+        String resultCode = retInfo.split("\\|")[0];
+        if("0".equalsIgnoreCase(resultCode)){
+          foundedPhoneNum =  phoneNumber;
+        } else {
+          logger.error(retInfo);
+          ignorePhones.add(phoneNumber);
+        }
+      }
+      
+      if(ignorePhones.size() > 0){
+        String mobiles = org.springframework.util.StringUtils.arrayToDelimitedString(ignorePhones.toArray(), ",");
+        ApiService.addIgnore(mobiles, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), smsReceiverInfo.getPid());
+      }
+      
+      if(foundedPhoneNum != null && org.springframework.util.StringUtils.hasText(foundedPhoneNum)){
+        return foundedPhoneNum;
+      }
+    }
+    
+//    if(index <= 6){
+//      delay(2);
+//      return getPhoneNumberFromPlatForm(pid, smsReceiverInfo, ++index);
+//    }
+//    
+//    return null;
+
+    delay(2);
+    return getPhoneNumberFromPlatForm(pid, smsReceiverInfo, ++index);
+  }
+  
+  
   protected String getSKUUrl(String prefix, String sku){
     return String.format(prefix, sku);
   }
@@ -534,6 +693,10 @@ public abstract class AbstractObject {
 
   protected boolean isCurrentPage(String currentWebDriveUrl, String currentPageUrl){
     return currentWebDriveUrl.contains(currentPageUrl);
+  }
+  
+  protected void closeJDPopupWindow(){
+    executeJavaScript("$($('.ui-dialog-close')[0]).click()");
   }
 
 } // end class AbstractObject

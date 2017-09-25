@@ -27,6 +27,7 @@
     <property name="warningVoiceFile" value="${warningVoiceFile}"/>
     <property name="filesPath" value="${filesPath}"/>
     <property name="exclusiveTags" value="${exclusiveTags}"/>
+    <property name="unlockAccountAutomatic" value="${unlockAccountAutomatic}"/>
   </bean>
 
 
@@ -37,6 +38,13 @@
     <property name="verifyPassedText" value="京东"/>
     <property name="allowGetIpAddress" value="false"/>
     <property name="_allowVerifyIpAddress" value="${allowVerifyIpAddress}"/>
+  </bean>
+  
+  <bean id="smsReceiverInfo" class="com.ly.model.SMSReceiverInfo">
+    <property name="username" value="${sms_username}"/>
+    <property name="password" value="${sms_password}"/>
+    <property name="pid" value="${sms_projectId}"/>
+    <property name="authorID" value="devPagodaUpperMe"/>
   </bean>
 
 </beans>

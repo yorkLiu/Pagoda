@@ -10,9 +10,16 @@ import java.math.BigDecimal;
  * @version  10/10/2016 15:29
  */
 public class ProductionInfo {
+  //~ Static fields/initializers ---------------------------------------------------------------------------------------
+
+  /** TODO: DOCUMENT ME! */
+  public static final String DIRECT_PAGE = "Direct";
+
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
   private String merchantId;
+
+  private String pageNum;
 
   private BigDecimal price;
 
@@ -40,6 +47,17 @@ public class ProductionInfo {
    */
   public String getMerchantId() {
     return merchantId;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for page num.
+   *
+   * @return  String
+   */
+  public String getPageNum() {
+    return pageNum;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -133,6 +151,17 @@ public class ProductionInfo {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for page num.
+   *
+   * @param  pageNum  String
+   */
+  public void setPageNum(String pageNum) {
+    this.pageNum = pageNum;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for price.
    *
    * @param  price  BigDecimal
@@ -209,7 +238,6 @@ public class ProductionInfo {
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
-
 
   /**
    * @see  java.lang.Object#toString()

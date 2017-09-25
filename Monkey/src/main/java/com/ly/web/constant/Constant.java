@@ -77,6 +77,7 @@ public class Constant {
   
   public static final String JD_ACCOUNT_FOLDER_NAME= ACCOUNT_FOLDER_NAME +File.separator + "JD-Account" + File.separator;
   public static final String JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Account-Locked";
+  public static final String JD_ACCOUNT_UNLOCKED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Account-UnLocked";
   public static final String JD_ACCOUNT_COMMENT_FAILED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Comment-Failed";
   
   

@@ -38,6 +38,8 @@
     <module>Lion</module>
     <!--services-->
     <module>Rabbit</module>
+    <!--SMS Recever-->
+    <module>Rooster</module>
     <!--Estimation-->
     <module>Monkey</module>
     <!--Pagoda Manager Desktop-->

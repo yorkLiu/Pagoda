@@ -1,5 +1,6 @@
 package com.ly.web.jd;
 
+import com.ly.model.SMSReceiverInfo;
 import com.ly.web.constant.Constant;
 import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.voice.VoicePlayer;
@@ -66,22 +67,19 @@ public class Login extends AbstractObject {
     }
     
     try {
-      
-      String pageState = (String) executeJavaScript("return document.readyState;");
-      System.out.println("----pageState: " + pageState);
-      
-      String uuidV = (String) executeJavaScript("return $('#uuid').val();");
-
-      System.out.println("-----uuidV: " + uuidV);
-      
-      if(uuidV != null && StringUtils.hasText(uuidV)){
-        return Boolean.TRUE;
+      WebElement vCodeDive = this.webDriver.findElement(By.id("o-authcode"));
+      if(vCodeDive.isDisplayed()){
+        String vcodepng = (String)executeJavaScript("return $('#JD_Verification1').attr('src')");
+        if(vcodepng != null && StringUtils.hasText(vcodepng)){
+          return Boolean.TRUE;
+        }
+        
+        throw new TimeoutException("The Login page css was not loaded, login failed.");
       }
-
-      throw new TimeoutException("The Login page css was not loaded, login failed.");
     }catch (Exception e){
       if(isCurrentPage(webDriver.getCurrentUrl(), "login")){
         refreshPage();
+        delay(3);
         return checkPageCssLoaded(++index);
       }
     }
@@ -250,4 +248,9 @@ public class Login extends AbstractObject {
 
     return loginSuccess;
   } // end method login
+  
+  
+  public String unlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNum){
+    return bindMobilePhoneToUnlockAccount(smsReceiverInfo, orderPhoneNum);
+  }
 } // end class Login

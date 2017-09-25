@@ -466,16 +466,43 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
   }
   
   
-  protected void closeWebDriver(){
-    if(driver != null){
+  /**
+   * closeWebDriver.
+   */
+  protected void closeWebDriver() {
+    if (driver != null) {
       driver.quit();
     }
   }
   
-  protected void printCommentedInfo(int total, int lockedCount, int failedCount){
+  /**
+   * printCommentedInfo.
+   *
+   * @param  total        int
+   * @param  lockedCount  int
+   * @param  failedCount  int
+   */
+  protected void printCommentedInfo(int total, int lockedCount, int failedCount) {
     System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     System.out.println("Total: " + total);
     System.out.println("Locked Account Count: " + lockedCount);
+    System.out.println("Failed Commented Count: " + failedCount);
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  }
+
+  /**
+   * printCommentedInfo.
+   *
+   * @param  total          int
+   * @param  lockedCount    int
+   * @param  unlockedCount  int
+   * @param  failedCount    int
+   */
+  protected void printCommentedInfo(int total, int lockedCount, int unlockedCount, int failedCount) {
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    System.out.println("Total: " + total);
+    System.out.println("Locked Account Count: " + lockedCount);
+    System.out.println("UnLocked Account Count: " + unlockedCount);
     System.out.println("Failed Commented Count: " + failedCount);
     System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
   }

@@ -187,6 +187,9 @@ public class OrderWriter extends FileWriter {
 
         // append order date
         ((appendOrderDateTime != null) && appendOrderDateTime) ? now : "",
+        
+        // append the every item in page info
+        orderResultInfo.getPageInfo(),
 
         // new line
         DEFAULT_LINE_SEPARATOR

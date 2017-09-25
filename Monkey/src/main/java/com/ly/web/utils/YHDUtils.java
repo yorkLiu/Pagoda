@@ -30,11 +30,13 @@ public class YHDUtils {
   private static final int    ORDER_ID_COLUMN                 = 0;
   private static final int    USER_NAME_COLUMN                = 1;
   private static final int    PASSWORD_COLUMN                 = 2;
-  private static final int    SKU_COLUMN                      = 3;
-  private static final int    COMMENT_CONTENT_COLUMN          = 4;
-  private static final int    ONLY_RECEIPT_NOT_COMMENT_COLUMN = 5;
-  private static final int    MUST_SELECT_TAG_COLUMN          = 6;
-  private static final int    PROVINCE_COLUMN                 = 7;
+  private static final int    ORDER_PHONE_NUMBER_COLUMN       = 3;
+  private static final int    SKU_COLUMN                      = 4;
+  private static final int    COMMENT_CONTENT_COLUMN          = 5;
+  private static final int    ONLY_RECEIPT_NOT_COMMENT_COLUMN = 6;
+  private static final int    MUST_SELECT_TAG_COLUMN          = 7;
+  private static final int    PROVINCE_COLUMN                 = 8;
+  
 
   private static int INDEX = 1;
 
@@ -166,6 +168,16 @@ public class YHDUtils {
         }
 
         commentsInfo.setProvince(cellValue);
+
+        break;
+      }
+      
+      case ORDER_PHONE_NUMBER_COLUMN: {
+        if (logger.isDebugEnabled()) {
+          logger.debug("phone number " + cellValue );
+        }
+
+        commentsInfo.setOrderPhoneNumber(cellValue);
 
         break;
       }

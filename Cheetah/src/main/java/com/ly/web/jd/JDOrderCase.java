@@ -109,8 +109,10 @@ public class JDOrderCase extends JDBaseOrderCase {
           boolean addedToShoppingCar = Boolean.FALSE;
           boolean canCheckoutOrder = Boolean.FALSE;
           boolean orderSubmitted = Boolean.FALSE;
+          int itemIndex = 0;
           for (ItemInfoCommand itemInfo : orderInfo.getItems()) {
-            boolean founded = search(orderInfo, itemInfo);
+            boolean founded = search(orderInfo, itemInfo, itemIndex);
+            itemIndex ++;
             
             if(founded){
               addedToShoppingCar = addToShoppingCar(itemInfo, orderInfo);
@@ -230,7 +232,7 @@ public class JDOrderCase extends JDBaseOrderCase {
     return loginSuccess;
   }
 
-  private boolean search(OrderCommand orderInfo, ItemInfoCommand itemInfo) throws PageNotLoadedException, SearchException {
+  private boolean search(OrderCommand orderInfo, ItemInfoCommand itemInfo, int index) throws PageNotLoadedException, SearchException {
     if (logger.isDebugEnabled()) {
       logger.debug(">>>>>>>>2. Search by keyword: " + itemInfo.getKeyword() + ">>>>>>>>>>>>");
     }
@@ -240,7 +242,7 @@ public class JDOrderCase extends JDBaseOrderCase {
     searchEngine.setMaxSearchPageNum(jdOrderConfig.getMaxSearchPageNum());
     searchEngine.setPriceOffsets(jdOrderConfig.getPriceOffsets());
 
-    return searchEngine.search(itemInfo, orderInfo);
+    return searchEngine.search(itemInfo, orderInfo, index);
   }
 
   private boolean addToShoppingCar(ItemInfoCommand itemInfo, OrderCommand orderInfo) {

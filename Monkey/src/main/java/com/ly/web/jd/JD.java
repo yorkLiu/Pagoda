@@ -9,6 +9,7 @@ import com.ly.config.JDConfig;
 import com.ly.config.WebDriverProperties;
 import com.ly.exceptions.LoginFailedException;
 import com.ly.file.FileWriter;
+import com.ly.model.SMSReceiverInfo;
 import com.ly.proxy.PagodaProxyProcessor;
 import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.utils.PagodaOrderSortUtils;
@@ -62,6 +63,7 @@ public class JD extends SeleniumBaseObject {
   private static final String[] JD_Config = new String[]{"JDResources.xml"};
   
   private int lockedAccountCount=0;
+  private int unlockedAccountCount=0;
   private int failedCommentAccountCount=0;
   
   @Autowired
@@ -72,6 +74,9 @@ public class JD extends SeleniumBaseObject {
 
   @Autowired  
   protected PagodaProxyProcessor pagodaProxyProcessor;
+  
+  @Autowired
+  protected SMSReceiverInfo smsReceiverInfo;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -261,7 +266,7 @@ public class JD extends SeleniumBaseObject {
     
     driver.close();
 
-    printCommentedInfo(total, lockedAccountCount, failedCommentAccountCount);
+    printCommentedInfo(total, lockedAccountCount, unlockedAccountCount, failedCommentAccountCount);
   } // end method readComment
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -368,13 +373,14 @@ public class JD extends SeleniumBaseObject {
     boolean loginSuccess = Boolean.TRUE;
     String username  = commentsInfo.getUsername();
     String pwd = commentsInfo.getPassword();
+    Login login = null;
     try {
       if (logger.isDebugEnabled()) {
         logger.debug("Starting login....");
         logger.debug("Open Login Page:" + Constant.JD_LOGIN_PAGE_URL);
       }
 
-      Login login = new Login(driver, Constant.JD_LOGIN_PAGE_URL, voiceFilePath);
+      login = new Login(driver, Constant.JD_LOGIN_PAGE_URL, voiceFilePath);
 
       if (logger.isDebugEnabled()) {
         logger.debug("Login JD with username: " + username + "and password: XXXXX");
@@ -400,11 +406,26 @@ public class JD extends SeleniumBaseObject {
         fileWriter.writeToFileln(Constant.JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX, content);
 
         // locked order write this orderNo to file yet.
-        if(fileWriter != null){
-          fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
-        }
+//        if(fileWriter != null){
+//          fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+//        }
       }
-      logger.error(e.getMessage(), e);
+      // try to unlock the account
+      if(jdConfig.getUnlockAccountAutomatic()){
+        String bindPhoneNumber = login.unlockAccount(smsReceiverInfo, commentsInfo.getOrderPhoneNumber());
+        if(bindPhoneNumber != null && StringUtils.hasText(bindPhoneNumber)){
+          unlockedAccountCount++;
+          logger.info("*****Unlock account [" + username + "] with bind phone number: [" + bindPhoneNumber + "] successfully.*****");
+          loginSuccess = Boolean.TRUE;
+          String unclockContent = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId(), bindPhoneNumber}, "|");
+          fileWriter.writeToFileln(Constant.JD_ACCOUNT_UNLOCKED_FILE_NAME_PREFIX, unclockContent);
+          
+          this.driver.navigate().to(Constant.JD_MY_ORDER_URL);
+          delay(3);
+        }
+      } else {
+        logger.error(e.getMessage(), e);
+      }
     } catch (Exception e) {
       loginSuccess = Boolean.FALSE;
       logger.error(e.getMessage(), e);
@@ -441,6 +462,10 @@ public class JD extends SeleniumBaseObject {
 
   public void setPagodaProxyProcessor(PagodaProxyProcessor pagodaProxyProcessor) {
     this.pagodaProxyProcessor = pagodaProxyProcessor;
+  }
+
+  public void setSmsReceiverInfo(SMSReceiverInfo smsReceiverInfo) {
+    this.smsReceiverInfo = smsReceiverInfo;
   }
 
   private void writeFailedOrder(){

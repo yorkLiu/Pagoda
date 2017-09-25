@@ -6,6 +6,7 @@ import com.ly.web.constant.Constant;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -157,8 +158,17 @@ public class ShoppingCar extends AbstractObject {
       if (logger.isDebugEnabled()) {
         logger.debug("Ready to fire click addShopping car button.");
       }
-
-      addToShoppingCarBtn.click();
+      
+      try {
+        closeJDPopupWindow();
+        addToShoppingCarBtn.click();
+      }catch (WebDriverException we){
+        logger.error(we.getMessage(), we);
+        logger.info("Will refresh current page and do it again.");
+        refreshPage();
+        delay(3);
+        addProductionToShoppingCar(sku);
+      }
       
       Boolean pickedUp =(new WebDriverWait(this.webDriver, 30)).until(new ExpectedCondition<Boolean>() {
         @Override public Boolean apply(WebDriver d) {
@@ -169,18 +179,6 @@ public class ShoppingCar extends AbstractObject {
       if (logger.isDebugEnabled()) {
         logger.debug("The sku[" + sku + "] added to shopping car successfully, please visit my shopping car to view");
       }
-      
-      // check the add to shopping car is successfully.
-//      WebElement goToShoppingCarBtn = ExpectedConditions.visibilityOfElementLocated(By.id(GO_TO_SHOPPING_CAR_BUTTON_ID))
-//        .apply(webDriver);
-//
-//      if (goToShoppingCarBtn != null) {
-//        if (logger.isDebugEnabled()) {
-//          logger.debug("The sku[" + sku + "] added to shopping car successfully, please visit my shopping car to view");
-//        }
-//      } else {
-//        // TODO add shopping car failed.
-//      }
 
     } catch (NoSuchElementException e) {
       logger.error("Add sku[" + sku + "] to shopping car failed.");

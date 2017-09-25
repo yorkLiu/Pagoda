@@ -44,6 +44,8 @@ public class CommentsInfo implements Serializable {
   private String username;
   
   private String province;
+  
+  private String orderPhoneNumber;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -270,6 +272,14 @@ public class CommentsInfo implements Serializable {
       return province.trim().replace("省", "").replace("市", "");
     }
     return province;
+  }
+
+  public String getOrderPhoneNumber() {
+    return orderPhoneNumber;
+  }
+
+  public void setOrderPhoneNumber(String orderPhoneNumber) {
+    this.orderPhoneNumber = orderPhoneNumber;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------

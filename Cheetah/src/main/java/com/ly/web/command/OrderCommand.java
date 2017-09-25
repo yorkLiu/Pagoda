@@ -1,6 +1,8 @@
 package com.ly.web.command;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -23,17 +25,18 @@ public class OrderCommand {
 
   private Set<ItemInfoCommand> items = new HashSet<>();
 
-  private String orderPrice;
-
-  private String password;
-
-  private String username;
-  
   /**订单备注*/
   private String orderCommentText;
-  
-  private String usedIpProxy;
+
+  private String       orderPrice;
+  private List<String> pagesInfo = new ArrayList<>();
+
+  private String password;
   private String storeName;
+
+  private String usedIpProxy;
+
+  private String username;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -65,6 +68,63 @@ public class OrderCommand {
       items.add(itemInfoCommand);
     }
   }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * addPageInfo.
+   *
+   * @param  pageInfo  String
+   */
+  public void addPageInfo(String pageInfo) {
+    // pageInfo will be: keyword: pageNum
+    this.pagesInfo.add(pageInfo);
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * addPageInfo.
+   *
+   * @param  keyword  String
+   * @param  pageNum  String
+   */
+  public void addPageInfo(String keyword, String pageNum) {
+    addPageInfo(String.format("%s:%s", keyword, pageNum));
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * @see  java.lang.Object#equals(java.lang.Object)
+   */
+  @Override public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if ((o == null) || (getClass() != o.getClass())) {
+      return false;
+    }
+
+    OrderCommand that = (OrderCommand) o;
+
+    if ((items != null) ? (!items.equals(that.items)) : (that.items != null)) {
+      return false;
+    }
+
+    if ((username != null) ? (!username.equals(that.username)) : (that.username != null)) {
+      return false;
+    }
+
+    if ((usedIpProxy != null) ? (!usedIpProxy.equals(that.usedIpProxy)) : (that.usedIpProxy != null)) {
+      return false;
+    }
+
+    return (storeName != null) ? storeName.equals(that.storeName) : (that.storeName == null);
+
+  } // end method equals
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -117,12 +177,34 @@ public class OrderCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for order comment text.
+   *
+   * @return  String
+   */
+  public String getOrderCommentText() {
+    return orderCommentText;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for order price.
    *
    * @return  String
    */
   public String getOrderPrice() {
     return orderPrice;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for pages info.
+   *
+   * @return  List
+   */
+  public List<String> getPagesInfo() {
+    return pagesInfo;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -139,12 +221,59 @@ public class OrderCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for province.
+   *
+   * @return  String
+   */
+  public String getProvince() {
+    return (addressInfo != null) ? addressInfo.getProvince() : null;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for store name.
+   *
+   * @return  String
+   */
+  public String getStoreName() {
+    return storeName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for used ip proxy.
+   *
+   * @return  String
+   */
+  public String getUsedIpProxy() {
+    return usedIpProxy;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for username.
    *
    * @return  String
    */
   public String getUsername() {
     return username;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * @see  java.lang.Object#hashCode()
+   */
+  @Override public int hashCode() {
+    int result = (items != null) ? items.hashCode() : 0;
+    result = (31 * result) + ((username != null) ? username.hashCode() : 0);
+    result = (31 * result) + ((usedIpProxy != null) ? usedIpProxy.hashCode() : 0);
+    result = (31 * result) + ((storeName != null) ? storeName.hashCode() : 0);
+
+    return result;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -205,12 +334,34 @@ public class OrderCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for order comment text.
+   *
+   * @param  orderCommentText  String
+   */
+  public void setOrderCommentText(String orderCommentText) {
+    this.orderCommentText = orderCommentText;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for order price.
    *
    * @param  orderPrice  String
    */
   public void setOrderPrice(String orderPrice) {
     this.orderPrice = orderPrice;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for pages info.
+   *
+   * @param  pagesInfo  List
+   */
+  public void setPagesInfo(List<String> pagesInfo) {
+    this.pagesInfo = pagesInfo;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -227,40 +378,34 @@ public class OrderCommand {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for store name.
+   *
+   * @param  storeName  String
+   */
+  public void setStoreName(String storeName) {
+    this.storeName = storeName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for used ip proxy.
+   *
+   * @param  usedIpProxy  String
+   */
+  public void setUsedIpProxy(String usedIpProxy) {
+    this.usedIpProxy = usedIpProxy;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for username.
    *
    * @param  username  String
    */
   public void setUsername(String username) {
     this.username = username;
-  }
-  
-  public String getProvince(){
-    return addressInfo != null ? addressInfo.getProvince() : null;
-  }
-
-  public String getOrderCommentText() {
-    return orderCommentText;
-  }
-
-  public void setOrderCommentText(String orderCommentText) {
-    this.orderCommentText = orderCommentText;
-  }
-
-  public String getUsedIpProxy() {
-    return usedIpProxy;
-  }
-
-  public void setUsedIpProxy(String usedIpProxy) {
-    this.usedIpProxy = usedIpProxy;
-  }
-
-  public String getStoreName() {
-    return storeName;
-  }
-
-  public void setStoreName(String storeName) {
-    this.storeName = storeName;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -278,29 +423,5 @@ public class OrderCommand {
     sb.append('}');
 
     return sb.toString();
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    OrderCommand that = (OrderCommand) o;
-
-    if (items != null ? !items.equals(that.items) : that.items != null) return false;
-    if (username != null ? !username.equals(that.username) : that.username != null) return false;
-    if (usedIpProxy != null ? !usedIpProxy.equals(that.usedIpProxy) : that.usedIpProxy != null) return false;
-    return storeName != null ? storeName.equals(that.storeName) : that.storeName == null;
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = items != null ? items.hashCode() : 0;
-    result = 31 * result + (username != null ? username.hashCode() : 0);
-    result = 31 * result + (usedIpProxy != null ? usedIpProxy.hashCode() : 0);
-    result = 31 * result + (storeName != null ? storeName.hashCode() : 0);
-    return result;
   }
 } // end class OrderCommand

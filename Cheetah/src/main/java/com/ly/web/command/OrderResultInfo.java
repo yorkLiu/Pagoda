@@ -1,6 +1,7 @@
 package com.ly.web.command;
 
 import com.gargoylesoftware.htmlunit.util.StringUtils;
+
 import com.ly.utils.Constants;
 
 
@@ -21,17 +22,19 @@ public class OrderResultInfo {
 
   private String orderNo;
 
+  private String pageInfo;
+
   private String password;
 
   private String paymentUrl;
 
   private String price;
 
-  private String username;
-  
-  private String usedIpProxy;
-  
   private String storeName;
+
+  private String usedIpProxy;
+
+  private String username;
 
   //~ Constructors -----------------------------------------------------------------------------------------------------
 
@@ -54,6 +57,7 @@ public class OrderResultInfo {
     this.keyword     = orderCommand.popupKeyword();
     this.storeName   = orderCommand.getStoreName();
     this.usedIpProxy = orderCommand.getUsedIpProxy();
+    this.pageInfo    = (orderCommand.getPagesInfo().size() > 0) ? orderCommand.getPagesInfo().toString() : "NA";
   }
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
@@ -107,6 +111,17 @@ public class OrderResultInfo {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * getter method for page info.
+   *
+   * @return  String
+   */
+  public String getPageInfo() {
+    return pageInfo;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * getter method for password.
    *
    * @return  String
@@ -135,6 +150,32 @@ public class OrderResultInfo {
    */
   public String getPrice() {
     return price;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for store name.
+   *
+   * @return  String
+   */
+  public String getStoreName() {
+    return storeName;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * getter method for used ip proxy.
+   *
+   * @return  String
+   */
+  public String getUsedIpProxy() {
+    if ((usedIpProxy == null) || !org.springframework.util.StringUtils.hasText(usedIpProxy)) {
+      return "NA";
+    }
+
+    return usedIpProxy;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -195,6 +236,17 @@ public class OrderResultInfo {
   //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
+   * setter method for page info.
+   *
+   * @param  pageInfo  String
+   */
+  public void setPageInfo(String pageInfo) {
+    this.pageInfo = pageInfo;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
    * setter method for password.
    *
    * @param  password  String
@@ -227,24 +279,27 @@ public class OrderResultInfo {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  public String getUsedIpProxy() {
-    if(usedIpProxy == null || !org.springframework.util.StringUtils.hasText(usedIpProxy)){
-      return "NA";
-    }
-    return usedIpProxy;
+  /**
+   * setter method for store name.
+   *
+   * @param  storeName  String
+   */
+  public void setStoreName(String storeName) {
+    this.storeName = storeName;
   }
 
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * setter method for used ip proxy.
+   *
+   * @param  usedIpProxy  String
+   */
   public void setUsedIpProxy(String usedIpProxy) {
     this.usedIpProxy = usedIpProxy;
   }
 
-  public String getStoreName() {
-    return storeName;
-  }
-
-  public void setStoreName(String storeName) {
-    this.storeName = storeName;
-  }
+  //~ ------------------------------------------------------------------------------------------------------------------
 
   /**
    * setter method for username.
@@ -252,8 +307,6 @@ public class OrderResultInfo {
    * @param  username  String
    */
   public void setUsername(String username) {
-    
-    
     this.username = username;
   }
 
