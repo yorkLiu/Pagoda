@@ -179,7 +179,7 @@ def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
         p_cmc_ticket_status = str(cmc_issue_status).replace('(', '').replace(')', '').replace(' ', '-').strip().upper()
         # do_reopen_flag= not ("PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA'))
         do_reopen_flag= "REJECTED" in p_cmc_ticket_status
-        append_today_label_flag= not ("PENDING" in p_cmc_ticket_status or "PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA'))
+        append_today_label_flag= not ("PENDING" in p_cmc_ticket_status or "PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA', 'OPEN-PM'))
 
         # append today's label to this issue.
         ticket_status = issue.fields.status.name
@@ -452,9 +452,10 @@ def update_oz_ticket_extra_info(oz_issue, cmc_issue, linkedIssue=None, epicIssue
                     oz_jira.create_issue_link('Relates', oz_issue.key, linkKey)
 
         if epicIssues:
-            if str(oz_issue.type.name).lower() == 'epic':
-                log.info("[%s] Linked Epic issues....[%s]", oz_issue.key, ','.join(epicIssues))
-                oz_jira.add_issues_to_epic(oz_issue.key, epicIssues)
+            if str(oz_issue.fields.issuetype.name).lower() == 'epic':
+                parentEpicIssueKey = oz_issue.key
+                log.info("[%s] Linked Epic issues....[%s]", parentEpicIssueKey, ','.join(epicIssues))
+                oz_jira.add_issues_to_epic(parentEpicIssueKey, epicIssues)
 
             else:
                 log.warn("Ignore link the Epic issues [%s], because this issue [%s] type not 'Epic', it's '%s'", ','.join(epicIssues), oz_issue.key, oz_issue.type.name)
@@ -673,6 +674,9 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, linkedIssu
         'reporter': {'name': oz_jira_default_assignee_reporter}
         # 'environment': oz_jira_env_text.format(cmcTicketNo=cmcTicketNo, branch=', '.join(branch_names))
     }
+
+    if issue_type_name == 'Epic':
+        issue_dic['customfield_10023'] = 'Epic for %s' % cmcTicketNo
 
     new_issue = oz_jira.create_issue(fields=issue_dic)
 
