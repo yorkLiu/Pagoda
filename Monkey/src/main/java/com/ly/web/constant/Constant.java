@@ -74,6 +74,7 @@ public class Constant {
   public static final String NONE_SKU_KEY_PREFIX="NONE-SKU-";
   
   public static final String JD_COMMENT_FILE_NAME_PREFIX="JD-Comment";
+  public static final String JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX="JD-CouldNot-Comment";
   
   public static final String JD_ACCOUNT_FOLDER_NAME= ACCOUNT_FOLDER_NAME +File.separator + "JD-Account" + File.separator;
   public static final String JD_ACCOUNT_LOCKED_FILE_NAME_PREFIX=JD_ACCOUNT_FOLDER_NAME + "JD-Account-Locked";

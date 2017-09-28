@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -82,6 +83,15 @@ public class FileWriter implements InitializingBean {
       logger.error(e.getMessage());
     }
 
+    return orderNoList;
+  }
+
+  public List<String> getTodayCommentedOrdersFromFiles(String... fileNamePrefix) {
+    List<String> orderNoList = new ArrayList<>();
+    for (String fpx : fileNamePrefix) {
+      orderNoList.addAll(getTodayCommentedOrdersFromFile(fpx));
+    }
+    
     return orderNoList;
   }
 

@@ -1,5 +1,10 @@
 package com.ly.web.jd;
 
+import com.ly.exceptions.HistoryPhoneIncorrectException;
+import com.ly.exceptions.NotReceiveMessageException;
+import com.ly.exceptions.SendSmsFrequencyException;
+import com.ly.exceptions.SendSmsOutOfMaxCountException;
+import com.ly.exceptions.UnknownPhoneNumberException;
 import com.ly.model.SMSReceiverInfo;
 import com.ly.web.constant.Constant;
 import com.ly.web.exceptions.AccountLockedException;
@@ -250,7 +255,9 @@ public class Login extends AbstractObject {
   } // end method login
   
   
-  public String unlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNum){
+  public String unlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNum) throws SendSmsFrequencyException,
+    NotReceiveMessageException, HistoryPhoneIncorrectException, UnknownPhoneNumberException, 
+    SendSmsOutOfMaxCountException {
     return bindMobilePhoneToUnlockAccount(smsReceiverInfo, orderPhoneNum);
   }
 } // end class Login

@@ -153,7 +153,7 @@ public class Comment extends AbstractObject {
         }
       } catch (NoSuchElementException e) {
         if (logger.isDebugEnabled()) {
-          logger.debug("Order[" + orderId + "] has not commented. No need comment again. Skip it.");
+          logger.debug("Order[" + orderId + "] has commented. No need comment again. Skip it.");
         }
 
         return;

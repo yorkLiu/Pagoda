@@ -7,7 +7,12 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.ly.config.JDConfig;
 import com.ly.config.WebDriverProperties;
+import com.ly.exceptions.HistoryPhoneIncorrectException;
 import com.ly.exceptions.LoginFailedException;
+import com.ly.exceptions.NotReceiveMessageException;
+import com.ly.exceptions.SendSmsFrequencyException;
+import com.ly.exceptions.SendSmsOutOfMaxCountException;
+import com.ly.exceptions.UnknownPhoneNumberException;
 import com.ly.file.FileWriter;
 import com.ly.model.SMSReceiverInfo;
 import com.ly.proxy.PagodaProxyProcessor;
@@ -58,6 +63,7 @@ public class JD extends SeleniumBaseObject {
   private CommentsInfo commentsInfo = null;
 
   private List<CommentsInfo> commentsInfoList = new LinkedList<>();
+  private List<CommentsInfo> failedCommentList = new LinkedList<>();
 
   private static final String applicationContext = "applicationContext-resources.xml";
   private static final String[] JD_Config = new String[]{"JDResources.xml"};
@@ -139,7 +145,8 @@ public class JD extends SeleniumBaseObject {
   public void checkOrderNo() {
     logger.info(">>>>>Start check the order number...... -" + commentsInfoList.size()+"-");
     if (commentsInfoList != null && commentsInfoList.size() > 0) {
-      List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.JD_COMMENT_FILE_NAME_PREFIX);
+//      List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFile(Constant.JD_COMMENT_FILE_NAME_PREFIX);
+      List<String> commentedOrders = fileWriter.getTodayCommentedOrdersFromFiles(Constant.JD_COMMENT_FILE_NAME_PREFIX, Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX);
 
       List<CommentsInfo> actualList = new LinkedList<>();
       if (commentedOrders != null && commentedOrders.size() > 0) {
@@ -206,7 +213,14 @@ public class JD extends SeleniumBaseObject {
       }
 
       this.commentsInfo = commentsInfo;
-
+      
+      if(commentsInfo.getStartDelayTimeStamp() != null){
+        long terms = System.currentTimeMillis() - commentsInfo.getStartDelayTimeStamp();
+        Long seconds = terms / 1000;
+        if (seconds < 120){
+          delay(seconds.intValue() - 120 + 1);
+        }
+      }
 
       // 1. login
 //      boolean loginSuccess = login(!(index > 1), WebDriverProperties.DRIVER_CHROME);//login(!(index > 1));
@@ -259,6 +273,16 @@ public class JD extends SeleniumBaseObject {
         checkDriver(vCodeCountMap);
       } // end if
     }   // end for
+    
+    if(!failedCommentList.isEmpty() && failedCommentList.size() > 0){
+      logger.info("Try to Comment the failed order.....");
+      logger.info("Total failed comment order size: " + failedCommentList.size());
+      commentsInfoList.clear();
+      commentsInfoList.addAll(failedCommentList);
+      failedCommentList.clear();
+      readComment();
+    }
+    
 
     if (logger.isDebugEnabled()) {
       logger.debug("Comment successfully, close the web driver.");
@@ -412,16 +436,41 @@ public class JD extends SeleniumBaseObject {
       }
       // try to unlock the account
       if(jdConfig.getUnlockAccountAutomatic()){
-        String bindPhoneNumber = login.unlockAccount(smsReceiverInfo, commentsInfo.getOrderPhoneNumber());
-        if(bindPhoneNumber != null && StringUtils.hasText(bindPhoneNumber)){
-          unlockedAccountCount++;
-          logger.info("*****Unlock account [" + username + "] with bind phone number: [" + bindPhoneNumber + "] successfully.*****");
-          loginSuccess = Boolean.TRUE;
-          String unclockContent = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId(), bindPhoneNumber}, "|");
-          fileWriter.writeToFileln(Constant.JD_ACCOUNT_UNLOCKED_FILE_NAME_PREFIX, unclockContent);
-          
-          this.driver.navigate().to(Constant.JD_MY_ORDER_URL);
-          delay(3);
+        try {
+          String bindPhoneNumber = login.unlockAccount(smsReceiverInfo, commentsInfo.getOrderPhoneNumber());
+          if (bindPhoneNumber != null && StringUtils.hasText(bindPhoneNumber)) {
+            unlockedAccountCount++;
+            logger.info("*****Unlock account [" + username + "] with bind phone number: [" + bindPhoneNumber + "] successfully.*****");
+            loginSuccess = Boolean.TRUE;
+            String unclockContent = StringUtils.arrayToDelimitedString(new String[]{username, pwd, commentsInfo.getOrderId(), bindPhoneNumber}, "|");
+            fileWriter.writeToFileln(Constant.JD_ACCOUNT_UNLOCKED_FILE_NAME_PREFIX, unclockContent);
+
+            this.driver.navigate().to(Constant.JD_MY_ORDER_URL);
+            delay(3);
+          }
+        }catch (SendSmsFrequencyException sfex){
+          commentsInfo.setStartDelayTimeStamp(sfex.getTimeStamp());
+          failedCommentList.add(commentsInfo);
+          logger.error(sfex.getMessage());
+        } catch (NotReceiveMessageException nmex){
+          commentsInfo.setStartDelayTimeStamp(nmex.getTimeStamp());
+          failedCommentList.add(commentsInfo);
+          logger.error(nmex.getMessage());
+        } catch (HistoryPhoneIncorrectException hex){
+          logger.error(hex.getMessage());
+          if(fileWriter != null){
+            fileWriter.writeToFile(Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+          }
+        } catch (UnknownPhoneNumberException upe){
+          logger.error(upe.getMessage());
+          if(fileWriter != null){
+            fileWriter.writeToFile(Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+          }
+        } catch (SendSmsOutOfMaxCountException soe){
+          logger.error(soe.getMessage());
+          if(fileWriter != null){
+            fileWriter.writeToFile(Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+          }
         }
       } else {
         logger.error(e.getMessage(), e);

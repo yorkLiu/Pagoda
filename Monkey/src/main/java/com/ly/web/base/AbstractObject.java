@@ -8,6 +8,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import com.ly.exceptions.HistoryPhoneIncorrectException;
+import com.ly.exceptions.NotReceiveMessageException;
+import com.ly.exceptions.SendSmsFrequencyException;
+import com.ly.exceptions.SendSmsOutOfMaxCountException;
+import com.ly.exceptions.UnknownPhoneNumberException;
 import com.ly.model.SMSReceiverInfo;
 import com.ly.suma.api.ApiService;
 import com.ly.web.constant.Constant;
@@ -497,15 +502,13 @@ public abstract class AbstractObject {
     }
   }
   
-  protected String bindMobilePhoneToUnlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNumber){
+  protected String bindMobilePhoneToUnlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNumber) throws SendSmsFrequencyException{
     String bindPhoneNum = null;
     if(this.webDriver.getCurrentUrl().contains(Constant.JD_ACCOUNT_LOCKED_URL_PREFIX)){
-      WebElement historyMobileEl = null;
       try {
-        historyMobileEl = this.webDriver.findElement(By.id("historyMobile"));
+        WebElement historyMobileEl = this.webDriver.findElement(By.id("historyMobile"));
 
         WebElement bindMobilePhoneEl = this.webDriver.findElement(By.id("mobile"));
-//        WebElement bindMobilePhoneBtn = this.webDriver.findElement(By.id("sendMobileCode"));
         WebElement codeEl = this.webDriver.findElement(By.id("code"));
         
         historyMobileEl.clear();
@@ -561,8 +564,10 @@ public abstract class AbstractObject {
           logger.info("The Phone number["+phoneNumber+"] has bind successfully.");
         }
         
-      }catch(NoSuchElementException e){
-        logger.error("This account has bind the phone");
+      }catch(org.openqa.selenium.NoSuchElementException e){
+        String errorMsg = "This account has bind the phone, but could not get the binded phone.";
+        logger.error(errorMsg);
+        throw new UnknownPhoneNumberException(errorMsg);
       }
     }
     
@@ -576,12 +581,15 @@ public abstract class AbstractObject {
       logger.info("SMS was received, message: " + message);
       retMsg = message.split("\\|")[1];
     } else if(message.contains("not_receive")) {
-      if(index<=15){
+      if(index<=20){
         logger.warn("SMS receive error, will wait 2 seconds and try again.");
         delay(2);
         return getVCodeFromPhoneNum(smsReceiverInfo, phoneNumber, ++index);
       } else {
-        logger.warn("The phone [" + phoneNumber + "] was not received message.");
+        String errorMsg = "The phone [" + phoneNumber + "] was not received message.";
+        logger.warn(errorMsg);
+        ApiService.addIgnore(phoneNumber, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), smsReceiverInfo.getPid());
+        throw new NotReceiveMessageException(System.currentTimeMillis(), errorMsg);
       }
     }
     
@@ -589,32 +597,65 @@ public abstract class AbstractObject {
   }
   
   
-  protected String getPhoneNumberFromPlatForm(String pid, SMSReceiverInfo smsReceiverInfo, int index){
+  protected String getPhoneNumberFromPlatForm(String pid, SMSReceiverInfo smsReceiverInfo, int index) throws SendSmsFrequencyException{
     String verifyPhoneScript="function getOne(){var retVal; $.ajaxSetup({async: false}); $.get('https://safe.jd.com/dangerousVerify/getCode.action?mobile=%2B0086$phone$&k=$k&t=$t'.replace('$k', ($('#sendMobileCode').attr('href')).match(/'(.*)'/)[1]).replace('$t', new Date().getTime()), function(data){var result = data.resultCode+'|'; result= data.resultCode == '0'? result+data.retryNum : result+data.resultMessage; retVal = result;}, 'json'); return retVal;} return getOne();";
     String[] phoneNumbers = ApiService.getMobileNums(pid, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), 5);
     List<String> ignorePhones = new ArrayList<>();
+    
+    SendSmsFrequencyException sendSmsFrequencyException = null;
+    HistoryPhoneIncorrectException historyPhoneIncorrectException = null;
+    SendSmsOutOfMaxCountException sendSmsOutOfMaxCountException = null; 
 
-    if(phoneNumbers != null){
+    if(phoneNumbers != null && phoneNumbers.length > 0){
       String foundedPhoneNum = null;
+      ignorePhones.addAll(Arrays.asList(phoneNumbers));
       for (String phoneNumber : phoneNumbers) {
         // verify is the phone number has been binded 
         String script = verifyPhoneScript.replace("$phone$", phoneNumber);
         String retInfo = (String)executeJavaScript(script);
-        String resultCode = retInfo.split("\\|")[0];
-        if("0".equalsIgnoreCase(resultCode)){
+//        String resultCode = retInfo.split("\\|")[0];
+        if(retInfo.startsWith("0")){
           foundedPhoneNum =  phoneNumber;
+          ignorePhones.remove(foundedPhoneNum);
+          logger.info("Found the phone number: " + phoneNumber);
+          break;
+        } else if(retInfo.startsWith("503")){
+          // 503|发送手机验证码时间间隔小于120秒，不允许发送
+          sendSmsFrequencyException = new SendSmsFrequencyException(System.currentTimeMillis(), retInfo);
+          break;
+        } else if(retInfo.startsWith("504")){
+          //504|发送验证码条数超过最大限制
+          sendSmsOutOfMaxCountException = new SendSmsOutOfMaxCountException(retInfo);
+          break;
+        } else if(retInfo.startsWith("804")) {
+          // 804|历史订单手机号错误
+          historyPhoneIncorrectException = new HistoryPhoneIncorrectException(retInfo);
+          break;
         } else {
-          logger.error(retInfo);
-          ignorePhones.add(phoneNumber);
+          logger.error("The phone number [" + phoneNumber + "] " + retInfo);
         }
       }
       
       if(ignorePhones.size() > 0){
         String mobiles = org.springframework.util.StringUtils.arrayToDelimitedString(ignorePhones.toArray(), ",");
+        logger.info("Release the phone numbers: " + mobiles);
         ApiService.addIgnore(mobiles, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), smsReceiverInfo.getPid());
       }
       
+      if(sendSmsFrequencyException != null){
+        throw sendSmsFrequencyException;
+      }
+      
+      if(sendSmsOutOfMaxCountException != null){
+        throw sendSmsOutOfMaxCountException;
+      }
+      
+      if(historyPhoneIncorrectException != null){
+        throw historyPhoneIncorrectException;
+      }
+      
       if(foundedPhoneNum != null && org.springframework.util.StringUtils.hasText(foundedPhoneNum)){
+        logger.info("Founded the phone number[" + foundedPhoneNum + "]");
         return foundedPhoneNum;
       }
     }

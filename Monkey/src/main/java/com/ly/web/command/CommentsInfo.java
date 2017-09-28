@@ -47,6 +47,11 @@ public class CommentsInfo implements Serializable {
   
   private String orderPhoneNumber;
 
+  /**
+   * @startDelayTimeStamp Using for send SMS, store the start time stamp for first sending sms time.
+   */
+  private Long startDelayTimeStamp;
+
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
   /**
@@ -280,6 +285,14 @@ public class CommentsInfo implements Serializable {
 
   public void setOrderPhoneNumber(String orderPhoneNumber) {
     this.orderPhoneNumber = orderPhoneNumber;
+  }
+
+  public Long getStartDelayTimeStamp() {
+    return startDelayTimeStamp;
+  }
+
+  public void setStartDelayTimeStamp(Long startDelayTimeStamp) {
+    this.startDelayTimeStamp = startDelayTimeStamp;
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
