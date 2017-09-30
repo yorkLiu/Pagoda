@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.ly.core.PagodaRandom;
+import com.ly.web.exceptions.CommentFailedWithoutBindPhone;
 import org.apache.commons.collections.map.HashedMap;
 
 import org.openqa.selenium.By;
@@ -742,6 +743,8 @@ public class Comment extends AbstractObject {
 
       delay(5);
 
+      checkAccountIsBindPhone();
+
       (new WebDriverWait(this.webDriver, 3000)).until(new ExpectedCondition<Boolean>() {
           @Override public Boolean apply(WebDriver d) {
             return (d.getCurrentUrl().contains(Constant.JD_COMMENT_SUCCESS_URL) || d.getCurrentUrl().contains("partFinish"));
@@ -761,6 +764,19 @@ public class Comment extends AbstractObject {
   }   // end method submit
 
   //~ ------------------------------------------------------------------------------------------------------------------
+  
+  private void checkAccountIsBindPhone(){
+    try {
+      WebElement dialog = webDriver.findElement(By.xpath("//div[contains(@class, 'ui-dialog')]"));
+      WebElement content = dialog.findElement(By.xpath("div[contains(@class, 'ui-dialog-content')]"));
+      String contentText = content.getText();
+      if (contentText != null && contentText.contains("未绑定手机号")) {
+        throw new CommentFailedWithoutBindPhone("Comment failed, because of not bind phone.");
+      }
+    }catch (NoSuchElementException e){
+      logger.info("This account has bind phone.");
+    }
+  }
   
   
 

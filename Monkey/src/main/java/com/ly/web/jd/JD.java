@@ -17,6 +17,7 @@ import com.ly.file.FileWriter;
 import com.ly.model.SMSReceiverInfo;
 import com.ly.proxy.PagodaProxyProcessor;
 import com.ly.web.exceptions.AccountLockedException;
+import com.ly.web.exceptions.CommentFailedWithoutBindPhone;
 import com.ly.web.utils.PagodaOrderSortUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -335,6 +336,14 @@ public class JD extends SeleniumBaseObject {
       if (logger.isDebugEnabled()) {
         logger.debug("'Comment' successfully for order#" + commentsInfo.getOrderId());
       }
+    } catch (CommentFailedWithoutBindPhone ex){
+      if(fileWriter != null){
+        fileWriter.writeToFile(Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+
+        String commentFailedWithoutBindPhoneContent = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), commentsInfo.getOrderId()}, "|");
+        fileWriter.writeToFileln(Constant.JD_ACCOUNT_NOT_BIND_PHONE_FILE_NAME_PREFIX, commentFailedWithoutBindPhoneContent);
+      }
+      logger.error(ex.getMessage());
     } catch (Exception e) {
       writeFailedOrder();
       logger.error(e.getMessage(), e);

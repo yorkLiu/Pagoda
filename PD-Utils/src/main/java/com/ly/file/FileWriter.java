@@ -89,7 +89,10 @@ public class FileWriter implements InitializingBean {
   public List<String> getTodayCommentedOrdersFromFiles(String... fileNamePrefix) {
     List<String> orderNoList = new ArrayList<>();
     for (String fpx : fileNamePrefix) {
-      orderNoList.addAll(getTodayCommentedOrdersFromFile(fpx));
+      List<String> ordersFormFile = getTodayCommentedOrdersFromFile(fpx);
+      if(ordersFormFile != null && !ordersFormFile.isEmpty()){
+        orderNoList.addAll(ordersFormFile);
+      }
     }
     
     return orderNoList;
