@@ -575,22 +575,32 @@ public abstract class AbstractObject {
   }
   
   protected String getVCodeFromPhoneNum(SMSReceiverInfo smsReceiverInfo, String phoneNumber, int index){
+    
     String retMsg = null;
-    String message = ApiService.getVcodeAndReleaseMobile(smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), phoneNumber, smsReceiverInfo.getAuthorID());
-    if(message.startsWith(phoneNumber)){
-      logger.info("SMS was received, message: " + message);
-      retMsg = message.split("\\|")[1];
-    } else if(message.contains("not_receive")) {
-      if(index<=20){
-        logger.warn("SMS receive error, will wait 2 seconds and try again.");
-        delay(2);
-        return getVCodeFromPhoneNum(smsReceiverInfo, phoneNumber, ++index);
-      } else {
-        String errorMsg = "The phone [" + phoneNumber + "] was not received message.";
-        logger.warn(errorMsg);
-        ApiService.addIgnore(phoneNumber, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), smsReceiverInfo.getPid());
-        throw new NotReceiveMessageException(System.currentTimeMillis(), errorMsg);
+    try {
+      String message = ApiService.getVcodeAndReleaseMobile(smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), phoneNumber, smsReceiverInfo.getAuthorID());
+      logger.info("***message:" + message);
+      if (message.startsWith(phoneNumber)) {
+        logger.info("SMS was received, message: " + message);
+        retMsg = message.split("\\|")[1];
+      } else if (message.contains("not_receive") || message.contains("try again later")) {
+        if (index <= 20) {
+          logger.warn("SMS receive error, will wait 2 seconds and try again." + index);
+          if(message.contains("try again later")){
+            delay(5);
+          } else {
+            delay(2);
+          }
+          return getVCodeFromPhoneNum(smsReceiverInfo, phoneNumber, ++index);
+        } else {
+          String errorMsg = "The phone [" + phoneNumber + "] was not received message.";
+          logger.warn(errorMsg);
+          ApiService.addIgnore(phoneNumber, smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), smsReceiverInfo.getPid());
+          throw new NotReceiveMessageException(System.currentTimeMillis(), errorMsg);
+        }
       }
+    }catch (Exception e){
+      e.printStackTrace();
     }
     
     return retMsg;
