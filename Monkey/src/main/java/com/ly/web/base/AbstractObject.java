@@ -502,7 +502,7 @@ public abstract class AbstractObject {
     }
   }
   
-  protected String bindMobilePhoneToUnlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNumber) throws SendSmsFrequencyException{
+  protected String bindMobilePhoneToUnlockAccount(SMSReceiverInfo smsReceiverInfo, String orderPhoneNumber) throws SendSmsFrequencyException, NotReceiveMessageException{
     String bindPhoneNum = null;
     if(this.webDriver.getCurrentUrl().contains(Constant.JD_ACCOUNT_LOCKED_URL_PREFIX)){
       try {
@@ -574,10 +574,10 @@ public abstract class AbstractObject {
     return bindPhoneNum;
   }
   
-  protected String getVCodeFromPhoneNum(SMSReceiverInfo smsReceiverInfo, String phoneNumber, int index){
+  protected String getVCodeFromPhoneNum(SMSReceiverInfo smsReceiverInfo, String phoneNumber, int index) throws NotReceiveMessageException{
     
     String retMsg = null;
-    try {
+//    try {
       String message = ApiService.getVcodeAndReleaseMobile(smsReceiverInfo.getUsername(), smsReceiverInfo.getToken(), phoneNumber, smsReceiverInfo.getAuthorID());
       logger.info("***message:" + message);
       if (message.startsWith(phoneNumber)) {
@@ -599,9 +599,9 @@ public abstract class AbstractObject {
           throw new NotReceiveMessageException(System.currentTimeMillis(), errorMsg);
         }
       }
-    }catch (Exception e){
-      e.printStackTrace();
-    }
+//    }catch (Exception e){
+//      logger.error(e.getMessage(), e);
+//    }
     
     return retMsg;
   }
