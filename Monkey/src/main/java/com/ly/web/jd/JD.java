@@ -1,9 +1,12 @@
 package com.ly.web.jd;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import com.ly.config.JDConfig;
 import com.ly.config.WebDriverProperties;
@@ -16,6 +19,7 @@ import com.ly.exceptions.UnknownPhoneNumberException;
 import com.ly.file.FileWriter;
 import com.ly.model.SMSReceiverInfo;
 import com.ly.proxy.PagodaProxyProcessor;
+import com.ly.web.command.OrderInfo;
 import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.exceptions.CommentFailedWithoutBindPhone;
 import com.ly.web.utils.PagodaOrderSortUtils;
@@ -24,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -69,6 +74,7 @@ public class JD extends SeleniumBaseObject {
   private static final String applicationContext = "applicationContext-resources.xml";
   private static final String[] JD_Config = new String[]{"JDResources.xml"};
   
+  private int totalCount = 0;
   private int lockedAccountCount=0;
   private int unlockedAccountCount=0;
   private int failedCommentAccountCount=0;
@@ -174,7 +180,50 @@ public class JD extends SeleniumBaseObject {
         }
       }
     }
+    
     logger.info(">>>>>End check the order number......");
+  }
+
+  /**
+   * Merge order by username and password
+   */
+  @Test(priority = 4)
+  public void mergeOrderInfo(){
+    List<CommentsInfo> mergedCommentInfoList = new ArrayList<>();
+    ///// merge start
+    logger.info(">>>>>>>>>> Start Merge comment info List>>>>>>>>>>>>>>>");
+    logger.info(">>>> Before merge comment info list size is: " + commentsInfoList.size());
+
+    // use username-password as the unique key
+    Map<String, List<CommentsInfo>> tempMap = commentsInfoList.stream().collect(Collectors.groupingBy(CommentsInfo::getUsernameAndPassword));
+    for (String key : tempMap.keySet()) {
+      List<CommentsInfo> tempList = tempMap.get(key);
+      CommentsInfo cmInfo = null;
+      if(tempList.size() > 1){
+        for (CommentsInfo info : tempList) {
+          if(cmInfo == null){
+            cmInfo = info;
+          }
+
+          cmInfo.addOrderInfo(new OrderInfo(info));
+        }
+      } else {
+        cmInfo = tempList.get(0);
+        cmInfo.addOrderInfo(new OrderInfo(cmInfo));
+      }
+
+      if(cmInfo != null){
+        mergedCommentInfoList.add(cmInfo);
+      }
+    }
+
+    logger.info(">>>> After merge comment info list size is: " + mergedCommentInfoList.size());
+    logger.info(">>>>>>>>>> End Merge comment info List>>>>>>>>>>>>>>>");
+
+    commentsInfoList.clear();
+    commentsInfoList.addAll(mergedCommentInfoList);
+    totalCount = commentsInfoList.size();
+    ///// merge end
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -182,7 +231,7 @@ public class JD extends SeleniumBaseObject {
   /**
    * readComment.
    */
-  @Test(priority = 4)
+  @Test(priority = 5)
   public void readComment() {
     int total = commentsInfoList.size();
     int index = 0;
@@ -192,7 +241,7 @@ public class JD extends SeleniumBaseObject {
     }
 
     for (CommentsInfo commentsInfo : commentsInfoList) {
-      long   startTime = System.currentTimeMillis();
+      long startTime = System.currentTimeMillis();
       if ((commentsInfo.getUsername() == null) || !StringUtils.hasText(commentsInfo.getUsername())) {
         if (logger.isDebugEnabled()) {
           logger.debug("This record username is NULL, skip it.");
@@ -214,6 +263,8 @@ public class JD extends SeleniumBaseObject {
       }
 
       this.commentsInfo = commentsInfo;
+
+     
       
       if(commentsInfo.getStartDelayTimeStamp() != null){
         long terms = System.currentTimeMillis() - commentsInfo.getStartDelayTimeStamp();
@@ -229,30 +280,41 @@ public class JD extends SeleniumBaseObject {
       
 
       if (loginSuccess) {
-        // 2. confirmReceipt
-        confirmReceipt();
 
-        // if 只收不评 is  ('Y', 'Yes', 'True', '是')
-        // then skip comment step.
-        if (!commentsInfo.getDoNotComment()) {
-          if (logger.isDebugEnabled()) {
-            // 3. comments production(s)
-            logger.debug("Ready comment " + indexInfo);
+        logger.info(">>>>>>>>> The username has [" + commentsInfo.getOrderInfos().size() + " orders.");
+        for (OrderInfo orderInfo : commentsInfo.getOrderInfos()) {
+          logger.info("...... order NO. " + orderInfo.getOrderId());
+          // 2. confirmReceipt
+          confirmReceipt(orderInfo);
+
+          // if 只收不评 is  ('Y', 'Yes', 'True', '是')
+          // then skip comment step.
+          if (!orderInfo.getDoNotComment()) {
+            if (logger.isDebugEnabled()) {
+              // 3. comments production(s)
+              logger.debug("Ready comment " + indexInfo);
+            }
+
+            comments(orderInfo);
+          } else {
+            logger.info("Order#" + orderInfo.getOrderId()
+              + " doNotComment is 'TRUE' then will not comment this order, continue next order.");
           }
 
-          comments();
-        } else {
-          logger.info("Order#" + commentsInfo.getOrderId()
-            + " doNotComment is 'TRUE' then will not comment this order, continue next order.");
+          // write this orderNo to file.
+          if(fileWriter != null){
+            fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, orderInfo.getOrderId());
+          }
+          
         }
         
         // 4. logout current user
         logout();
 
         // write this orderNo to file.
-        if(fileWriter != null){
-          fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
-        }
+//        if(fileWriter != null){
+//          fileWriter.writeToFile(Constant.JD_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+//        }
 
         // print info
         long   endTime = System.currentTimeMillis();
@@ -291,7 +353,7 @@ public class JD extends SeleniumBaseObject {
     
     driver.close();
 
-    printCommentedInfo(total, lockedAccountCount, unlockedAccountCount, failedCommentAccountCount);
+    printCommentedInfo(totalCount, lockedAccountCount, unlockedAccountCount, failedCommentAccountCount);
   } // end method readComment
 
   //~ ------------------------------------------------------------------------------------------------------------------
@@ -323,49 +385,49 @@ public class JD extends SeleniumBaseObject {
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private void comments() {
+  private void comments(OrderInfo orderInfo) {
     try {
       if (logger.isDebugEnabled()) {
-        logger.debug("Ready for 'Comment' order#" + commentsInfo.getOrderId() + " and comment content is: "
+        logger.debug("Ready for 'Comment' order#" + orderInfo.getOrderId() + " and comment content is: "
           + commentsInfo.getCommentsMap());
       }
 
       Comment comment = new Comment(driver);
-      comment.comment(commentsInfo.getOrderId(), commentsInfo.getTagsCount(), commentsInfo.getCommentsMap());
+      comment.comment(orderInfo.getOrderId(), orderInfo.getTagsCount(), orderInfo.getCommentsMap());
 
       if (logger.isDebugEnabled()) {
-        logger.debug("'Comment' successfully for order#" + commentsInfo.getOrderId());
+        logger.debug("'Comment' successfully for order#" + orderInfo.getOrderId());
       }
     } catch (CommentFailedWithoutBindPhone ex){
       if(fileWriter != null){
-        fileWriter.writeToFile(Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX, commentsInfo.getOrderId());
+        fileWriter.writeToFile(Constant.JD_COULD_NOT_COMMENT_FILE_NAME_PREFIX, orderInfo.getOrderId());
 
-        String commentFailedWithoutBindPhoneContent = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), commentsInfo.getOrderId()}, "|");
+        String commentFailedWithoutBindPhoneContent = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), orderInfo.getOrderId()}, "|");
         fileWriter.writeToFileln(Constant.JD_ACCOUNT_NOT_BIND_PHONE_FILE_NAME_PREFIX, commentFailedWithoutBindPhoneContent);
       }
       logger.error(ex.getMessage());
     } catch (Exception e) {
-      writeFailedOrder();
+      writeFailedOrder(orderInfo);
       logger.error(e.getMessage(), e);
     }
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
-  private void confirmReceipt() {
+  private void confirmReceipt(OrderInfo orderInfo) {
     try {
       if (logger.isDebugEnabled()) {
-        logger.debug("Ready for 'Confirm Receipt' order#" + commentsInfo.getOrderId());
+        logger.debug("Ready for 'Confirm Receipt' order#" + orderInfo.getOrderId());
       }
 
       ConfirmReceipt confirmReceipt = new ConfirmReceipt(driver);
-      confirmReceipt.receipt(commentsInfo.getOrderId());
+      confirmReceipt.receipt(orderInfo.getOrderId());
 
       if (logger.isDebugEnabled()) {
-        logger.debug("'Confirm Receipt' successfully for order#" + commentsInfo.getOrderId());
+        logger.debug("'Confirm Receipt' successfully for order#" + orderInfo.getOrderId());
       }
     } catch (Exception e) {
-      writeFailedOrder();
+      writeFailedOrder(orderInfo);
       logger.error(e.getMessage(), e);
     }
   }
@@ -526,10 +588,10 @@ public class JD extends SeleniumBaseObject {
     this.smsReceiverInfo = smsReceiverInfo;
   }
 
-  private void writeFailedOrder(){
+  private void writeFailedOrder(OrderInfo orderInfo){
     failedCommentAccountCount++;
     if(fileWriter != null){
-      String content = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), commentsInfo.getOrderId()}, "|");
+      String content = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), orderInfo.getOrderId()}, "|");
       fileWriter.writeToFileln(Constant.JD_ACCOUNT_COMMENT_FAILED_FILE_NAME_PREFIX, content);
     }
   }

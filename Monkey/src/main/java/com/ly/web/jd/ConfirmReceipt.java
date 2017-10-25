@@ -67,7 +67,7 @@ public class ConfirmReceipt extends AbstractObject {
     }
 
 
-    if (!webDriver.getCurrentUrl().contains("order")) {
+    if (!webDriver.getCurrentUrl().contains("order.jd.com/center/list.action")) {
       navigateTo(Constant.JD_MY_ORDER_URL);
     }
 

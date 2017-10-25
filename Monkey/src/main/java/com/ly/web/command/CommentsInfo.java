@@ -2,6 +2,8 @@ package com.ly.web.command;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.map.HashedMap;
@@ -51,6 +53,9 @@ public class CommentsInfo implements Serializable {
    * @startDelayTimeStamp Using for send SMS, store the start time stamp for first sending sms time.
    */
   private Long startDelayTimeStamp;
+  
+  
+  private List<OrderInfo> orderInfos = new ArrayList<>();
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -293,6 +298,24 @@ public class CommentsInfo implements Serializable {
 
   public void setStartDelayTimeStamp(Long startDelayTimeStamp) {
     this.startDelayTimeStamp = startDelayTimeStamp;
+  }
+  
+  public String getUsernameAndPassword(){
+    return username + "-" + password;
+  }
+
+  public List<OrderInfo> getOrderInfos() {
+    return orderInfos;
+  }
+
+  public void setOrderInfos(List<OrderInfo> orderInfos) {
+    this.orderInfos = orderInfos;
+  }
+  
+  public void addOrderInfo(OrderInfo orderInfo){
+    if(orderInfo != null){
+      this.orderInfos.add(orderInfo);
+    }
   }
 
   //~ ------------------------------------------------------------------------------------------------------------------
