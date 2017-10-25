@@ -23,7 +23,7 @@ sys.setdefaultencoding("utf8")
 ############## pip install tools###################
 
 
-oz_jira_rapid_board_id=6
+oz_jira_rapid_board_id=21
 
 '''
 Log Configuration
@@ -90,6 +90,24 @@ proxies = {
 
 
 do_not_append_sprint_status_contains=['PM', 'PENDING']
+
+cmc_ticket_assign_to_us_usernames=['ozdev', 'ozintel']
+
+ignore_linked_tickets_prefix=['CTS']
+
+# CMC ticket assign to who
+# for example all CA tickets assign to 'yliu'
+# all TD tickets assign to 'cldu'
+tickets_automatic_assignments={
+    'TD': 'cldu',
+    'CBA': 'cldu',
+    'UCO': 'cldu',
+    'SMW': 'wtang',
+    'SMB': 'wtang',
+    'GRM': 'wtang',
+    'FLEX': 'swu',
+    'NFS': 'swu'
+}
 
 # Connect to jira server with username and password
 def connect_jira(jira_server, jira_user, jira_password, use_proxy=False):
@@ -648,16 +666,7 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, linkedIssu
     else:
         labels = [label]
 
-    # process softer branches
-    # if software_branches and software_branches.__len__() > 0:
-    #     for software_branch in software_branches:
-    #         # branch_names.append(software_branch['value'])
-    #         branch_names.append(software_branch.value)
-    # else:
-    #     branch_names.append("master")
-    # 
-    # 
-    # log.info('Software Branches: %s', ', '.join(branch_names))
+    assignee_and_reporter = get_assignment_by_ticket(cmcTicketNo)
 
     issue_dic = {
         # 'project': {'key': 'CMC JIRA Tickets'},
@@ -670,8 +679,10 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, linkedIssu
         'customfield_10227': oz_jira_cmc_jira_link.format(cmcTicketNo=cmcTicketNo),
          # customfield_10228 is Software Branches
         'customfield_10228': branch_names,
-        'assignee': {'name': oz_jira_default_assignee_reporter},
-        'reporter': {'name': oz_jira_default_assignee_reporter}
+        'assignee': {'name': assignee_and_reporter},
+        'reporter': {'name': assignee_and_reporter}
+        # 'assignee': {'name': oz_jira_default_assignee_reporter},
+        # 'reporter': {'name': oz_jira_default_assignee_reporter}
         # 'environment': oz_jira_env_text.format(cmcTicketNo=cmcTicketNo, branch=', '.join(branch_names))
     }
 
@@ -716,6 +727,19 @@ def create_ticket_on_oz_side(oz_jira, cmc_jira, cmcTicketNo, workDir, linkedIssu
     # print cmc_issue.fields.attachment
 
     return new_issue.key
+
+def get_assignment_by_ticket(cmc_ticket_no):
+    """
+    get the assignment and report by cmc ticket no from config @tickets_automatic_assignments
+    :param cmc_ticket_no:
+    :return: assignment username, if not found by default return confi @oz_jira_default_assignee_reporter
+    """
+    ticket_prefix = str(cmc_ticket_no).split("-")[0]
+
+    if tickets_automatic_assignments.has_key(ticket_prefix) and tickets_automatic_assignments[ticket_prefix]:
+        return tickets_automatic_assignments[ticket_prefix]
+
+    return oz_jira_default_assignee_reporter
 
 def get_cmc_ticket_number(oz_ticket):
     """
@@ -783,16 +807,35 @@ def getLinkedIssue(key):
     for link in issue.fields.issuelinks:
         if hasattr(link, "outwardIssue"):
             outwardIssue = link.outwardIssue
-            outwardIssues.append(outwardIssue.key)
+            if checkLinkedTicket(outwardIssue):
+                outwardIssues.append(outwardIssue.key)
         if hasattr(link, "inwardIssue"):
             inwardIssue = link.inwardIssue
-            inwardIssues.append(inwardIssue.key)
+            if checkLinkedTicket(inwardIssue):
+                inwardIssues.append(inwardIssue.key)
     if inwardIssues:
         results['inwardIssues'] = inwardIssues
     if outwardIssues:
         results['outwardIssues'] = outwardIssues
 
     return results
+
+def checkLinkedTicket(linked_ticket):
+    if linked_ticket:
+        linked_ticket_key = linked_ticket.key
+        linked_ticket_status = linked_ticket.fields.status.name
+        p_cmc_ticket_status = str(linked_ticket_status).replace('(', '').replace(')', '').replace(' ', '-').strip().upper()
+        ignoreStatusFlag = ("PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA'))
+
+        real_cmc_linked_ticket = cmc_jira.issue(linked_ticket_key)
+        if real_cmc_linked_ticket.fields.assignee:
+            linked_ticket_assignee = real_cmc_linked_ticket.fields.assignee.name if real_cmc_linked_ticket.fields.assignee else 'NotAssign'
+
+        for prefix in ignore_linked_tickets_prefix:
+            if (prefix in linked_ticket_key) or ignoreStatusFlag or not (linked_ticket_assignee in cmc_ticket_assign_to_us_usernames):
+                log.info("Ignore Linked ticket %s", linked_ticket_key)
+                return False
+    return True
 
 def getEpicIssue(key):
     epicIssues = []
