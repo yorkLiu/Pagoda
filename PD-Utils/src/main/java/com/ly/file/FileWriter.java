@@ -177,6 +177,10 @@ public class FileWriter implements InitializingBean {
     FileUtils.writeContentToFile(filePath, new Object[] { content, "" }, paramDelimiter);
   }
   
+  public void writeToFileDirectly(String fileName, String content){
+    FileUtils.writeContentToFile(fileName, content);
+  }
+  
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -245,6 +249,29 @@ public class FileWriter implements InitializingBean {
     return filePath;
   }
   
+  
+  public File getFileByName(String fileName){
+    String tmpWorkDir = workDir;
+    fileName = StringUtils.cleanPath(fileName);
+    String fileNameOnly = StringUtils.getFilename(fileName);
+    String foldersIncludeFileName = fileName.replace(fileNameOnly, "");
+    if(StringUtils.hasLength(foldersIncludeFileName)){
+      tmpWorkDir = StringUtils.applyRelativePath(workDir, foldersIncludeFileName);
+    }
+
+    File dir = new File(tmpWorkDir);
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
+
+    if (!tmpWorkDir.endsWith(File.separator)) {
+      tmpWorkDir = tmpWorkDir + File.separator;
+    }
+    String filePath = tmpWorkDir + fileNameOnly;
+
+    logger.info("File Path:" + filePath);
+    return new File(filePath);
+  }
   
 
 } // end class FileWriter
