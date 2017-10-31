@@ -2,12 +2,17 @@ package com.ly.web.lyd;
 
 import com.ly.config.YHDConfig;
 import com.ly.file.FileWriter;
+import com.ly.model.SMSReceiverInfo;
 import com.ly.web.base.SeleniumBaseObject;
 import com.ly.web.command.CommentsInfo;
 import com.ly.web.constant.Constant;
 import com.ly.web.dp.YHDDataProvider;
 import com.ly.web.exceptions.AccountLockedException;
 import com.ly.web.utils.PagodaOrderSortUtils;
+import com.ly.web.utils.SMSUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +24,7 @@ import org.testng.annotations.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -55,12 +61,16 @@ public class YHD extends SeleniumBaseObject {
 
   private int lockedAccountCount=0;
   private int failedCommentAccountCount=0;
+  private int bindPhoneCount = 0;
   
   @Autowired
   private YHDConfig yhdConfig;
   
   @Autowired
   private FileWriter fileWriter;
+
+  @Autowired
+  protected SMSReceiverInfo smsReceiverInfo;
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
   @BeforeTest
@@ -124,8 +134,14 @@ public class YHD extends SeleniumBaseObject {
             logger.debug("Ready comment " + indexInfo);
           }
           
-          // 3. comment production(s)
-          comments();
+          // before comment, bind the phone number
+          Boolean bindSuccess = bindPhoneNumber();
+          
+          if(bindSuccess){
+            // 3. comment production(s)
+            comments();
+          }
+          
         } else {
           logger.info("Order#" + commentsInfo.getOrderId()
             + " doNotComment is 'TRUE' then will not comment this order, continue next order.");
@@ -165,9 +181,33 @@ public class YHD extends SeleniumBaseObject {
 
     driver.close();
 
-    printCommentedInfo(total, lockedAccountCount, failedCommentAccountCount);
+    printCommentedInfo(total, lockedAccountCount, 0, failedCommentAccountCount, bindPhoneCount);
 
   } // end method comment
+  
+  
+  private Boolean bindPhoneNumber(){
+    try {
+      BindPhone bindPhone = new BindPhone(driver, smsReceiverInfo);
+      String bindedPhone = bindPhone.bindPhoneNumber();
+      if(bindedPhone != null){
+        if(Constant.PHONE_HAS_BIND.equalsIgnoreCase(bindedPhone)){
+          logger.info(String.format("The username: %s has bind phone, no need bind it again.", commentsInfo.getUsername() ));
+        } else {
+          bindPhoneCount ++;
+          if(fileWriter != null){
+            String content = StringUtils.arrayToDelimitedString(new String[]{commentsInfo.getUsername(), commentsInfo.getPassword(), bindedPhone}, "|");
+            fileWriter.writeToFileln(Constant.YHD_ACCOUNT_BIND_PHONE_FILE_NAME_PREFIX, content);
+          }
+          delay(3);
+        }
+      }
+    }catch (Exception e){
+      logger.error(e.getMessage(), e);
+      return Boolean.FALSE;
+    }
+    return Boolean.TRUE;
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
@@ -408,8 +448,11 @@ public class YHD extends SeleniumBaseObject {
   public void setFileWriter(FileWriter fileWriter) {
     this.fileWriter = fileWriter;
   }
-  
-  
+
+  public void setSmsReceiverInfo(SMSReceiverInfo smsReceiverInfo) {
+    this.smsReceiverInfo = smsReceiverInfo;
+  }
+
   private void writeFailedOrder(){
     failedCommentAccountCount++;
     if(fileWriter != null){

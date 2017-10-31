@@ -32,9 +32,9 @@ import com.ly.web.constant.Constant;
 public class Comment extends YHDAbstractObject {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
-  private static final String COMMENT_BUTTON_PREFIX = "comment_";
+  private static final String COMMENT_BUTTON_XPATH = "//a[contains(text(), '评论')]";
 
-  private static final String COMMENT_DIV_SELECTOR = "//div[@soid='%s']";
+  private static final String COMMENT_DIV_SELECTOR = "//div[@orderid='%s']";
 
   //~ Instance fields --------------------------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ public class Comment extends YHDAbstractObject {
       logger.debug("Confirm receipt the order#" + orderId);
     }
 
-    if (!webDriver.getCurrentUrl().contains("myOrder")) {
+    if (!webDriver.getCurrentUrl().contains("toOrderList")) {
       navigateTo(myOrderUrl);
     }
 
@@ -82,12 +82,10 @@ public class Comment extends YHDAbstractObject {
     webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     checkWelcomeShopping();
 
-    String commentBtnId = COMMENT_BUTTON_PREFIX + orderId.trim();
-
     WebElement commentBtnEle = null;
 
     try {
-      commentBtnEle = ExpectedConditions.presenceOfElementLocated(By.id(commentBtnId)).apply(webDriver);
+      commentBtnEle = ExpectedConditions.presenceOfElementLocated(By.xpath(COMMENT_BUTTON_XPATH)).apply(webDriver);
 
       if (commentBtnEle != null) {
         String text = commentBtnEle.getText();
@@ -106,7 +104,7 @@ public class Comment extends YHDAbstractObject {
         }
       }
 
-      userId = getUserId();
+//      userId = getUserId();
 
 // waitForById(commentBtnId);
     } catch (NoSuchElementException e) {
@@ -119,7 +117,7 @@ public class Comment extends YHDAbstractObject {
     } // end try-catch
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Finding comment button element id#'" + commentBtnId + "'");
+      logger.debug("Finding comment button element xpath#'" + COMMENT_BUTTON_XPATH + "'");
     }
 
 // WebElement commentBtnEle = webDriver.findElement(By.id(commentBtnId));
@@ -128,9 +126,7 @@ public class Comment extends YHDAbstractObject {
       logger.debug("Found the comment button and starting click it....");
     }
 
-    WebElement commentBtn  = commentBtnEle.findElement(By.tagName("a"));
-    String     commentHref = commentBtn.getAttribute("href");
-// commentBtn.click();
+    String     commentHref = commentBtnEle.getAttribute("href");
 
     if (logger.isDebugEnabled()) {
       logger.debug("Comment button was clicked and the page will direct to: " + commentHref);
@@ -211,7 +207,7 @@ public class Comment extends YHDAbstractObject {
       return;
     }
 
-    String sku            = commentElement.getAttribute("pminfoid");
+    String sku            = commentElement.getAttribute("productid");
     String commentContent = commentMap.get(sku);
     
     // if commentContent is empty, set the default content.
@@ -238,6 +234,9 @@ public class Comment extends YHDAbstractObject {
 
     // wait 5 seconds
     delay(5);
+    // check the 匿名 
+    executeJavaScript("if(!$('#niming').hasClass('cur')){$('#niming').click()}");
+    
     webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     
     // submit the comment

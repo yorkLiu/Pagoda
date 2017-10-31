@@ -126,10 +126,9 @@ public abstract class YHDAbstractObject extends AbstractObject {
    */
   public String getWriteCommentUrl(String orderId, String userId) {
     Assert.notNull(orderId);
-    Assert.notNull(userId);
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Order id#" + orderId + " and userInfoId#" + userId);
+      logger.debug("Order id#" + orderId);
     }
 
     String writeCommentUrl = String.format(Constant.YHD_ORDER_WRITE_COMMENT_URL, orderId, userId);

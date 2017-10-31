@@ -28,4 +28,11 @@
     <property name="filesPath" value="${filesPath}"/>
   </bean>
 
+  <bean id="smsReceiverInfo" class="com.ly.model.SMSReceiverInfo">
+    <property name="username" value="${sms_username}"/>
+    <property name="password" value="${sms_password}"/>
+    <property name="pid" value="${sms_projectId}"/>
+    <property name="authorID" value="devPagodaUpperMe"/>
+  </bean>
+
 </beans>

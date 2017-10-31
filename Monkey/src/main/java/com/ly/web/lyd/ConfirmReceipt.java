@@ -67,7 +67,7 @@ public class ConfirmReceipt extends YHDAbstractObject {
       logger.debug("Confirm receipt the order#" + orderId);
     }
 
-    if (!webDriver.getCurrentUrl().contains("myOrder")) {
+    if (!webDriver.getCurrentUrl().contains("toOrderList")) {
       navigateTo(myOrderUrl);
     }
 
@@ -78,69 +78,73 @@ public class ConfirmReceipt extends YHDAbstractObject {
 
     // wait 5 seconds
     webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-    String confirmReceiptId = CONFIRM_RECEIPT_BUTTON_PREFIX + orderId.trim();
-
-    try {
-       ExpectedConditions.presenceOfElementLocated(By.id(confirmReceiptId)).apply(webDriver);
-//      waitForById(confirmReceiptId);
-    } catch (NoSuchElementException e) {
-      if (logger.isDebugEnabled()) {
-        logger.debug("Not found 'Confirm Receipt' button, this order#" + orderId + " has receipted.");
-        logger.debug("Exit 'Confirm Receipt' step, exit code: R_11001");
-      }
-      return;
-    }
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Finding order confirm receipt element id#'" + confirmReceiptId + "'");
-    }
-
-    checkWelcomeShopping();
-    // wait 3 seconds
-    webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     
-    WebElement confirmReceiptBtnEle = webDriver.findElement(By.id(confirmReceiptId));
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Found order confirm receipt element id#'" + confirmReceiptId + "'");
-    }
-
-    WebElement confirmReceiptBtn = confirmReceiptBtnEle.findElement(By.tagName("a"));
-
-    ExpectedConditions.elementToBeClickable(confirmReceiptBtn);
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Try to click confirm receipt button....");
-    }
-
+    executeJavaScript(String.format("confirmReceived(%s)", orderId));
     
-    confirmReceiptBtn.click();
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("'Confirm receipt' button was clicked, and popped up a confirm message window.");
-    }
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Finding confirm receipt [OK] button by xpath:" + ORDER_CONFIRM_OK_BUTTON_XPATH);
-    }
-
-    waitForByXPath(ORDER_CONFIRM_OK_BUTTON_XPATH);
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Starting click 'Confirm' button in pop-up message window");
-    }
-
-    WebElement okBtn = webDriver.findElement(By.xpath(ORDER_CONFIRM_OK_BUTTON_XPATH));
     
-    logger.debug("Try to click the 'OK' to confirm the this order has receipt");
-    ExpectedConditions.elementToBeClickable(okBtn);
-    
-    okBtn.click();
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Clicked the 'OK' button in pop-up message window");
-      logger.debug("The Order[" + orderId + "] was receipt. You can comments it.");
-    }
+//    String confirmReceiptId = CONFIRM_RECEIPT_BUTTON_PREFIX + orderId.trim();
+//
+//    try {
+//       ExpectedConditions.presenceOfElementLocated(By.id(confirmReceiptId)).apply(webDriver);
+////      waitForById(confirmReceiptId);
+//    } catch (NoSuchElementException e) {
+//      if (logger.isDebugEnabled()) {
+//        logger.debug("Not found 'Confirm Receipt' button, this order#" + orderId + " has receipted.");
+//        logger.debug("Exit 'Confirm Receipt' step, exit code: R_11001");
+//      }
+//      return;
+//    }
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Finding order confirm receipt element id#'" + confirmReceiptId + "'");
+//    }
+//
+//    checkWelcomeShopping();
+//    // wait 3 seconds
+//    webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+//    
+//    WebElement confirmReceiptBtnEle = webDriver.findElement(By.id(confirmReceiptId));
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Found order confirm receipt element id#'" + confirmReceiptId + "'");
+//    }
+//
+//    WebElement confirmReceiptBtn = confirmReceiptBtnEle.findElement(By.tagName("a"));
+//
+//    ExpectedConditions.elementToBeClickable(confirmReceiptBtn);
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Try to click confirm receipt button....");
+//    }
+//
+//    
+//    confirmReceiptBtn.click();
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("'Confirm receipt' button was clicked, and popped up a confirm message window.");
+//    }
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Finding confirm receipt [OK] button by xpath:" + ORDER_CONFIRM_OK_BUTTON_XPATH);
+//    }
+//
+//    waitForByXPath(ORDER_CONFIRM_OK_BUTTON_XPATH);
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Starting click 'Confirm' button in pop-up message window");
+//    }
+//
+//    WebElement okBtn = webDriver.findElement(By.xpath(ORDER_CONFIRM_OK_BUTTON_XPATH));
+//    
+//    logger.debug("Try to click the 'OK' to confirm the this order has receipt");
+//    ExpectedConditions.elementToBeClickable(okBtn);
+//    
+//    okBtn.click();
+//
+//    if (logger.isDebugEnabled()) {
+//      logger.debug("Clicked the 'OK' button in pop-up message window");
+//      logger.debug("The Order[" + orderId + "] was receipt. You can comments it.");
+//    }
   } // end method receipt
 
   //~ ------------------------------------------------------------------------------------------------------------------

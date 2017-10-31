@@ -507,5 +507,15 @@ public class SeleniumBaseObject implements SauceOnDemandSessionIdProvider {
     System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
   }
 
+  protected void printCommentedInfo(int total, int lockedCount, int unlockedCount, int failedCount, int bindPhoneCount) {
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    System.out.println("Total: " + total);
+    System.out.println("Locked Account Count: " + lockedCount);
+    System.out.println("UnLocked Account Count: " + unlockedCount);
+    System.out.println("Bind Phone Count: " + bindPhoneCount);
+    System.out.println("Failed Commented Count: " + failedCount);
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  }
+
 
 } // end class SeleniumBaseObject

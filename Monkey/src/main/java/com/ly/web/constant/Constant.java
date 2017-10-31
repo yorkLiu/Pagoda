@@ -23,19 +23,21 @@ public class Constant {
   /** TODO: DOCUMENT ME! */
   public static final String OK = "OK";
   
+  public static final String PHONE_HAS_BIND="Binded";
+  
   public static final String ACCOUNT_FOLDER_NAME="accounts";
 
 
 //  public static final String YHD_LOGIN_PAGE_URL = "https://passport.yhd.com/passport/login_input.do";
-  public static final String YHD_LOGIN_PAGE_URL = "https://passport.yhd.com/passport/login_input.do?returnUrl=http://my.yhd.com/order/myOrder.do";
+  public static final String YHD_LOGIN_PAGE_URL = "https://passport.yhd.com/passport/login_input.do?returnUrl=http://home.yhd.com/order/toOrderList.do";
   
   public static final String YHD_LOGIN_PAGE_URL_WITHOUT_MY_ORDER = "https://passport.yhd.com/passport/login_input.do";
 
   public static final String YHD_INDEX_PAGE_URL = "http://www.yhd.com";
   
-  public static final String YHD_MY_ORDER_URL = "http://my.yhd.com/order/myOrder.do";
+  public static final String YHD_MY_ORDER_URL = "http://home.yhd.com/order/toOrderList.do";
   
-  public static final String YHD_ORDER_WRITE_COMMENT_URL="http://e.yhd.com/front-pe/pe/orderProductExperience!orderProductExperience.do?soId=%s&userId=%s&soType=0&hasCommented=false";
+  public static final String YHD_ORDER_WRITE_COMMENT_URL="http://item.yhd.com/comment/orderProductExperience.do?orderId=%s";
   
   public static final String YHD_LOGOUT_URL = "https://passport.yhd.com/passport/logoutJsonp.do?timestamp="+new Date().getTime()+"&callback=?";
   
@@ -49,6 +51,10 @@ public class Constant {
   
   public static final String YHT_PAGE_URL="http://t.yhd.com";
   
+  public static final String YHD_SECURITY_PAGE_URL="http://home.yhd.com/safecenter/index.do";
+  
+  public static final String YHD_BIND_PHONE_PAGE_URL="http://home.yhd.com/myyhdbind/bind.do";
+  
   
   
   public static final String YHD_COMMENT_FILE_NAME_PREFIX="YHD-Comment";
@@ -58,7 +64,8 @@ public class Constant {
   public static final String YHD_ACCOUNT_FOLDER_NAME= ACCOUNT_FOLDER_NAME +File.separator + "YHD-Account" + File.separator;
   public static final String YHD_ACCOUNT_LOCKED_FILE_NAME_PREFIX=YHD_ACCOUNT_FOLDER_NAME+"YHD-Account-Locked";
   public static final String YHD_ACCOUNT_COMMENT_FAILED_FILE_NAME_PREFIX=YHD_ACCOUNT_FOLDER_NAME+"YHD-Comment-Failed";
-  
+
+  public static final String YHD_ACCOUNT_BIND_PHONE_FILE_NAME_PREFIX=YHD_ACCOUNT_FOLDER_NAME+"YHD-Account-Bind-Phone";
   
   
   public static final String JD_LOGIN_PAGE_URL="https://passport.jd.com/uc/login?ReturnUrl=http://order.jd.com/center/list.action";
