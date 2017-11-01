@@ -20,8 +20,8 @@ public class URLUtils {
 
   private static final Logger logger = Logger.getLogger(URLUtils.class);
 
-  public static final String P_YHD_URL_PREFIX          = "http://item.yhd.com/item/";
-  public static final String P_YHT_URL_PREFIX = "http://t.yhd.com/detail/";
+  public static final String P_YHD_URL_PREFIX          = "http://item.yhd.com/";
+  public static final String P_YHT_URL_PREFIX          = "http://item.yhd.com/";
   public static final String P_JD_URL_PREFIX           = "http://item.jd.com/";
   public static final String P_JD_URL_HTTPS_PREFIX     = "https://item.jd.com/";
 

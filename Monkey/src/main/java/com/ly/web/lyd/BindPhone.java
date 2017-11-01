@@ -61,8 +61,8 @@ public class BindPhone extends YHDAbstractObject {
    */
   public String bindPhoneNumber() {
     webDriver.get(Constant.YHD_SECURITY_PAGE_URL);
-
     try {
+      ExpectedConditions.presenceOfElementLocated(By.xpath("//span[contains(text(), '绑定手机')]")).apply(webDriver);
       webDriver.findElement(By.xpath("//a[@data-tpa='MYYHD_PC_SAFE_BINDMOBILE']"));
     } catch (NoSuchElementException e) {
       logger.info("This user was binded phone");
