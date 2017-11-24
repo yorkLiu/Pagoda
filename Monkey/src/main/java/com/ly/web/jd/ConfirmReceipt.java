@@ -59,7 +59,7 @@ public class ConfirmReceipt extends AbstractObject {
    *
    * @throws  Exception  exception
    */
-  public void receipt(String orderId) throws Exception {
+  public void receipt(String orderId, Boolean refreshPage) throws Exception {
     Assert.notNull(orderId);
 
     if (logger.isDebugEnabled()) {
@@ -160,6 +160,10 @@ public class ConfirmReceipt extends AbstractObject {
     
     // delay 10 secs
     delay(3);
+    
+    if(refreshPage != null && refreshPage){
+      refreshPage();
+    }
     
   } // end method receipt
 

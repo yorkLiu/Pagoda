@@ -421,7 +421,7 @@ public class JD extends SeleniumBaseObject {
       }
 
       ConfirmReceipt confirmReceipt = new ConfirmReceipt(driver);
-      confirmReceipt.receipt(orderInfo.getOrderId());
+      confirmReceipt.receipt(orderInfo.getOrderId(), orderInfo.getDoNotComment());
 
       if (logger.isDebugEnabled()) {
         logger.debug("'Confirm Receipt' successfully for order#" + orderInfo.getOrderId());

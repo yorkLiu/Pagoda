@@ -59,8 +59,11 @@ public class BindPhone extends YHDAbstractObject {
    *
    * @return  String
    */
-  public String bindPhoneNumber() {
-    webDriver.get(Constant.YHD_SECURITY_PAGE_URL);
+  public String bindPhoneNumber() throws Exception {
+    logger.info("------go to:" + Constant.YHD_SECURITY_PAGE_URL);
+    goToPage(Constant.YHD_SECURITY_PAGE_URL);
+    this.webDriver.get(Constant.YHD_SECURITY_PAGE_URL);
+    delay(3);
     try {
       ExpectedConditions.presenceOfElementLocated(By.xpath("//span[contains(text(), '绑定手机')]")).apply(webDriver);
       webDriver.findElement(By.xpath("//a[@data-tpa='MYYHD_PC_SAFE_BINDMOBILE']"));
@@ -71,7 +74,8 @@ public class BindPhone extends YHDAbstractObject {
 
 
     // goto bind phone page
-    webDriver.get(Constant.YHD_BIND_PHONE_PAGE_URL);
+    goToPage(Constant.YHD_BIND_PHONE_PAGE_URL);
+//    this.webDriver.get(Constant.YHD_BIND_PHONE_PAGE_URL);
 
     try {
       WebElement phoneField = null;

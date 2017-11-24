@@ -335,6 +335,10 @@ public abstract class AbstractObject {
       throw e;
     }
   }
+  
+  protected void goToPage(String url){
+    executeJavaScript(String.format("document.location.href='%s'", url));
+  }
 
   //~ ------------------------------------------------------------------------------------------------------------------
 
