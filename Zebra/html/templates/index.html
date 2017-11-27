@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2>今日订单</h2>
+    <div class="table-responsive">
+        <p>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">添加订单</button>
+        </p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th width="50">No.#</th>
+                <th>商品ID(goodsId)</th>
+                <th>关键词</th>
+                <th>数量</th>
+                <th>购买方式</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="exampleModal" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                        class="sr-only">Close</span></button>
+                <h3 class="modal-title" id="lineModalLabel">添加订单</h3>
+            </div>
+            <div class="modal-body">
+
+                <!-- content goes here -->
+                <form>
+                    <div class="form-group">
+                        <label for="goodsId">商品ID</label>
+                        <input type='text' class="form-control" id="goodsId" name="goodsId" required="required" placeholder="请输入商品编号(如: 32923047)"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="keywords">搜索关键词</label>
+                        <input type='text' class="form-control" id="keywords" name="keywords" required="required" placeholder="请输入搜索关键词"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalCount">刷单数量</label>
+                        <input type="number" class="form-control" id="totalCount" name="totalCount" required="required" placeholder="请输入刷单数量"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="buyType">购买方</label>
+                        <select id="buyType" name="buyType" class="form-control">
+                            <option value="3">开团/参团 (有团就参,无团就开)</option>
+                            <option value="2">只参团</option>
+                            <option value="1">只开团</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" role="button">取消</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="button" id="saveOrder" class="btn btn-default btn-primary" data-action="save" role="button">添加</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        var $goodsId = $('#goodsId');
+        var $saveBtn = $('#saveOrder');
+        
+        $saveBtn.click(function () {
+
+
+        });
+//        $goodsId.blur(function(e){
+//            var goodsId = $goodsId.val();
+//            if(goodsId){
+//                $.get('http://apiv4.yangkeduo.com/v5/goods/'+goodsId.trim()+'?pdduid=', function(res){
+//                    console.log(res)
+//                }, 'json')
+//            }
+//        })
+    });
+</script>
+{% endblock %}
+

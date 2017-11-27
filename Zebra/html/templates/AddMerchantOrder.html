@@ -1,0 +1,101 @@
+<html>
+<header>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<title>添加商家下单</title>
+
+	<style>
+		.mainContent{margin: 10% 30%;}
+		.mainContent > div {margin-top: 5px;}
+		.mainContent > div>label{width:100px; display: inline-block}
+		.mainContent >div >input {width:300px; height: 25px}
+		.mainContent >div >select {width: 300px; height: 25px}
+		button{margin-top:20px;width:80px;height: 25px;}
+	</style>
+
+	<script type="text/javascript">
+		function confirm_add(){
+			var goodsIdF = document.getElementById('goodsId');
+			var keywordsF = document.getElementById('keywords');
+			var totalCountF = document.getElementById('totalCount');
+			var buyTypeF = document.getElementById('buyType');
+			var resultsF = document.getElementById('results');
+
+			var goodsId = goodsIdF.value;
+			var keywords = keywordsF.value;
+			var totalCount = totalCountF.value;
+			var buyType = buyTypeF.value;
+
+			if (goodsId && keywords && totalCount && buyType){
+				var order = [goodsId.trim(), keywords.trim(), totalCount.trim(), buyType.trim()]
+
+				var resultV = resultsF.value.trim()
+
+				if (resultV){
+					resultV+='\n'+order.join('|')
+				} else {
+					resultV = order.join('|')
+				}
+
+				resultsF.value = resultV;
+
+				// clear
+				goodsIdF.value = ''
+				keywordsF.value=''
+				totalCountF.value=''
+			} else {
+				alert('请输入以下信息')
+			}
+		}
+
+		function clear_order(){
+			var resultsF = document.getElementById('results');
+			resultsF.value='';
+		}
+
+	</script>
+</header>
+
+<body>
+	<div class="mainContent">
+		<div>
+			<label>商品ID</label>
+			<input type='text' id="goodsId" name="goodsId" required="required" placeholder="请输入商品编号(如: 32923047)" />
+		</div>
+		<div>
+			<label>搜索关键词</label>
+			<input type='text' id="keywords" name="keywords" required="required" placeholder="请输入搜索关键词"/>
+		</div>
+		<div>
+			<label>下单数量</label>
+			<input type="number" id="totalCount" name="totalCount" required="required" placeholder="请输入刷单数量" />
+		</div>
+
+		<div>
+			<label>购买方 </label>
+			<select id="buyType" name="buyType">
+				<option value="3">开团/参团 (有团就参,无团就开)</option>
+				<option value="2">只参团</option>
+				<option value="3">只开团</option>
+			</select>
+		</div>
+		<div>
+			<label>&nbsp;</label>
+			<button onclick="confirm_add()">添加</button>
+		</div>
+
+		<form action="{{url_for('addorder')}}" method="post">
+			<div>
+				<textarea id="results" style="width: 420px;height: 200px; text-align: left;" name="orders">
+
+				</textarea>
+			</div>
+			<div>
+				<label>&nbsp;</label>
+				<button style="width: 100px" onclick="clear_order()">清除订单信息</button>
+				<button type="submit">提交订单</button>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
