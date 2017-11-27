@@ -1,0 +1,28 @@
+[Default]
+webdriver_name= chromedriver
+mark_receive_address_symbol = 
+delay_seconds_for_next_by_goods_id = 1800
+
+[SMS]
+sms_username =
+sms_password =
+
+[Address]
+address_used_index = 0
+
+[ADSL]
+adsl_dial_on = 0
+adsl_username =
+adsl_password =
+
+[Payment]
+a_pay_username = 
+a_pay_password = 
+
+[Email]
+email_login_username =
+email_login_password =
+email_sent_to = 
+email_cc_to =
+email_bcc_to =
+
