@@ -1,0 +1,147 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- Insert this line above script imports  -->
+    <script>if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }</script>
+
+    <!-- normal script imports etc  -->
+    <script type="text/javascript" src="tools/jquery.min.js"></script>
+    <script type="text/javascript" src="tools/bootstrap.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+
+
+</head>
+<body>
+
+<div class="container">
+    <!--<div class="page-header">-->
+    <!--<h1>Panels with nav tabs.<span class="pull-right label label-default">:)</span></h1>-->
+    <!--</div>-->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel with-nav-tabs panel-default">
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tabForToadyOrders" data-toggle="tab">今日订单</a></li>
+                        <li><a href="#tabForOrderStatus" data-toggle="tab">订单状态</a></li>
+                        <li><a href="#tabForHistoryOrders" data-toggle="tab">历史订单</a></li>
+                        <li><a href="#tabForComment" data-toggle="tab">评价</a></li>
+                        <li><a href="#tabForSetting" id="tabForSysSetting" data-toggle="tab">系统设置</a></li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="tabForToadyOrders" style="height: 80%">
+</form></fieldset>
+
+                        </div>
+                        <div class="tab-pane fade" id="tabForOrderStatus">Default 2</div>
+                        <div class="tab-pane fade" id="tabForHistoryOrders">Default 3</div>
+                        <div class="tab-pane fade" id="tabForComment">Default 4</div>
+                        <div class="tab-pane fade" id="tabForSetting" style="height: 80%">
+                            <div class="row">
+                                <form class="form-horizontal">
+                                    <fieldset>
+
+                                        <!-- Form Name -->
+                                        <legend> <p>系统设置</p> </legend>
+
+                                        <!-- Text input-->
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="mark_receive_address_symbol">地址前加</label>
+                                            <div class="col-md-4">
+                                                <input type="text" maxlength="5" name="mark_receive_address_symbol" id="mark_receive_address_symbol"  class="form-control input-md">
+                                            </div>
+                                             <label class="col-md-1 control-label">作为暗号</label>
+                                        </div>
+                                        <!-- Select Basic -->
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="declineType">Issue Type</label>
+                                            <div class="col-md-4">
+                                                <select id="issuetype" name="issuetype" class="form-control">
+                                                    <option value="l">Blumber</option>
+                                                    <option value="2">Electrician</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Textarea -->
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="dis">Discriptions</label>
+                                            <div class="col-md-4">
+                                                <textarea class="form-control" id="dis" name="dis"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!-- Text input-->
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="date">Created At</label>
+                                            <div class="col-md-4">
+                                                <input id="date" name="date" placeholder="Date"
+                                                       class="form-control input-md" type="text">
+
+                                            </div>
+                                        </div>
+                                        <!-- Button -->
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="submit"></label>
+                                            <div class="col-md-4">
+                                                <button id="submit" name="submit" class="btn btn-default">Submit</button>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div class="col-md-6">-->
+        <!--<div class="panel with-nav-tabs panel-primary">-->
+        <!--<div class="panel-heading">-->
+        <!--<ul class="nav nav-tabs">-->
+        <!--<li class="active"><a href="#tab1primary" data-toggle="tab">Primary 1</a></li>-->
+        <!--<li><a href="#tab2primary" data-toggle="tab">Primary 2</a></li>-->
+        <!--<li><a href="#tab3primary" data-toggle="tab">Primary 3</a></li>-->
+        <!--<li class="dropdown">-->
+        <!--<a href="#" data-toggle="dropdown">Dropdown <span class="caret"></span></a>-->
+        <!--<ul class="dropdown-menu" role="menu">-->
+        <!--<li><a href="#tab4primary" data-toggle="tab">Primary 4</a></li>-->
+        <!--<li><a href="#tab5primary" data-toggle="tab">Primary 5</a></li>-->
+        <!--</ul>-->
+        <!--</li>-->
+        <!--</ul>-->
+        <!--</div>-->
+        <!--<div class="panel-body">-->
+        <!--<div class="tab-content">-->
+        <!--<div class="tab-pane fade in active" id="tab1primary">Primary 1</div>-->
+        <!--<div class="tab-pane fade" id="tab2primary">Primary 2</div>-->
+        <!--<div class="tab-pane fade" id="tab3primary">Primary 3</div>-->
+        <!--<div class="tab-pane fade" id="tab4primary">Primary 4</div>-->
+        <!--<div class="tab-pane fade" id="tab5primary">Primary 5</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
+
+
+</body>
+
+</html>

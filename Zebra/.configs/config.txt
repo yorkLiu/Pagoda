@@ -4,25 +4,24 @@ mark_receive_address_symbol =
 delay_seconds_for_next_by_goods_id = 1800
 
 [SMS]
-sms_username =
-sms_password =
+sms_username = tz5HjDs2VsCUVzATVWzz4VPudSdtQNyjoWkabRNcENE=
+sms_password = tz5HjDs2VsCUVzATVWzz4SwEB9KaH+LDXrNISy18tDA=
 
 [Address]
 address_used_index = 0
 
 [ADSL]
 adsl_dial_on = 0
-adsl_username =
-adsl_password =
+adsl_username = hun3414022
+adsl_password = 30808042
 
 [Payment]
-a_pay_username = 
-a_pay_password = 
+a_pay_username =
+a_pay_password =
 
 [Email]
-email_login_username =
-email_login_password =
-email_sent_to = 
-email_cc_to =
-email_bcc_to =
-
+email_login_username = hB5HMHbOX3LpRrAwL95PSNmdDnWbH1i/b1rFjrHFE2I=
+email_login_password = tz5HjDs2VsCUVzATVWzz4YSM6dwDGk3iz3h/2LCIfb4=
+email_sent_to = 441553179@qq.com
+email_cc_to = 441553179@qq.com,651007525@qq.com
+email_bcc_to = 441553179@qq.com

@@ -16,14 +16,14 @@ now = datetime.datetime.now()
 today = now.strftime(dateFormat)
 
 ### START config Email Sender
-email_username=os.environ.get('EMAIL_USER_NAME')
-email_password=os.environ.get('EMAIL_PWD')
-email_from= os.environ.get('EMAIL_FROM')
-email_subject= os.environ.get('EMAIL_SUBJECT')
+email_username='notify@ozstrategy.com'
+email_password='MHptcDBvZCRvejg4OGNvbUAm'
+email_from= 'notify@ozstrategy.com'
+email_subject= 'Test for RWD Email'
 
 # config the email address here
-email_tos=os.environ.get('EMAIL_TO_TECH_LEADS').split(',')
-email_ccs=os.environ.get('EMAIL_CCS').split(',')
+email_tos='yong.liu@ozstrategy.com'.split(',')
+email_ccs='yong.liu@ozstrategy.com'.split(',')
 ### END config Email Sender
 
 
@@ -84,25 +84,28 @@ def send_email():
         mail_content['Subject'] = email_subject
         mail_content['From'] = email_from
         mail_content['To'] = ','.join(email_tos)
-        mail_content['CC'] = ','.join(email_ccs)
+        mail_content['Cc'] = ','.join(email_ccs)
 
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.ehlo()
         server.starttls()
         server.login(email_username, de_email_pwd)
-        server.sendmail(email_from, [email_tos, email_ccs], mail_content.as_string())
+        server.sendmail(email_from, email_tos, mail_content.as_string())
         server.quit()
         log.info('Send email successfully')
 
-    except:
+    except Exception as e:
         log.error("Send Email Error")
+        log.error(e)
 
 if __name__ == '__main__':
-    parameters = sys.argv[1:]
-    
-    email_file_name = None
-    if parameters.__len__() > 0:
-        email_file_name = parameters[0]
-        send_email()
 
-    exit()
+    print base64.encodestring('PPrr@#$4567$')
+    # parameters = sys.argv[1:]
+    #
+    # email_file_name = None
+    # if parameters.__len__() > 0:
+    #     email_file_name = parameters[0]
+    #     send_email()
+    #
+    # exit()

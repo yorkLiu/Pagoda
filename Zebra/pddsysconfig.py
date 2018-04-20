@@ -35,6 +35,14 @@ date_time_formatter='%Y-%m-%d %H:%M:%S'
 def decode_chinese(chinese_characters):
     return str(chinese_characters).strip().decode('utf-8')
 
+def read_file_content(file_path):
+    content = ''
+    if(os.path.exists(file_path)):
+        with open(file_path, 'r') as f:
+            content += f.read().decode("utf-8-sig").encode("utf-8")
+    return content
+
+
 def check_folder_exists(folder_path):
     """
     Check the folder is exists, if not exists then create the folder(s)
@@ -240,6 +248,63 @@ phantomjs_driver_path =  os.path.join(web_driver_base_path, 'phantomjs%s' % web_
 ####################### Driver Configs [E N D] #######################
 
 
+####################### Chat Message Config [START] #######################
+message_folder_path=os.path.join(os.getcwd(), 'Message')
+message_templates_folder_path=os.path.join(message_folder_path, 'templates')
+message_mall_file_path=os.path.join(message_folder_path, 'malls.txt')
+
+
+check_folder_exists(message_folder_path)
+check_folder_exists(message_templates_folder_path)
+
+
+
+def get_chat_messages_from_template(template_file_name):
+    messages = []
+    tpl_file_path = os.path.join(message_templates_folder_path, template_file_name)
+    if os.path.exists(tpl_file_path):
+        content = decode_chinese(read_file_content(tpl_file_path))
+        messages = [re.sub(r'\s+', '', item) for item in content.split("\n") if item]
+
+
+    return messages
+
+def save_malls(malls, mode='a'):
+    """
+    save malls (mall_id)
+    :param malls:
+    :return:
+    """
+    if malls and len(malls) > 0:
+        with open(message_mall_file_path, mode) as f:
+            content_tpl = '%s\n' if mode == 'a' else '%s'
+            f.write(content_tpl % '\n'.join(malls))
+            f.flush()
+            logger.info("Save the mall ids (%s malls saved) done!!!", len(malls))
+
+def remove_duplicate_mall():
+    content = read_file_content(message_mall_file_path)
+    if content:
+        mall_set = set([re.sub(r'\s+', '', item) for item in content.split("\n") if item])
+        if mall_set:
+            save_malls(mall_set, 'w')
+
+
+def get_mall_from_file(start_index, limit=50):
+    malls = []
+
+    range_malls = open(message_mall_file_path, 'r').readlines()
+
+    start_index = max([start_index, 0])
+    end_index = min([len(range_malls), (start_index+limit)])
+    malls = range_malls[start_index:end_index]
+
+    malls = [m.rstrip('\n').strip() for m in malls if m]
+    return malls
+
+####################### Chat Message Config [E N D] #######################
+
+
 ############################ Read Configuration from Config File[START]############################
 Config = ConfigParser.ConfigParser()
 config_file_path=os.path.join(config_folder_path,'config.txt')
@@ -399,12 +464,7 @@ def adsl_disconnect():
 
 ############################ Read Order file content [START] ############################
 def read_order_file_content(file_path):
-    content = ''
-    if(os.path.exists(file_path)):
-        with open(file_path, 'r') as f:
-            content += f.read().decode("utf-8-sig").encode("utf-8")
-            f.flush()
-    return content
+    return read_file_content(file_path)
 
 
 # 用于存放 已经下好的订单信息
@@ -507,7 +567,6 @@ def read_today_merchant_orders():
     if content:
         items = content.split('\n')
         for item in items:
-            print item
             if item:
                 item = re.sub(r'\s+', '', item)
                 data = item.split('|')

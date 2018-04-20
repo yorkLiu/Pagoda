@@ -219,6 +219,24 @@ class PDDLogin:
         # # save cookies
         # pddsysconfig.save_cookies(mobile_phone, self.driver.get_cookies())
 
+    def getPageID(self):
+        """
+        PDD has assigned every page a "page_id"
+        can run javaScript "Navigation.querySet.page_id" to get the it
+        :return: visit page_id
+        """
+
+        page_id = self.driver.execute_script("return Navigation.querySet.page_id")
+        log.debug('The current page ID is: %s', page_id)
+        return page_id
+
+    def forward_to(self, page_name):
+        if page_name:
+            log.debug("Will redirect to %s page", page_name)
+            self.driver.execute_script("Navigation.forward('%s')" % page_name)
+            time.sleep(5)
+
+
 class PDDOrder(PDDLogin):
     def __init__(self):
         PDDLogin.__init__(self)
@@ -251,16 +269,7 @@ class PDDOrder(PDDLogin):
         # 购买方式
         self.buy_type = None
 
-    def getPageID(self):
-        """
-        PDD has assigned every page a "page_id"
-        can run javaScript "Navigation.querySet.page_id" to get the it
-        :return: visit page_id
-        """
 
-        page_id = self.driver.execute_script("return Navigation.querySet.page_id")
-        log.debug('The current page ID is: %s', page_id)
-        return page_id
 
     def getMallInfo(self, mallId):
         """

@@ -20,11 +20,22 @@ PDD_PERSONAL_PAGE_URL="http://mobile.yangkeduo.com/personal.html"
 
 PDD_LOGIN_PAGE_URL="http://mobile.yangkeduo.com/login.html"
 
+# http://mobile.yangkeduo.com/chat_detail.html?mall_id=340007&refer_page_name=chat_list&refer_page_id=chat_list_1512443429657_vRepbNFHc1&refer_page_sn=10036
+PDD_CHAT_BASE_URL="http://mobile.yangkeduo.com/chat_detail.html?mall_id={mall_id}&refer_page_name=chat_list&refer_page_id={refer_page_id}&refer_page_sn=10036"
 
 ### API [START]###
 PDD_GOODS_DETAILS_API='http://apiv4.yangkeduo.com/v5/goods/{goods_id}?pdduid='
 PDD_GOODS_GROUPS_API='http://apiv4.yangkeduo.com/v2/goods/{goods_id}/local_group?pdduid='
 PDD_MALL_INFO_API='http://apiv4.yangkeduo.com/mall/{mall_id}/info?pdduid='
+
+
+
+
+# Get PDD 所有的一级目录 (一级目录所返回的数据 包含了其所对应的的二级目录)
+PDD_GET_ALL_CATEGORY='http://apiv4.yangkeduo.com/operations?pdduid=&is_back=1'
+# http://apiv2.yangkeduo.com/v4/operation/1135/groups?opt_type=2&offset=900&size=1000&sort_type=DEFAULT&pdduid=
+PDD_GET_GOODS_BY_CATEGORY_ID='http://apiv2.yangkeduo.com/v4/operation/{opt_id}/groups?opt_type={opt_type}&offset={start}&size={end}&sort_type=DEFAULT&pdduid='
+
 ### API [END]#####
 
 ##### PDD Config END########

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Setting</title>
+    <link href="css/main.css" rel="stylesheet">
+    <script type="text/javascript">
+        function checkAdsl(){
+            var $adsl = document.getElementById('adsl_dial_on');
+            var $adsl_username = document.getElementById('adsl_username');
+            var $adsl_password = document.getElementById('adsl_password');
+
+            var attrName = 'disabled';
+            if ($adsl.checked){
+                $adsl_username.removeAttribute(attrName);
+                $adsl_password.removeAttribute(attrName);
+                $adsl_username.focus();
+                $adsl.value='1';
+            } else {
+                $adsl_username.setAttribute(attrName, attrName);
+                $adsl_password.setAttribute(attrName, attrName);
+                $adsl.value='0';
+            }
+        }
+
+    </script>
+    <script type="text/javascript" src="app.js"></script>
+</head>
+<body>
+<div>
+<p>
+        <label>地址前加</label>
+        <input type="text" maxlength="5" name="mark_receive_address_symbol" id="mark_receive_address_symbol">
+        <label class="left">作为暗号</label>
+    </p>
+    <p>
+      <label>同一个商品间隔</label>
+      <input type="number" maxlength="6" name="delay_seconds_for_next_by_goods_id" id="delay_seconds_for_next_by_goods_id" decimal="false" value="60">
+      <label class="left">秒</label>
+    </p>
+    <p>
+        <label>速码短信平台 登陆用户名</label>
+        <input type="text" name="sms_username" id="sms_username">
+        <label class="left"><a href="">点击注册</a> </label>
+    </p>
+    <p>
+        <label>速码短信平台 登陆密码</label>
+        <input type="text" name="sms_password" id="sms_password">
+        <label class="left">&nbsp;</label>
+    </p>
+    <p>
+        <label>使用宽带拨号</label>
+        <input type="checkbox" name="adsl_dial_on" id="adsl_dial_on" value="0" onclick="checkAdsl()">
+        <label class="left">&nbsp;</label>
+    </p>
+    <p>
+        <label>宽带账号</label>
+        <input type="text" name="adsl_username" id="adsl_username" disabled="disabled">
+        <label class="left">&nbsp;</label>
+    </p>
+    <p>
+        <label>宽带密码</label>
+        <input type="text" name="adsl_password" id="adsl_password" disabled="disabled">
+        <label class="left">&nbsp;</label>
+    </p>
+    <p>
+        <label>&nbsp;</label>
+        <button onclick="saveConfigs()">保存</button>
+        <label>&nbsp;</label>
+    </p>
+
+</div>
+</body>
+</html>
