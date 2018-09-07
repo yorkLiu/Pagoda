@@ -54,6 +54,9 @@ cmc_jira_password=os.environ.get('CMC_JIRA_PASSWORD')
 
 qa_manager_full_names=os.environ.get('OZ_QA_MANAGER_NAME')
 
+use_proxy=os.environ.get('USE_PROXY')
+proxy_ip = os.environ.get('PROXY_SERVER')
+
 ### START config  jira username & password
 oz_jira_server = 'http://192.168.168.21:8091'
 cmc_jira_server = 'https://jira.cmcassist.com'
@@ -64,10 +67,12 @@ oz_jira_url_prefix = 'http://192.168.168.21:8091/browse/%s'
 oz_fixed_tickets_query='project = "CMC JIRA Tickets" AND labels = %s AND status in (Resolved, Closed, "Passed QA", "In QA", Done) ORDER BY status DESC'
 
 
-proxies = {
-    'http': 'socks5://192.168.100.3:1083',
-    'https': 'socks5://192.168.100.3:1083'
-}
+proxies = None
+if use_proxy and str(use_proxy).upper() in ('YES', 'TRUE'):
+    proxies = {
+                'http': str(proxy_ip).strip(),
+                'https': str(proxy_ip).strip()
+              }
 
 log = logging.getLogger('JIRA Checker')
 log.setLevel(logging.INFO)

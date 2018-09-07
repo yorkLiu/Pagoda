@@ -10,7 +10,6 @@ import hashlib
 import difflib
 import re
 import requests
-from jira.client import GreenHopper
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -876,7 +875,7 @@ if __name__ == '__main__':
         sys.exit(2)
 
     try:
-        opts, args = getopt.getopt(parameters,"hcaULEd:f:t:",["config", "append", "dir=","file=","tickets="])
+        opts, args = getopt.getopt(parameters,"hcaULEPd:f:t:",["config", "append", "dir=","file=","tickets="])
     except getopt.GetoptError, e:
         print 'DailyJira.py -d <workPath> -c '
         print 'DailyJira.py -f <filename> '
@@ -892,6 +891,7 @@ if __name__ == '__main__':
     force_update_flag = False
     create_linked_issue_flag=False
     create_epic_issue_falg=False
+    use_proxy = True
     ############  variables [END]  #############
 
     for opt, arg in opts:
@@ -917,6 +917,9 @@ if __name__ == '__main__':
             work_dir = get_work_path(work_dir)
             config_content = '{a}\n{b}\n{c}\n{d}\n{e}\n{workPath}'.format(a=oz_jira_username, b=oz_jira_pwd, c=cmc_jira_username, d=cmc_jira_pwd, e=oz_jira_default_assigner, workPath=work_dir)
             write_content_to_file(config_file_name, config_content)
+
+        if opt in ('-P', '--noproxy'):
+            use_proxy = False
 
         if opt in ('-U', '--Update'):
             force_update_flag = True
@@ -974,7 +977,7 @@ if __name__ == '__main__':
         oz_jira = connect_jira(oz_jira_server, oz_jira_username, oz_jira_pwd)
 
     if cmc_jira_username and cmc_jira_pwd:
-        cmc_jira = connect_jira(cmc_jira_server, cmc_jira_username, cmc_jira_pwd, True)
+        cmc_jira = connect_jira(cmc_jira_server, cmc_jira_username, cmc_jira_pwd, use_proxy)
     ############### INIT JIRA Server [End] ######################
 
     ## get current active sprint####

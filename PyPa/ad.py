@@ -1,4 +1,4 @@
 import py_compile
-py_compile.compile('sendemail.py')
+py_compile.compile('CmcWorkLog.py')
 
 print 'Done'

@@ -41,6 +41,9 @@ oz_jira_password =os.environ.get('OZ_JIRA_PASSWORD')
 
 cmc_jira_username=os.environ.get('CMC_JIRA_USERNAME')
 cmc_jira_password=os.environ.get('CMC_JIRA_PASSWORD')
+
+use_proxy=os.environ.get('USE_PROXY')
+proxy_ip = os.environ.get('PROXY_SERVER')
 #### JIRA Account Config [End]########
 
 cmc_jira_server = 'https://jira.cmcassist.com'
@@ -54,10 +57,12 @@ oz_jira_search_all_tickets_monthly = 'project = "CMC JIRA Tickets" AND labels in
 oz_jira_search_all_tickets_monthly_by_ticket_number_jql = 'project = "CMC JIRA Tickets" AND (summary ~ %s)'
 oz_jira_search_all_labels_montly_api = oz_jira_server+'/rest/api/1.0/labels/23175/suggest?query=%s'
 
-proxies = {
-    'http': 'socks5://192.168.100.3:1083',
-    'https': 'socks5://192.168.100.3:1083'
-}
+proxies = None
+if use_proxy and str(use_proxy).upper() in ('YES', 'TRUE'):
+    proxies = {
+                'http': str(proxy_ip).strip(),
+                'https': str(proxy_ip).strip()
+              }
 
 log = logging.getLogger('CmcWorkLog')
 log.setLevel(logging.INFO)
@@ -413,17 +418,29 @@ if __name__ == '__main__':
     print lastWorkDateStr, today, today == lastWorkDateStr
     # if today is the last work date of a month
     # then run the method to statistics all cmc ticket logged hours which in oz jira refered
-    if today == lastWorkDateStr:
-        get_worklog_monthly()
-    else:
-        # else will statistics the dashboard which assigned ozintel or ozdev tickets
-        # within logged hours
-        if parameters.__len__() > 0:
-            filename = parameters[0]
-            if os.path.isfile(filename):
-                file = open(filename, 'r')
-                ticket_file_content = file.read()
-                tickets = ticket_file_content.replace("/", ",").replace("\\", ",").replace("\n", ",").replace(" ", "").replace("\t", "").split(',')
-                print tickets
-                if tickets:
-                    get_worklog_daily(tickets)
+    # if today == lastWorkDateStr:
+    #     get_worklog_monthly()
+    # else:
+    #     # else will statistics the dashboard which assigned ozintel or ozdev tickets
+    #     # within logged hours
+    #     if parameters.__len__() > 0:
+    #         filename = parameters[0]
+    #         if os.path.isfile(filename):
+    #             file = open(filename, 'r')
+    #             ticket_file_content = file.read()
+    #             tickets = ticket_file_content.replace("/", ",").replace("\\", ",").replace("\n", ",").replace(" ", "").replace("\t", "").split(',')
+    #             print tickets
+    #             if tickets:
+    #                 get_worklog_daily(tickets)
+
+    if parameters.__len__() > 0:
+        filename = parameters[0]
+        if os.path.isfile(filename):
+            file = open(filename, 'r')
+            ticket_file_content = file.read()
+            tickets = ticket_file_content.replace("/", ",").replace("\\", ",").replace("\n", ",").replace(" ",
+                                                                                                          "").replace(
+                "\t", "").split(',')
+            print tickets
+            if tickets:
+                get_worklog_daily(tickets)

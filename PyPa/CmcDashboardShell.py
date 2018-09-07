@@ -43,6 +43,8 @@ oz_jira_username=os.environ.get('OZ_JIRA_USERNAME')
 oz_jira_password =os.environ.get('OZ_JIRA_PASSWORD')
 cmc_jira_username=os.environ.get('CMC_JIRA_USERNAME')
 cmc_jira_password=os.environ.get('CMC_JIRA_PASSWORD')
+use_proxy=os.environ.get('USE_PROXY')
+proxy_ip = os.environ.get('PROXY_SERVER')
 ### END config cmc jira username & password
 
 
@@ -58,10 +60,12 @@ email_ccs=os.environ.get('EMAIL_CCS').split(',')
 
 ### END config Email Sender
 
-proxies = {
-            'http': 'socks5://192.168.100.3:1083',
-            'https': 'socks5://192.168.100.3:1083'
-          }
+proxies = None
+if use_proxy and str(use_proxy).upper() in ('YES', 'TRUE'):
+    proxies = {
+                'http': str(proxy_ip).strip(),
+                'https': str(proxy_ip).strip()
+              }
 ######################## Configuration [End] #################################
 
 ### START CMC Dashboard Config
