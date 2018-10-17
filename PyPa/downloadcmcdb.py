@@ -6,8 +6,7 @@ import cPickle
 
 DATE_TIME_FORMAT='%Y%m%d%H%M%S'
 
-# login_cmd = 'ssh qasdbat001'
-login_cmd = 'ssh cmcdb'
+login_cmd = 'ssh qasdbat001'
 dump_cmd = 'mysqldump --single-transaction -h{host} -P3306 --ignore-table={db_name}.VariableAudit --ignore-table={db_name}.PreviewRuleNodeResult --ignore-table={db_name}.Session -n -R -u ozuser1 -pTest123! {db_name} > {output_filename}.sql;'
 gzip_cmd = 'gzip {output_filename}.sql'
 download_cmd = 'scp qasdbat001:~/{output_filename}.sql.gz /Users/yongliu/Downloads'
