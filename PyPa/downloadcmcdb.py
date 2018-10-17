@@ -6,10 +6,11 @@ import cPickle
 
 DATE_TIME_FORMAT='%Y%m%d%H%M%S'
 
+# login_cmd = 'ssh qasdbat001'
 login_cmd = 'ssh cmcdb'
 dump_cmd = 'mysqldump --single-transaction -h{host} -P3306 --ignore-table={db_name}.VariableAudit --ignore-table={db_name}.PreviewRuleNodeResult --ignore-table={db_name}.Session -n -R -u ozuser1 -pTest123! {db_name} > {output_filename}.sql;'
 gzip_cmd = 'gzip {output_filename}.sql'
-download_cmd = 'scp cmcdb:~/{output_filename}.sql.gz /Users/yongliu/Downloads'
+download_cmd = 'scp qasdbat001:~/{output_filename}.sql.gz /Users/yongliu/Downloads'
 remove_db_cmd = 'rm -rf {output_filename}.sql.gz'
 cmc_databases={}
 
@@ -30,8 +31,8 @@ def update_database():
     with open('.cmc_databases.pck', 'wb') as f:
         cPickle.dump(cmc_databases, f)
 import os
-def load_databases():
-    if not os.path.exists('.cmc_databases.pck'):
+def load_databases(force_update=False):
+    if not os.path.exists('.cmc_databases.pck') or force_update:
         update_database()
 
     with open('.cmc_databases.pck', 'rb') as f:
@@ -41,7 +42,7 @@ def load_databases():
 
 def dump_database(database_name):
     host = cmc_databases[database_name]
-    filename=datetime.now().strftime(DATE_TIME_FORMAT)
+    filename='%s_%s' % (database_name, datetime.now().strftime(DATE_TIME_FORMAT))
     dump_command = dump_cmd.format(host=host, db_name=database_name, output_filename=filename)
     gzip_command = gzip_cmd.format(output_filename=filename)
     download_command = download_cmd.format(output_filename=filename)
@@ -66,20 +67,42 @@ def search_cmc_db(prefix):
 
 
 from sys import argv
+import getopt, getpass
 if __name__ == '__main__':
-    cmc_databases = load_databases()
+    parameters = argv[1:]
+
+    opts, args = getopt.getopt(parameters, "U", ["Update"])
+    force_update = False
+    for opt, arg in opts:
+        if opt == '-U':
+            force_update = True
+
+    cmc_databases = load_databases(force_update)
+
+    if len(parameters) < 1:
+        print """
+        python downloadcmcdb.py C2QA_PLA
+        -U force synchronize the database info with CMC database servers
+
+        python downloadcmcdb.py C2QA_PLA -U
+        """
+
     if len(argv) == 1:
         print '\t'.join(search_cmc_db(None))
         exit(0)
 
-    prefix = argv[1]
+    prefixes = ''.join(parameters).replace("-U", '').split()
+    print prefixes
+    prefix = prefixes[0] if len(prefixes) > 0 else ''
+    print 'prefix: %s' % prefix
     dbs = search_cmc_db(prefix)
     if len(dbs) > 1:
         print '\t'.join(dbs)
         exit(0)
-    download_db_name = dbs[0]
-    print 'Starting download database "%s"' % download_db_name
-    dump_database(download_db_name)
-
-
-
+    elif len(dbs) == 1:
+        download_db_name = dbs[0]
+        print 'Starting download database "%s"' % download_db_name
+        dump_database(download_db_name)
+    else:
+        print 'Not found the database "%s"' % prefix
+        exit(0)
