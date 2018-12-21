@@ -27,7 +27,7 @@ export EMAIL_CCS='yong.liu@ozstrategy.com'
 python CmcDashboardShell.py true
 #
 ### create the dashboard ticket which not created on oz jira server
-python DailyJira.pyc -f $NONE_CREATED_TICKET_OUTPUT_DIR/$(date +"%Y-%m-%d").txt -a -U -L
+python DailyJira.pyc -f $NONE_CREATED_TICKET_OUTPUT_DIR/$(date +"%Y-%m-%d").txt -a -U -L -P
 #
 ### run dashboard
 #python CmcDashboardShell.pyc

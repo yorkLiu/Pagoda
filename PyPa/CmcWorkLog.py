@@ -433,14 +433,4 @@ if __name__ == '__main__':
     #             if tickets:
     #                 get_worklog_daily(tickets)
 
-    if parameters.__len__() > 0:
-        filename = parameters[0]
-        if os.path.isfile(filename):
-            file = open(filename, 'r')
-            ticket_file_content = file.read()
-            tickets = ticket_file_content.replace("/", ",").replace("\\", ",").replace("\n", ",").replace(" ",
-                                                                                                          "").replace(
-                "\t", "").split(',')
-            print tickets
-            if tickets:
-                get_worklog_daily(tickets)
+    get_worklog_monthly()

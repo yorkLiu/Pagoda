@@ -98,14 +98,15 @@ ignore_linked_tickets_prefix=['CTS']
 # for example all CA tickets assign to 'yliu'
 # all TD tickets assign to 'cldu'
 tickets_automatic_assignments={
-    'TD': 'cldu',
-    'CBA': 'cldu',
-    'UCO': 'cldu',
-    'SMW': 'wtang',
-    'SMB': 'wtang',
-    'GRM': 'wtang',
-    'FLEX': 'swu',
-    'NFS': 'swu'
+    'TD': 'njli',
+    'CA': 'yliu'
+    # 'CBA': 'cldu',
+    # 'UCO': 'cldu',
+    # 'SMW': 'wtang',
+    # 'SMB': 'wtang',
+    # 'GRM': 'wtang',
+    # 'FLEX': 'swu',
+    # 'NFS': 'swu'
 }
 
 # Connect to jira server with username and password
@@ -783,7 +784,7 @@ def append_today_label_for_yesterday_unresolved_tickets(oz_jira, workDir):
         log.info(">>>>>>>>> There are %i tickets will append today's label: %s", yesterday_unresolved_tickets.__len__(), label)
         for issue in yesterday_unresolved_tickets:
             cmc_ticket_num = get_cmc_ticket_number(issue)
-            # append_label(oz_jira, issue, workDir, cmc_ticket_num, issue.key)
+            append_label(oz_jira, issue, workDir, cmc_ticket_num, issue.key)
             if force_update_flag:
                 # update oz ticket's summary, description, attachments and branches
                 forceUpdateOzTicket(oz_jira, cmc_jira, issue.key, cmc_ticket_num, workDir)
@@ -859,6 +860,7 @@ if __name__ == '__main__':
             -t <ticketsNo> load content from transform tickets (split with ',', '/' or '\')
             -a Append today's label for yesterday not 'Resolved' and 'Closed' tickets (just in oz jira)
             -U force update the oz ticket with same as cmc ticket (if cmc ticket was updated)
+            -P without proxy
 
             Usage:
                     python DailyJira.py -d ~/Downloads/JIRA -c
@@ -880,6 +882,7 @@ if __name__ == '__main__':
         print 'DailyJira.py -d <workPath> -c '
         print 'DailyJira.py -f <filename> '
         print 'DailyJira.py -t <cmc tickets> '
+        print '[-P] without proxy'
         log.error(e)
         sys.exit(2)
 
@@ -974,7 +977,7 @@ if __name__ == '__main__':
     oz_jira = None
     cmc_jira = None
     if oz_jira_username and oz_jira_pwd:
-        oz_jira = connect_jira(oz_jira_server, oz_jira_username, oz_jira_pwd)
+        oz_jira = connect_jira(oz_jira_server, oz_jira_username, oz_jira_pwd, False)
 
     if cmc_jira_username and cmc_jira_pwd:
         cmc_jira = connect_jira(cmc_jira_server, cmc_jira_username, cmc_jira_pwd, use_proxy)
