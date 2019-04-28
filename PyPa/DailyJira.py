@@ -784,7 +784,13 @@ def append_today_label_for_yesterday_unresolved_tickets(oz_jira, workDir):
     """
     day_offset = 1
     weekday = today.isoweekday()
-    if weekday == 1:
+    if weekday == 6:
+        # Saturday
+        day_offset = 1
+    elif weekday ==7:
+        # Sunday
+        day_offset=2
+    elif weekday == 1:
         # monday, usually Sat and Sun were reset days
         day_offset = 3
 
