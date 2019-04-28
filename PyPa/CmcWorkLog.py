@@ -220,9 +220,14 @@ def generate_html(logged_tickets, totalFoundTickets, url):
         # calculate the work log by ticket type
         statistics_hours_by_ticket_type(key, current_month_worklogged)
 
-        log_details_str=''
-        worklog_details = logged_ticket_obj[key]
         print 'key:', key
+
+        log_details_str=''
+        worklog_details = logged_ticket_obj[key] if logged_ticket_obj.has_key(key) else None
+
+        if worklog_details == None:
+            continue
+
         for worklog in worklog_details:
             date = worklog['log_date']
             # comment = (u' '.join(worklog['log_comment'])).encode("utf-8").strip()

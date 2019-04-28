@@ -63,6 +63,9 @@ oz_jira_cmc_jira_link = 'https://jira.cmcassist.com/browse/{cmcTicketNo}'
 oz_jira_get_cmc_project_all_versions_api=oz_jira_server + '/rest/api/2/project/CMC/versions'
 oz_jira_create_cmc_project_version_api=oz_jira_server + '/rest/api/2/version'
 
+use_proxy=os.environ.get('USE_PROXY')
+proxy_ip = os.environ.get('PROXY_SERVER')
+
 '''
 Ticket Status Map
 '''
@@ -82,10 +85,17 @@ messages={
 
 ticket_updated_comment = '[~%s] %s \n %s'
 
-proxies = {
-    'http': 'socks5://192.168.100.3:1083',
-    'https': 'socks5://192.168.100.3:1083'
-}
+# proxies = {
+#     'http': 'socks5://192.168.168.3:1083',
+#     'https': 'socks5://192.168.168.3:1083'
+# }
+
+proxies = None
+if use_proxy and str(use_proxy).upper() in ('YES', 'TRUE'):
+    proxies = {
+                'http': str(proxy_ip).strip(),
+                'https': str(proxy_ip).strip()
+              }
 
 
 do_not_append_sprint_status_contains=['PM', 'PENDING']

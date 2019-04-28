@@ -154,6 +154,8 @@ def getDashboardContent():
         log.info("Data was returned.")
         jsonObj = response.json()
         issues = jsonObj['issuesData']['issues']
+        types = jsonObj['entityData']['types']
+        statuses = jsonObj['entityData']['statuses']
         for issueObj in issues:
             assignee = issueObj['assignee']
             if assignee not in ('ozdev', 'ozintel'):
@@ -162,9 +164,12 @@ def getDashboardContent():
             key = issueObj['key']
             summary = issueObj['summary']
             # type is 'defect', 'story'...
-            type = issueObj['typeName']
+
+            # type = issueObj['typeName']
+            type = types[issueObj['typeId']]['typeName']
             # status is 'Open (Dev)', 'In Progress (Dev)' ...
-            status = issueObj['statusName']
+            # status = issueObj['statusName']
+            status = statuses[issueObj['statusId']]['statusName']
             # Sprint & QA Date
             extra_text = get_extra_fields_info(issueObj['extraFields'],  key, group_by_extra_map)
 

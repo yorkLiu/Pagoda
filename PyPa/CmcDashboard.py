@@ -48,12 +48,22 @@ email_subject='OZStrategy Dashboard in CMC Side on %s' % today
 email_to_addres = 'yong.liu@ozstrategy.com'
 email_to_tech_leads=email_to_addres.split(',')
 
+use_proxy=os.environ.get('USE_PROXY')
+proxy_ip = os.environ.get('PROXY_SERVER')
+
 ### END config Email Sender
 
-proxies = {
-            'http': 'socks5://192.168.100.3:1083',
-            'https': 'socks5://192.168.100.3:1083'
-          }
+# proxies = {
+#             'http': 'socks5://192.168.168.3:1083',
+#             'https': 'socks5://192.168.168.3:1083'
+#           }
+
+proxies = None
+if use_proxy and str(use_proxy).upper() in ('YES', 'TRUE'):
+    proxies = {
+                'http': str(proxy_ip).strip(),
+                'https': str(proxy_ip).strip()
+              }
 ######################## Configuration [End] #################################
 
 ### START CMC Dashboard Config
@@ -86,13 +96,28 @@ log.addHandler(h)
 def getDashboardContent():
     resultMap={}
     url = dashboardUrl % current_milli_time()
-    log.info("Visit URL %s", url)
+    log.info("Visit URL %s with proxy: %s", url, proxies)
+
+    types = {}
+    statuses = {}
 
     response = requests.get(url,  auth=(cmc_jira_username, cmc_jira_password), proxies=proxies)
     if response.status_code == requests.codes.ok:
         log.info("Data was returned.")
         jsonObj = response.json()
         issues = jsonObj['issuesData']['issues']
+
+        entityData = jsonObj['entityData']
+        # init the types (Story, Defect, Task, Epic ...)
+        typeList = entityData['types']
+        for key in typeList:
+            types[key] = typeList[key]['typeName']
+
+        # init the status
+        statusList = entityData['statuses']
+        for key in statusList:
+            statuses[key] = statusList[key]['statusName']
+
         for issueObj in issues:
             assignee =  issueObj['assignee']
             print issueObj['key'], assignee
@@ -102,9 +127,11 @@ def getDashboardContent():
             print key, issueObj['hidden'], issueObj['assignee']
             summary = issueObj['summary']
             # type is 'defect', 'story'...
-            type = issueObj['typeName']
+            # type = issueObj['typeName']
+            type = types[issueObj['typeId']]
             # status is 'Open (Dev)', 'In Progress (Dev)' ...
-            status = issueObj['statusName']
+            # status = issueObj['statusName']
+            status = statuses[issueObj['statusId']]
             if not issueObj['hidden']:
                 log.info("Process CMC Ticket [%s]", key)
                 if not resultMap.has_key(type):
