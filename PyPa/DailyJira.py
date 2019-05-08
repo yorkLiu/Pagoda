@@ -52,14 +52,14 @@ file_content_template='http://192.168.168.21:8091/browse/{ozTicketNo} ({cmcTicke
 OZ JIRA Server
 '''
 oz_jira_server = 'http://192.168.168.21:8091'
-cmc_jira_server = 'https://jira.cmcassist.com'
+cmc_jira_server = 'https://jira.katabat.com'
 
 cmc_jira_epic_api=cmc_jira_server + '/rest/api/2/search?jql=cf[11264]={key}&fields=summary'
 
 oz_jira_search_query = 'project = "CMC JIRA Tickets" AND summary ~ %s'
 oz_jira_yesterday_not_resolved_query='project = "CMC JIRA Tickets" AND labels=%s AND status not in(Resolved, Closed, "Passed QA", Done)'
-oz_jira_env_text = 'https://jira.cmcassist.com/browse/{cmcTicketNo}\n branch: {branch}'
-oz_jira_cmc_jira_link = 'https://jira.cmcassist.com/browse/{cmcTicketNo}'
+oz_jira_env_text = 'https://jira.katabat.com/browse/{cmcTicketNo}\n branch: {branch}'
+oz_jira_cmc_jira_link = 'https://jira.katabat.com/browse/{cmcTicketNo}'
 oz_jira_get_cmc_project_all_versions_api=oz_jira_server + '/rest/api/2/project/CMC/versions'
 oz_jira_create_cmc_project_version_api=oz_jira_server + '/rest/api/2/version'
 

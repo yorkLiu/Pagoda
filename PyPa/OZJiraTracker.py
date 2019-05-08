@@ -59,10 +59,10 @@ proxy_ip = os.environ.get('PROXY_SERVER')
 
 ### START config  jira username & password
 oz_jira_server = 'http://192.168.168.21:8091'
-cmc_jira_server = 'https://jira.cmcassist.com'
+cmc_jira_server = 'https://jira.katabat.com'
 ### END config  jira username & password
 
-cmc_jira_url_prefix = 'https://jira.cmcassist.com/browse/%s'
+cmc_jira_url_prefix = 'https://jira.katabat.com/browse/%s'
 oz_jira_url_prefix = 'http://192.168.168.21:8091/browse/%s'
 oz_fixed_tickets_query='project = "CMC JIRA Tickets" AND labels = %s AND status in (Resolved, Closed, "Passed QA", "In QA", Done) ORDER BY status DESC'
 

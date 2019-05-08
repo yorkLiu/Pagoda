@@ -69,9 +69,9 @@ if use_proxy and str(use_proxy).upper() in ('YES', 'TRUE'):
 ######################## Configuration [End] #################################
 
 ### START CMC Dashboard Config
-dashboard_real_Url = "https://jira.cmcassist.com/secure/RapidBoard.jspa?rapidView=129"
-dashboardUrl = "https://jira.cmcassist.com/rest/greenhopper/1.0/xboard/work/allData.json?rapidViewId=129&_=%s"
-cmc_jira_url_prefix = 'https://jira.cmcassist.com/browse/%s'
+dashboard_real_Url = "https://jira.katabat.com/secure/RapidBoard.jspa?rapidView=129"
+dashboardUrl = "https://jira.katabat.com/rest/greenhopper/1.0/xboard/work/allData.json?rapidViewId=129&_=%s"
+cmc_jira_url_prefix = 'https://jira.katabat.com/browse/%s'
 ### END  CMC Dashboard Config
 
 ### START OZ JIRA Config

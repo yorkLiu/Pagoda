@@ -23,15 +23,22 @@ export CMC_JIRA_PASSWORD='0zPa$$123'
 export EMAIL_TO_TECH_LEADS='yong.liu@ozstrategy.com'
 export EMAIL_CCS='yong.liu@ozstrategy.com'
 
+
+export USE_PROXY='YES'
+export PROXY_SERVER='socks5://192.168.168.3:1083'
+
+
 ## Check the cmc dashbaord tickets but not created on oz jira server
 python CmcDashboardShell.py true
+#python CmcWorkLog.py
+#python CmcDashboard.py
 #
 ### create the dashboard ticket which not created on oz jira server
-python DailyJira.pyc -f $NONE_CREATED_TICKET_OUTPUT_DIR/$(date +"%Y-%m-%d").txt -a -U -L -P
+#python DailyJira.pyc -f $NONE_CREATED_TICKET_OUTPUT_DIR/$(date +"%Y-%m-%d").txt -a -U -L -P
+##
+#### run dashboard
+##python CmcDashboardShell.pyc
 #
-### run dashboard
-#python CmcDashboardShell.pyc
-
-## email the created tickets to tech_leads
-#python sendemail.pyc $NONE_CREATED_TICKET_OUTPUT_DIR/$(date +"%Y-%m-%d").txt
-python sendemail.py ~/Downloads/JIRA/Tickets/$(date +"%Y%m%d").txt
+### email the created tickets to tech_leads
+##python sendemail.pyc $NONE_CREATED_TICKET_OUTPUT_DIR/$(date +"%Y-%m-%d").txt
+#python sendemail.py ~/Downloads/JIRA/Tickets/$(date +"%Y%m%d").txt

@@ -43,7 +43,7 @@ def connect_jira(jira_server, jira_user, jira_password, use_proxy=False):
 
 
 def getEpicIssues(key):
-    url = 'https://jira.cmcassist.com/rest/api/2/search?jql=cf[11264]={key}&fields=summary'.format(key=key)
+    url = 'https://jira.katabat.com/rest/api/2/search?jql=cf[11264]={key}&fields=summary'.format(key=key)
     r = requests.get(url,auth=(cmc_username, cmc_pwd))
     jsonData = r.json()
     if jsonData and 'issues' in jsonData:

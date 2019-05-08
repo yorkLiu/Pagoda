@@ -46,11 +46,11 @@ use_proxy=os.environ.get('USE_PROXY')
 proxy_ip = os.environ.get('PROXY_SERVER')
 #### JIRA Account Config [End]########
 
-cmc_jira_server = 'https://jira.cmcassist.com'
+cmc_jira_server = 'https://jira.katabat.com'
 oz_jira_server = 'http://192.168.168.21:8091'
 
 oz_jira_ticket_link = 'http://192.168.168.21:8091/browse/{ticketNo}'
-oz_jira_cmc_jira_link = 'https://jira.cmcassist.com/browse/{cmcTicketNo}'
+oz_jira_cmc_jira_link = 'https://jira.katabat.com/browse/{cmcTicketNo}'
 
 
 oz_jira_search_all_tickets_monthly = 'project = "CMC JIRA Tickets" AND labels in(%s)'

@@ -32,9 +32,9 @@ class CMCJira(BaseJIRA.BaseJIRA):
         self.username=''
         self.password=''
         self.downloadPath=''
-        self.loginUrl = 'https://jira.cmcassist.com/login.jsp'
-        self.jiraUrlPrefix='https://jira.cmcassist.com/browse/{ticketNo}'
-        self.jiraSummaryAndDescriptonUrlPrefix="https://jira.cmcassist.com/rest/api/2/issue/{ticketId}?fields=summary,issuetype,description,customfield_13450"
+        self.loginUrl = 'https://jira.katabat.com/login.jsp'
+        self.jiraUrlPrefix='https://jira.katabat.com/browse/{ticketNo}'
+        self.jiraSummaryAndDescriptonUrlPrefix="https://jira.katabat.com/rest/api/2/issue/{ticketId}?fields=summary,issuetype,description,customfield_13450"
 
         self.xpath_ticket_rel_ID="//a[@id='key-val']"
         self.xpath_attachment="//div[@id='attachmentmodule']//ol/li"
