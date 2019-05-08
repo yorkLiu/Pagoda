@@ -63,6 +63,8 @@ oz_jira_cmc_jira_link = 'https://jira.katabat.com/browse/{cmcTicketNo}'
 oz_jira_get_cmc_project_all_versions_api=oz_jira_server + '/rest/api/2/project/CMC/versions'
 oz_jira_create_cmc_project_version_api=oz_jira_server + '/rest/api/2/version'
 
+original_oz_jira_cmc_jira_link ='https://jira.cmcassist.com/browse/{cmcTicketNo}'
+
 use_proxy=os.environ.get('USE_PROXY')
 proxy_ip = os.environ.get('PROXY_SERVER')
 
@@ -200,6 +202,7 @@ def get_active_srpint(board_id):
     return current_sprint
 
 def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
+    ticket_status = issue.fields.status.name
     try:
         extra_info=''
         cmc_issue = cmc_jira.issue(cmcTicketNo)
@@ -210,7 +213,7 @@ def append_label(oz_jira, issue, workDir, cmcTicketNo, oz_issue_key):
         append_today_label_flag= not ("PENDING" in p_cmc_ticket_status or "PASSED" in p_cmc_ticket_status or p_cmc_ticket_status in ('CLOSED', 'RESOLVED', 'QA-COMPLETE', 'DEV-COMPLETE', 'IN-PROGRESS-QA', 'IN-QA', 'OPEN-PM'))
 
         # append today's label to this issue.
-        ticket_status = issue.fields.status.name
+
         log.info("%s current status is: [%s]", oz_issue_key, ticket_status)
         if label not in issue.fields.labels:
 
@@ -768,7 +771,7 @@ def get_cmc_ticket_number(oz_ticket):
         cmc_jira_link_url = oz_ticket.fields.customfield_10227 or ''
 
         cmc_ticket_no_in_summary = str(summary).strip().split(" ")[0]
-        cmc_ticket_no_in_link_url = str(cmc_jira_link_url).strip().replace(oz_jira_cmc_jira_link.format(cmcTicketNo='') , '')
+        cmc_ticket_no_in_link_url = str(cmc_jira_link_url).strip().replace(original_oz_jira_cmc_jira_link.format(cmcTicketNo=''), '').replace(oz_jira_cmc_jira_link.format(cmcTicketNo='') , '')
 
         if cmc_ticket_no_in_link_url:
             cmc_ticket_num = cmc_ticket_no_in_link_url
@@ -796,10 +799,13 @@ def append_today_label_for_yesterday_unresolved_tickets(oz_jira, workDir):
 
     yesterday_label=(today - timedelta(days=day_offset)).strftime(dateFormat)
     yesterday_unresolved_tickets = oz_jira.search_issues(oz_jira_yesterday_not_resolved_query % yesterday_label)
+    print 'yesterday_unresolved_tickets:', yesterday_unresolved_tickets.__len__()
     if yesterday_unresolved_tickets.__len__() > 0:
         log.info(">>>>>>>>> There are %i tickets will append today's label: %s", yesterday_unresolved_tickets.__len__(), label)
         for issue in yesterday_unresolved_tickets:
             cmc_ticket_num = get_cmc_ticket_number(issue)
+            print 'cmc_ticket_num:', cmc_ticket_num, issue.key
+            print 'issue.fields.status.name', issue.fields.status, issue.fields.status.name
             append_label(oz_jira, issue, workDir, cmc_ticket_num, issue.key)
             if force_update_flag:
                 # update oz ticket's summary, description, attachments and branches

@@ -52,6 +52,9 @@ oz_jira_server = 'http://192.168.168.21:8091'
 oz_jira_ticket_link = 'http://192.168.168.21:8091/browse/{ticketNo}'
 oz_jira_cmc_jira_link = 'https://jira.katabat.com/browse/{cmcTicketNo}'
 
+original_oz_jira_cmc_jira_link ='https://jira.cmcassist.com/browse/{cmcTicketNo}'
+
+
 
 oz_jira_search_all_tickets_monthly = 'project = "CMC JIRA Tickets" AND labels in(%s)'
 oz_jira_search_all_tickets_monthly_by_ticket_number_jql = 'project = "CMC JIRA Tickets" AND (summary ~ %s)'
@@ -181,7 +184,7 @@ def get_cmc_ticket_number(oz_ticket):
         cmc_jira_link_url = oz_ticket.fields.customfield_10227 or ''
 
         cmc_ticket_no_in_summary = str(summary).strip().split(" ")[0]
-        cmc_ticket_no_in_link_url = str(cmc_jira_link_url).strip().replace(oz_jira_cmc_jira_link.format(cmcTicketNo='') , '')
+        cmc_ticket_no_in_link_url = str(cmc_jira_link_url).strip().replace(original_oz_jira_cmc_jira_link.format(cmcTicketNo='') , '').replace(oz_jira_cmc_jira_link.format(cmcTicketNo='') , '')
 
         if cmc_ticket_no_in_link_url:
             cmc_ticket_num = cmc_ticket_no_in_link_url
